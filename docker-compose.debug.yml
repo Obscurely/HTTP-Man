@@ -1,0 +1,11 @@
+
+version: '3.4'
+
+services:
+  httpman:
+    image: httpman
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    volumes:
+      - ~/.vsdbg:/remote_debugger:rw
