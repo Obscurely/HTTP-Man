@@ -24,6 +24,10 @@ namespace HTTPMan
         private List<string> Proxies { get { return _proxies; } set { _proxies = value; } }
 
         // Methods
+        /// <summary>
+        /// Gets a list of proxies from proxyscrape.com
+        /// </summary>
+        /// <returns>Return a list with the proxy downloaded from proxyscrape.com</returns>
         private async Task<List<string>> GetProxies()
         {
             List<string> proxies = new();
@@ -42,6 +46,11 @@ namespace HTTPMan
             return proxies;
         }
 
+        /// <summary>
+        /// Simple function that basically picks a random item from a List not just a proxy, but because that's the only use here is way is named like this.
+        /// </summary>
+        /// <param name="proxies">list with proxies to pick from.</param>
+        /// <returns>Returns a random selected proxy from the given list.</returns>
         private string PickProxy(List<string> proxies)
         {
             Random random = new(Guid.NewGuid().GetHashCode());
@@ -1525,15 +1534,5 @@ namespace HTTPMan
             return response;
         }
 #nullable disable
-
-        /*
-        public async Task<HttpResponseMessage> PostRequest(string url, Dictionary<string, string> body)
-        {
-            // Setting body.
-            JsonSerializerOptions jsonOptions = new();
-            jsonOptions.WriteIndented = true;
-            StringContent requestBody = new(JsonSerializer.Serialize(body, typeof(Dictionary<string, string>), jsonOptions), Encoding.UTF8, "application/json");
-        }
-        */
     }
 }

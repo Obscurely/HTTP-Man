@@ -21,6 +21,7 @@ namespace HTTPMan
 {
     public class Server
     {
+        // Fields
         private readonly ProxyServer _proxyServer = new();
         private bool _isServerStarted = false;
         private bool _isSystemProxySet = false;
@@ -29,7 +30,9 @@ namespace HTTPMan
         private List<TunnelConnectSessionEventArgs> _tunnelConnectRequests = new();
         private List<SessionEventArgs> _httpRequests = new();
         private List<SessionEventArgs> _httpResponses = new();
+        private List<MockerRule> _requestRules = new();
 
+        // Properties
         private ProxyServer ProxyServer { get { return _proxyServer; } }
         private bool IsServerStarted { get { return _isServerStarted; } set { _isServerStarted = value; } }
         private bool IsSystemProxySet { get { return _isSystemProxySet; } set { _isSystemProxySet = value; } }
@@ -38,13 +41,16 @@ namespace HTTPMan
         public List<TunnelConnectSessionEventArgs> TunnelConnectRequests { get { return _tunnelConnectRequests; } }
         public List<SessionEventArgs> HttpRequests { get { return _httpRequests; } }
         public List<SessionEventArgs> HttpResponses { get { return _httpResponses; } }
+        public List<MockerRule> RequestRules { get { return _requestRules; } }
 
+        // Constructors
         public Server(IPAddress explicitEndPointIP, int explicitEndPointPort, IPAddress transparentEndPointIP, int transparentEndPointPort)
         {
             _explicitEndPoint = new(explicitEndPointIP, explicitEndPointPort, true);
             _transparentEndPoint = new(transparentEndPointIP, transparentEndPointPort, true) { GenericCertificateName = "google.com" };
         }
 
+        // Methods
         public bool Start()
         {
             // Adds the handlers for the proxy.
@@ -166,6 +172,18 @@ namespace HTTPMan
 
         private async Task OnRequest(object sender, SessionEventArgs e)
         {
+            if (RequestRules.Count != 0)
+            {
+                for (int i = 0; i < RequestRules.Count; i++)
+                {
+                    if (RequestRules[i].Method.ToString().ToUpper() != e.HttpClient.Request.Method.ToUpper())
+                    {
+                        continue;
+                    }
+
+                    //Mocker.Mock(MockerRule, e);
+                }
+            }
             HttpRequests.Add(e); // Stores Http Request.
         }
 
