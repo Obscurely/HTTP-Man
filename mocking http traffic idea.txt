@@ -1,1 +1,1 @@
-Mocker.Mock() which then matches the mock mockmather and redirects to a private method for the specific action.
+Add a value that speciefs if is for requests and if it's for responses

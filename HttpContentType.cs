@@ -1,5 +1,8 @@
 namespace HTTPMan
 {
+    /// <summary>
+    /// Enum that contains the http content types for requests supported by the requester.
+    /// </summary>
     public enum HttpContentType : int
     {
         TextPlain = 0,
@@ -29,6 +32,9 @@ namespace HTTPMan
         VideoWEBM = 24
     }
 
+    /// <summary>
+    /// Used for getting the string representation of a value from the enum HttpContentType.
+    /// </summary>
     public static class HttpContentTypeString
     {
         // Fields

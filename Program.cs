@@ -10,13 +10,20 @@ namespace HTTPMan
     {
         static async Task Main(string[] args)
         {
-            System.Console.WriteLine(HttpMethod.Get.ToString().Equals("GET"));
-            /*
-            Server server = new Server(IPAddress.Parse("127.0.0.1"), 8866, IPAddress.Parse("127.0.0.1"), 8867);
-            server.Start();
-            server.TrustCertificate();
-            Console.ReadKey();
-            server.Stop();*/
+            Dictionary<string, string> test1 = new()
+            {
+                { "test1", "test1" },
+                { "test2", "test2" },
+                { "test3", "test3" },
+            };
+            Dictionary<string, string> test2 = new()
+            {
+                { "test1", "test1" },
+                { "test2", "test2" },
+                { "test3", "test3" }
+            };
+
+            System.Console.WriteLine(test1.Equals(test2));
         }
     }
 }

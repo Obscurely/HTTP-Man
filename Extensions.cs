@@ -5,8 +5,16 @@ using System.Collections.Generic;
 
 namespace HTTPMan
 {
+    /// <summary>
+    /// The class where object extension methods go in.
+    /// </summary>
     public static class Extensions
     {
+        /// <summary>
+        /// Extension method that converts a Dictionary<string, string> to it's json string representation.
+        /// </summary>
+        /// <param name="dict">The objects its self.</param>
+        /// <returns></returns>
         public static string ToJsonString(this Dictionary<string, string> dict)
         {
             JsonSerializerOptions jsonOptions = new();
@@ -14,6 +22,11 @@ namespace HTTPMan
             return JsonSerializer.Serialize(dict, typeof(Dictionary<string, string>), jsonOptions);
         }
 
+        /// <summary>
+        /// Extension method that converts a Dictionary<string, object> to it's json string representation.
+        /// </summary>
+        /// <param name="dict">The object its self.</param>
+        /// <returns></returns>
         public static string ToJsonString(this Dictionary<string, object> dict)
         {
             string json = "{\n";
@@ -42,6 +55,90 @@ namespace HTTPMan
             }
             json += "}";
             return json;
+        }
+
+        /// <summary>
+        /// Checks if keys and values of 2 Dictionary<string, string> are the same.
+        /// </summary>
+        /// <param name="dict1">The first dictionary to compare.</param>
+        /// <param name="dict2">The second dictionary to compare to.</param>
+        /// <returns>Returns true if the keys and values of the 2 dictionaries match otherwise false.</returns>
+        public static bool ContentEquals(this Dictionary<string, string> dict1, Dictionary<string, string> dict2)
+        {
+            if (dict1.Count != dict2.Count)
+                return false;
+
+            for (int i = 0; i < dict1.Count; i++)
+            {
+                if (dict1.Keys.ElementAt(i).Equals(dict2.Keys.ElementAt(i)) && dict1.Values.ElementAt(i).Equals(dict2.Values.ElementAt(i)))
+                    continue;
+                else
+                    return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Extension method that converts a MockHttpMethod to it's string in upper case representation.
+        /// </summary>
+        /// <param name="MockHttpMethod">The object its self</param>
+        /// <param name="isNotDefaultMethod">Can be set to whatever is just so it will be differentiated from the original one.</param>
+        /// <returns></returns>
+        public static string ToString(this MockHttpMethod method, bool isNotDefaultMethod)
+        {
+            switch ((int)method)
+            {
+                case 0:
+                    return "GET";
+                case 1:
+                    return "POST";
+                case 2:
+                    return "PUT";
+                case 3:
+                    return "PATCH";
+                case 4:
+                    return "DELETE";
+                case 5:
+                    return "HEAD";
+                case 6:
+                    return "OPTIONS";
+                case 7:
+                    return "TRACE";
+                case 8:
+                    return "ANY";
+
+                default:
+                    return "ANY";
+            }
+        }
+
+        public static string GetOptionsKey(this MockMatcher matcher)
+        {
+            switch ((int)matcher)
+            {
+                case 0:
+                    return "host";
+                case 1:
+                    return "url";
+                case 2:
+                    return "regexPattern";
+                case 3:
+                    return "query";
+                case 4:
+                    return "";
+                case 5:
+                    return "exactBody";
+                case 6:
+                    return "partBody";
+                case 7:
+                    return "exactJsonBody";
+                case 8:
+                    return "partJsonBody";
+
+                default:
+                    return "";
+            }
         }
     }
 }

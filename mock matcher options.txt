@@ -1,0 +1,29 @@
+0 = ForHost:
+    { "host", "host.com"}
+
+1 = ForUrl:
+    { "url", "https://www.url.com"}
+
+2 = ForUrlsMatchingRegex:
+    { "regexPattern", ".+?"} // should check if the pattern matches all the url of request
+
+3 = ExactQueryString:
+    { "query", "ts=st&fd=bd"} // query string is everything after "?" in url.
+
+4 = IncludingHeaders:
+    { "host", "host.com"}
+    { "refferer", "duckduckgo.com"}
+    { "toekn", "3025702570"} // Basically a dict with headers.
+
+5 = ExactBody:
+    { "body", "requestBody"}
+
+6 = BodyIncluding:
+    { "body", "part of the body"}
+
+7 = ExactJsonBody:
+    { "jsonBody", "json format body"}
+
+8 = JsonBodyIncluding:
+    { "jsonBody", "part of json format body"}
+
