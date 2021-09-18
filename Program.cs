@@ -13,9 +13,21 @@ namespace HTTPMan
     {
         static async Task Main(string[] args)
         {
-            HttpMethod? method = HttpMethod.Get;
+            Server server = new Server(IPAddress.Parse("127.0.0.1"), 8887, IPAddress.Parse("127.0.0.1"), 8889);
+            Dictionary<string, string> mockerOptions = new() { { "regexPattern", "https://discordapp.com/api/v9/channels/.+?/messages" } };
+            Dictionary<string, string> newBody = new()
+            {
+                { "content", "test" }
+            };
+            MockTransformer transformer = new MockTransformer(null, null, newBody.ToJsonString(), HttpContentType.ApplicationJson, null, null, null, null, null, null, null, null, null, null);
+            Dictionary<string, object> mockerActionOptions = new() { { "transformer", transformer } };
+            MockerRule rule1 = new MockerRule(MockHttpMethod.Post, MockMatcher.ForUrlsMatchingRegex, mockerOptions, MockAction.AutoTransformRequestOrResponse, mockerActionOptions);
+            server.HttpRules.Add(rule1);
+            System.Console.WriteLine(server.Start());
 
-            System.Console.WriteLine(method.ToString());
+            Console.ReadKey();
+
+            server.Stop();
         }
 
         static void Test(object test)

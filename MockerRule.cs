@@ -123,7 +123,6 @@ namespace HTTPMan
             }
             else if (mockingAction == MockAction.TimeoutWithNoResponse)
             {
-                _isForRequest = true;
                 _isForResponse = true;
             }
             else if (mockingAction == MockAction.CloseConnectionImmediately)

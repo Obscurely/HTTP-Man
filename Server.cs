@@ -35,7 +35,8 @@ namespace HTTPMan
         private List<TunnelConnectSessionEventArgs> _tunnelConnectRequests = new();
         private List<SessionEventArgs> _httpRequests = new();
         private List<SessionEventArgs> _httpResponses = new();
-        private List<MockerRule> _requestRules = new();
+        private List<MockerRule> _httpRules = new();
+        private Mocker _httpMocker = new();
 
         // Properties
         private ProxyServer ProxyServer { get { return _proxyServer; } }
@@ -46,7 +47,8 @@ namespace HTTPMan
         public List<TunnelConnectSessionEventArgs> TunnelConnectRequests { get { return _tunnelConnectRequests; } }
         public List<SessionEventArgs> HttpRequests { get { return _httpRequests; } }
         public List<SessionEventArgs> HttpResponses { get { return _httpResponses; } }
-        public List<MockerRule> RequestRules { get { return _requestRules; } }
+        public List<MockerRule> HttpRules { get { return _httpRules; } }
+        public Mocker HttpMocker { get { return _httpMocker; } }
 
         // Constructors
         /// <summary>
@@ -225,16 +227,16 @@ namespace HTTPMan
         /// <returns>Nothing.</returns>
         private async Task OnRequest(object sender, SessionEventArgs e)
         {
-            if (RequestRules.Count != 0)
+            if (HttpRules.Count != 0)
             {
-                for (int i = 0; i < RequestRules.Count; i++)
+                for (int i = 0; i < HttpRules.Count; i++)
                 {
-                    if (RequestRules[i].Method.GetString().ToUpper() != e.HttpClient.Request.Method.ToUpper() && RequestRules[i].Method != MockHttpMethod.Any)
-                    {
+                    if (HttpRules[i].Method.GetString().ToUpper() != e.HttpClient.Request.Method.ToUpper() && HttpRules[i].Method != MockHttpMethod.Any)
                         continue;
-                    }
+                    if (!HttpRules[i].IsForRequest)
+                        continue;
 
-                    //Mocker.Mock(MockerRule, e);
+                    e = HttpMocker.Mock(HttpRules[i], e, true);
                 }
             }
 
@@ -250,6 +252,19 @@ namespace HTTPMan
         /// <returns>Nothing.</returns>
         private async Task OnResponse(object sender, SessionEventArgs e)
         {
+            if (HttpRules.Count != 0)
+            {
+                for (int i = 0; i < HttpRules.Count; i++)
+                {
+                    if (HttpRules[i].Method.GetString().ToUpper() != e.HttpClient.Request.Method.ToUpper() && HttpRules[i].Method != MockHttpMethod.Any)
+                        continue;
+                    if (!HttpRules[i].IsForResponse)
+                        continue;
+
+                    e = HttpMocker.Mock(HttpRules[i], e, false);
+                }
+            }
+
             HttpResponses.Add(e); // Stores Http Response.
         }
 

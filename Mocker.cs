@@ -18,71 +18,73 @@ namespace HTTPMan
         /// </summary>
         /// <param name="rule">The mocker rule.</param>
         /// <param name="e">Event arguments given by the proxy.</param>
-        public void Mock(MockerRule rule, SessionEventArgs e)
+        public SessionEventArgs Mock(MockerRule rule, SessionEventArgs e, bool isRequest)
         {
             if (rule.Matcher == MockMatcher.ForHost)
             {
                 if (Mocker.IsSameHost(rule, e))
                 {
-                    // . . .
+                    e = MockRequest(rule, e, isRequest);
                 }
             }
             else if (rule.Matcher == MockMatcher.ForUrl)
             {
                 if (Mocker.IsSameUrl(rule, e))
                 {
-                    // . . .
+                    e = MockRequest(rule, e, isRequest);
                 }
             }
             else if (rule.Matcher == MockMatcher.ForUrlsMatchingRegex)
             {
                 if (Mocker.IsUrlMatchingRegex(rule, e))
                 {
-                    // . . .
+                    e = MockRequest(rule, e, isRequest);
                 }
             }
             else if (rule.Matcher == MockMatcher.ExactQueryString)
             {
                 if (Mocker.IsSameQueryString(rule, e))
                 {
-                    // . . .
+                    e = MockRequest(rule, e, isRequest);
                 }
             }
             else if (rule.Matcher == MockMatcher.IncludingHeaders)
             {
                 if (Mocker.IsIncludingHeaders(rule, e))
                 {
-                    // . . .
+                    e = MockRequest(rule, e, isRequest);
                 }
             }
             else if (rule.Matcher == MockMatcher.ExactBody)
             {
                 if (Mocker.IsSameBody(rule, e))
                 {
-                    // . . .
+                    e = MockRequest(rule, e, isRequest);
                 }
             }
             else if (rule.Matcher == MockMatcher.BodyIncluding)
             {
                 if (Mocker.IsBodyIncluding(rule, e))
                 {
-                    // . . .
+                    e = MockRequest(rule, e, isRequest);
                 }
             }
             else if (rule.Matcher == MockMatcher.ExactJsonBody)
             {
                 if (Mocker.IsSameJsonBody(rule, e))
                 {
-                    // . . .
+                    e = MockRequest(rule, e, isRequest);
                 }
             }
             else if (rule.Matcher == MockMatcher.JsonBodyIncluding)
             {
                 if (Mocker.IsJsonBodyIncluding(rule, e))
                 {
-                    // . . .
+                    e = MockRequest(rule, e, isRequest);
                 }
             }
+
+            return e;
         }
 
         private static SessionEventArgs MockRequest(MockerRule rule, SessionEventArgs e, bool isRequest)
@@ -113,15 +115,11 @@ namespace HTTPMan
             }
             else if (rule.MockingAction == MockAction.AutoTransformRequestOrResponse)
             {
-                // AutoTransformRequestOrResponse(rule, e);
-            }
-            else if (rule.MockingAction == MockAction.TimeoutWithNoResponse)
-            {
-                // TimeoutWithNoResponse(rule, e);
+                e = AutoTransformRequestOrResponse(rule, e, isRequest);
             }
             else if (rule.MockingAction == MockAction.CloseConnectionImmediately)
             {
-                // CloseConnectionImmediately(rule, e);
+                e = CloseConnectionImmediately(e);
             }
 
             return e;
@@ -431,56 +429,36 @@ namespace HTTPMan
                 // Setting headers if any.
                 if (transformer.ResponseHeaders != null)
                 {
-                    e.HttpClient.Request.Headers.Clear();
-                    if (transformer.RequestHeaders.Count != 0)
-                        e.HttpClient.Request.Headers.AddHeaders(transformer.RequestHeaders);
+                    e.HttpClient.Response.Headers.Clear();
+                    if (transformer.ResponseHeaders.Count != 0)
+                        e.HttpClient.Response.Headers.AddHeaders(transformer.ResponseHeaders);
                 }
 
                 // Setting body type if any.
                 if (transformer.RequestBodyType != null)
                     e.HttpClient.Request.ContentType = transformer.RequestBodyType.GetString();
 
-                // Setting request body if any.
-                if (transformer.RequestBodyString != null)
-                    e.SetRequestBodyString(transformer.RequestBodyString);
+                // Setting response body if any.
+                if (transformer.ResponseBodyString != null)
+                    e.SetResponseBodyString(transformer.ResponseBodyString);
 
-                // Setting request keep body if any.
-                if (transformer.RequestKeepBody != null)
-                    e.HttpClient.Request.KeepBody = (bool)transformer.RequestKeepBody;
-
-                // Changing host if any given.
-                if (transformer.RequestHost != null)
-                {
-                    string originalHost = e.HttpClient.Request.RequestUri.Host;
-
-                    e.HttpClient.Request.RequestUriString = e.HttpClient.Request.RequestUriString.ReplaceFirst(originalHost, transformer.RequestHost);
-                    e.HttpClient.Request.Host = transformer.RequestHost;
-                }
-
-                // Chaning url if any given.
-                if (transformer.RequestUrl != null)
-                {
-                    string oldRequestUrl = e.HttpClient.Request.RequestUriString;
-                    string oldRequestHost = e.HttpClient.Request.Host;
-
-                    try
-                    {
-                        Uri newUri = new(transformer.RequestUrl);
-
-                        e.HttpClient.Request.RequestUri = newUri;
-                        e.HttpClient.Request.Host = newUri.Host;
-                    }
-                    catch (Exception)
-                    {
-                        e.HttpClient.Request.RequestUriString = oldRequestUrl;
-                        e.HttpClient.Request.Host = oldRequestHost;
-                    }
-                }
+                // Setting response keep body if any.
+                if (transformer.ResponseKeepBody != null)
+                    e.HttpClient.Response.KeepBody = (bool)transformer.ResponseKeepBody;
 
                 // Setting http version if any.
-                if (transformer.RequestHttpMethodVersion != null)
-                    e.HttpClient.Request.HttpVersion = transformer.RequestHttpMethodVersion;
+                if (transformer.ResponseHttpMethodVersion != null)
+                    e.HttpClient.Response.HttpVersion = transformer.ResponseHttpMethodVersion;
             }
+
+            return e;
+        }
+
+        public static SessionEventArgs CloseConnectionImmediately(SessionEventArgs e)
+        {
+            // Terminating connection and session.
+            e.TerminateServerConnection();
+            e.TerminateSession();
 
             return e;
         }
