@@ -85,7 +85,52 @@ namespace HTTPMan
             }
         }
 
-        // Checkers based on the matcher.
+        private static SessionEventArgs MockRequest(MockerRule rule, SessionEventArgs e, bool isRequest)
+        {
+            if (rule.MockingAction == MockAction.PassRequestToDestination)
+            {
+                return e;
+            }
+            else if (rule.MockingAction == MockAction.PauseRequestToManuallyEdit)
+            {
+                // TODO: implement when making the UI.
+            }
+            else if (rule.MockingAction == MockAction.PauseResponseToManuallyEdit)
+            {
+                // TODO: implement when making the UI.
+            }
+            else if (rule.MockingAction == MockAction.PauseRequestAndResponseToManuallyEdit)
+            {
+                // TODO: implement when making the UI.
+            }
+            else if (rule.MockingAction == MockAction.ReturnFixedResponse)
+            {
+                e = ReturnFixedResponse(rule, e);
+            }
+            else if (rule.MockingAction == MockAction.ForwardRequestToDifferentHost)
+            {
+                e = ForwardRequestToDifferentHost(rule, e);
+            }
+            else if (rule.MockingAction == MockAction.AutoTransformRequestOrResponse)
+            {
+                // AutoTransformRequestOrResponse(rule, e);
+            }
+            else if (rule.MockingAction == MockAction.TimeoutWithNoResponse)
+            {
+                // TimeoutWithNoResponse(rule, e);
+            }
+            else if (rule.MockingAction == MockAction.CloseConnectionImmediately)
+            {
+                // CloseConnectionImmediately(rule, e);
+            }
+
+            return e;
+        }
+
+        // *********************************
+        // * Checkers based on the matcher *
+        // *********************************
+
         /// <summary>
         /// Checks if the request has the same host as in the rule.
         /// </summary>
@@ -276,6 +321,53 @@ namespace HTTPMan
             }
 
             return true;
+        }
+
+
+        // *****************************
+        // * Request/Response Changers *
+        // *****************************
+
+        private static SessionEventArgs ReturnFixedResponse(MockerRule rule, SessionEventArgs e)
+        {
+            HttpResponse response = (HttpResponse)(rule.MockingActionOptions[rule.MockingAction.GetOptionsKey()]);
+
+            e.HttpClient.Response.StatusCode = response.StatusCode;
+
+            // Setting headers.
+            e.HttpClient.Response.Headers.Clear();
+            for (int i = 0; i < response.Headers.Count; i++)
+            {
+                e.HttpClient.Response.Headers.AddHeader(response.Headers.Keys.ElementAt(i), response.Headers.Values.ElementAt(i));
+            }
+
+            e.SetResponseBodyString(response.BodyString);
+            e.HttpClient.Request.ContentType = response.BodyType.GetString();
+            e.HttpClient.Response.KeepBody = response.KeepBody;
+            e.HttpClient.Response.HttpVersion = response.HttpMethodVersion;
+
+            return e;
+        }
+
+        private static SessionEventArgs ForwardRequestToDifferentHost(MockerRule rule, SessionEventArgs e)
+        {
+            string originalHost = e.HttpClient.Request.RequestUri.Host;
+            string newHost = (string)(rule.MockingActionOptions[rule.MockingAction.GetOptionsKey()]);
+
+            e.HttpClient.Request.RequestUriString = e.HttpClient.Request.RequestUriString.ReplaceFirst(originalHost, newHost);
+            e.HttpClient.Request.Host = newHost;
+
+            return e;
+        }
+
+        public static SessionEventArgs AutoTransformRequestOrResponse(MockerRule rule, SessionEventArgs e, bool isRequest)
+        {
+            if (isRequest)
+            {
+                // to be continued...
+            }
+
+            return e;
         }
     }
 }

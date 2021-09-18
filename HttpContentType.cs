@@ -35,7 +35,7 @@ namespace HTTPMan
     /// <summary>
     /// Used for getting the string representation of a value from the enum HttpContentType.
     /// </summary>
-    public static class HttpContentTypeString
+    public static class HttpContentTypeExtension
     {
         // Fields
         private static readonly string _textPlain = "text/plain";
@@ -92,66 +92,130 @@ namespace HTTPMan
         private static string VideoWEBM { get { return _videoWEBM; } }
 
         /// <summary>
-        /// This function returns a Http Body Content Type based on the id passed.
-        /// The id matches with the enum HttpContentType so you can do this:
-        /// HttpContentTypeString.Get(HttpContentType.TextPlain);
+        /// Returns the string representation of the current HttpContentType object.
         /// </summary>
-        /// <param name="id">the id of the Content Type works best with the enum HttpContentType.</param>
-        /// <returns>Returns a string contating the Content Type for the id passed.</returns>
-        public static string Get(int id)
+        /// <param name="contentType">This object of type HttpContentType.</param>
+        /// <returns>Returns the string representation of the current HttpContentType object.</returns>
+        public static string GetString(this HttpContentType contentType)
         {
-            switch (id)
+            switch (contentType)
             {
-                case 0:
+                case HttpContentType.TextPlain:
                     return TextPlain;
-                case 1:
+                case HttpContentType.ApplicationJson:
                     return ApplicationJson;
-                case 2:
+                case HttpContentType.ApplicationXML:
                     return ApplicationXML;
-                case 3:
+                case HttpContentType.TextXML:
                     return TextXML;
-                case 4:
+                case HttpContentType.TextHTML:
                     return TextHTML;
-                case 5:
+                case HttpContentType.MultipartFormData:
                     return MultipartFormData;
-                case 6:
+                case HttpContentType.ApplicationXWWWFormUrlEncoded:
                     return ApplicationXWWWFormUrlEncoded;
-                case 7:
+                case HttpContentType.ApplicationJavaScript:
                     return ApplicationJavaScript;
-                case 8:
+                case HttpContentType.ApplicationPDF:
                     return ApplicationPDF;
-                case 9:
+                case HttpContentType.ApplicationZIP:
                     return ApplicationZIP;
-                case 10:
+                case HttpContentType.AudioMPEG:
                     return AudioMPEG;
-                case 11:
+                case HttpContentType.AudioXWAV:
                     return AudioXWAV;
-                case 12:
+                case HttpContentType.ImageGIF:
                     return ImageGIF;
-                case 13:
+                case HttpContentType.ImageJPEG:
                     return ImageJPEG;
-                case 14:
+                case HttpContentType.ImagePNG:
                     return ImagePNG;
-                case 15:
+                case HttpContentType.ImageTIFF:
                     return ImageTIFF;
-                case 16:
+                case HttpContentType.ImageXIcon:
                     return ImageXIcon;
-                case 17:
+                case HttpContentType.ImageSVGAndXML:
                     return ImageSVGAndXML;
-                case 18:
+                case HttpContentType.MultipartMixed:
                     return MultipartMixed;
-                case 19:
+                case HttpContentType.TextCSS:
                     return TextCSS;
-                case 20:
+                case HttpContentType.TextCSV:
                     return TextCSV;
-                case 21:
+                case HttpContentType.VideoMPEG:
                     return VideoMPEG;
-                case 22:
+                case HttpContentType.VideoMP4:
                     return VideoMP4;
-                case 23:
+                case HttpContentType.VideoXFLV:
                     return VideoXFLV;
-                case 24:
+                case HttpContentType.VideoWEBM:
                     return VideoWEBM;
+
+                default:
+                    return TextPlain;
+            }
+        }
+
+        /// <summary>
+        /// Returns the string representation of the current HttpContentType object.
+        /// </summary>
+        /// <param name="id">This object of type HttpContentType.</param>
+        /// <returns>Returns the string representation of the current HttpContentType object.</returns>
+        public static string GetString(this HttpContentType? contentType)
+        {
+            switch (contentType)
+            {
+                case HttpContentType.TextPlain:
+                    return TextPlain;
+                case HttpContentType.ApplicationJson:
+                    return ApplicationJson;
+                case HttpContentType.ApplicationXML:
+                    return ApplicationXML;
+                case HttpContentType.TextXML:
+                    return TextXML;
+                case HttpContentType.TextHTML:
+                    return TextHTML;
+                case HttpContentType.MultipartFormData:
+                    return MultipartFormData;
+                case HttpContentType.ApplicationXWWWFormUrlEncoded:
+                    return ApplicationXWWWFormUrlEncoded;
+                case HttpContentType.ApplicationJavaScript:
+                    return ApplicationJavaScript;
+                case HttpContentType.ApplicationPDF:
+                    return ApplicationPDF;
+                case HttpContentType.ApplicationZIP:
+                    return ApplicationZIP;
+                case HttpContentType.AudioMPEG:
+                    return AudioMPEG;
+                case HttpContentType.AudioXWAV:
+                    return AudioXWAV;
+                case HttpContentType.ImageGIF:
+                    return ImageGIF;
+                case HttpContentType.ImageJPEG:
+                    return ImageJPEG;
+                case HttpContentType.ImagePNG:
+                    return ImagePNG;
+                case HttpContentType.ImageTIFF:
+                    return ImageTIFF;
+                case HttpContentType.ImageXIcon:
+                    return ImageXIcon;
+                case HttpContentType.ImageSVGAndXML:
+                    return ImageSVGAndXML;
+                case HttpContentType.MultipartMixed:
+                    return MultipartMixed;
+                case HttpContentType.TextCSS:
+                    return TextCSS;
+                case HttpContentType.TextCSV:
+                    return TextCSV;
+                case HttpContentType.VideoMPEG:
+                    return VideoMPEG;
+                case HttpContentType.VideoMP4:
+                    return VideoMP4;
+                case HttpContentType.VideoXFLV:
+                    return VideoXFLV;
+                case HttpContentType.VideoWEBM:
+                    return VideoWEBM;
+
                 default:
                     return TextPlain;
             }

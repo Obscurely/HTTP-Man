@@ -17,6 +17,8 @@ using Titanium.Web.Proxy.Models;
 using Titanium.Web.Proxy.Network;
 using Titanium.Web.Proxy.StreamExtended;
 
+#pragma warning disable CS1998 // disables the warning "async method lacks await operators and will run synchronously" since titanium web proxy requires the handlers to be async.
+
 namespace HTTPMan
 {
     /// <summary>
@@ -235,7 +237,9 @@ namespace HTTPMan
                     //Mocker.Mock(MockerRule, e);
                 }
             }
+
             HttpRequests.Add(e); // Stores Http Request.
+            e.UserData = e.HttpClient.Request; // Stores request in order to find it from the request handler.
         }
 
         /// <summary>

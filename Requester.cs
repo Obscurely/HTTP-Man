@@ -164,7 +164,7 @@ namespace HTTPMan
                         {
                             Method = HttpMethod.Get,
                             RequestUri = new Uri(url),
-                            Content = new StringContent(content, Encoding.UTF8, HttpContentTypeString.Get((int)contentType))
+                            Content = new StringContent(content, Encoding.UTF8, contentType.GetString())
                         };
                     }
                     else
@@ -173,7 +173,7 @@ namespace HTTPMan
                         {
                             Method = HttpMethod.Get,
                             RequestUri = new Uri(url),
-                            Content = new StringContent(content, Encoding.UTF8, HttpContentTypeString.Get((int)HttpContentType.TextPlain))
+                            Content = new StringContent(content, Encoding.UTF8, HttpContentType.TextPlain.GetString())
                         };
                     }
                 }
@@ -378,9 +378,9 @@ namespace HTTPMan
                 if (content != null)
                 {
                     if (contentType != null)
-                        requestBody = new(content, Encoding.UTF8, HttpContentTypeString.Get((int)contentType));
+                        requestBody = new(content, Encoding.UTF8, contentType.GetString());
                     else
-                        requestBody = new(content, Encoding.UTF8, HttpContentTypeString.Get((int)HttpContentType.TextPlain));
+                        requestBody = new(content, Encoding.UTF8, HttpContentType.TextPlain.GetString());
                 }
 
                 // Setting timeout if any.
@@ -561,9 +561,9 @@ namespace HTTPMan
                 if (content != null)
                 {
                     if (contentType != null)
-                        requestBody = new(content, Encoding.UTF8, HttpContentTypeString.Get((int)contentType));
+                        requestBody = new(content, Encoding.UTF8, contentType.GetString());
                     else
-                        requestBody = new(content, Encoding.UTF8, HttpContentTypeString.Get((int)HttpContentType.TextPlain));
+                        requestBody = new(content, Encoding.UTF8, HttpContentType.TextPlain.GetString());
                 }
 
                 // Setting timeout if any.
@@ -737,9 +737,9 @@ namespace HTTPMan
                 if (content != null)
                 {
                     if (contentType != null)
-                        requestBody = new(content, Encoding.UTF8, HttpContentTypeString.Get((int)contentType));
+                        requestBody = new(content, Encoding.UTF8, contentType.GetString());
                     else
-                        requestBody = new(content, Encoding.UTF8, HttpContentTypeString.Get((int)HttpContentType.TextPlain));
+                        requestBody = new(content, Encoding.UTF8, HttpContentType.TextPlain.GetString());
                 }
 
                 // Setting timeout if any.
@@ -924,7 +924,7 @@ namespace HTTPMan
                         {
                             Method = HttpMethod.Delete,
                             RequestUri = new Uri(url),
-                            Content = new StringContent(content, Encoding.UTF8, HttpContentTypeString.Get((int)contentType))
+                            Content = new StringContent(content, Encoding.UTF8, contentType.GetString())
                         };
                     }
                     else
@@ -933,7 +933,7 @@ namespace HTTPMan
                         {
                             Method = HttpMethod.Delete,
                             RequestUri = new Uri(url),
-                            Content = new StringContent(content, Encoding.UTF8, HttpContentTypeString.Get((int)HttpContentType.TextPlain))
+                            Content = new StringContent(content, Encoding.UTF8, HttpContentType.TextPlain.GetString())
                         };
                     }
                 }
@@ -942,9 +942,9 @@ namespace HTTPMan
                 if (content != null)
                 {
                     if (contentType != null)
-                        requestBody = new(content, Encoding.UTF8, HttpContentTypeString.Get((int)contentType));
+                        requestBody = new(content, Encoding.UTF8, contentType.GetString());
                     else
-                        requestBody = new(content, Encoding.UTF8, HttpContentTypeString.Get((int)HttpContentType.TextPlain));
+                        requestBody = new(content, Encoding.UTF8, HttpContentType.TextPlain.GetString());
                 }
 
                 // Setting timeout if any.

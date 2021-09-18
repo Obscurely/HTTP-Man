@@ -4,26 +4,32 @@ using System.Net;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
+#pragma warning disable CS1998 // disables the warning "async method lacks await operators and will run synchronously" as the main method is always async for developing purposes.
+
 namespace HTTPMan
 {
     class Program
     {
         static async Task Main(string[] args)
         {
-            Dictionary<string, string> test1 = new()
+            Dictionary<string, string> test = new()
             {
-                { "test1", "test1" },
+                { "test1", "test" },
                 { "test2", "test2" },
-                { "test3", "test3" },
-            };
-            Dictionary<string, string> test2 = new()
-            {
-                { "test1", "test1" },
-                { "test2", "test2" },
-                { "test3", "test3" }
+                { "email", "email@domain.com" },
+                { "phone", "0712345678" },
+                { "america", "weapons" }
             };
 
-            System.Console.WriteLine(test1.Equals(test2));
+            Test(test);
+        }
+
+        static void Test(object test)
+        {
+            Dictionary<string, string> testDict = (Dictionary<string, string>)test;
+            System.Console.WriteLine(testDict["email"]);
+            System.Console.WriteLine(testDict["phone"]);
+            System.Console.WriteLine(testDict["america"]);
         }
     }
 }
@@ -34,3 +40,6 @@ namespace HTTPMan
 // TODO: add mock action that changes body or headers or both of the mocked/filtered request.
 // TODO: add option to export and load requests and responses from files.
 // TODO: add extra mock features based on what titanium web proxy gives.
+// TODO: add a rule only requests (block all the requests besides the ones allowed in the rule).
+// TODO: add stop from connecting to specific hosts.
+// TODO: stylize the files.

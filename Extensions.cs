@@ -58,6 +58,24 @@ namespace HTTPMan
         }
 
         /// <summary>
+        /// Only replaces the first occurrence of the substring.
+        /// </summary>
+        /// <param name="text">the actual string object to replace.</param>
+        /// <param name="search">Old substring.</param>
+        /// <param name="replace">New substring.</param>
+        /// <returns>Returns a string with the first occurrences of the old substring replaced.</returns>
+        public static string ReplaceFirst(this string text, string search, string replace)
+        {
+            int pos = text.IndexOf(search);
+            if (pos < 0)
+            {
+                return text;
+            }
+
+            return text.Substring(0, pos) + replace + text.Substring(pos + search.Length);
+        }
+
+        /// <summary>
         /// Checks if keys and values of 2 Dictionary<string, string> are the same.
         /// </summary>
         /// <param name="dict1">The first dictionary to compare.</param>
@@ -135,6 +153,34 @@ namespace HTTPMan
                     return "exactJsonBody";
                 case 8:
                     return "partJsonBody";
+
+                default:
+                    return "";
+            }
+        }
+
+        public static string GetOptionsKey(this MockAction action)
+        {
+            switch ((int)action)
+            {
+                case 0:
+                    return ""; // Not needed.
+                case 1:
+                    return ""; // Not needed.
+                case 2:
+                    return ""; // Not needed.
+                case 3:
+                    return ""; // Not needed.
+                case 4:
+                    return "response";
+                case 5:
+                    return "host";
+                case 6:
+                    return "transformer"; // TODO: make object for this one (values for responses and requests.)
+                case 7:
+                    return ""; // Not needed.
+                case 8:
+                    return ""; // Not needed.
 
                 default:
                     return "";

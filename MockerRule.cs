@@ -128,7 +128,6 @@ namespace HTTPMan
             }
             else if (mockingAction == MockAction.CloseConnectionImmediately)
             {
-                _isForTunnelConnect = true;
                 _isForRequest = true;
                 _isForResponse = true;
             }
