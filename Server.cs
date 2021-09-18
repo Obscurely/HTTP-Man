@@ -229,7 +229,7 @@ namespace HTTPMan
             {
                 for (int i = 0; i < RequestRules.Count; i++)
                 {
-                    if (RequestRules[i].Method.ToString(true).ToUpper() != e.HttpClient.Request.Method.ToUpper() && RequestRules[i].Method != MockHttpMethod.Any)
+                    if (RequestRules[i].Method.GetString().ToUpper() != e.HttpClient.Request.Method.ToUpper() && RequestRules[i].Method != MockHttpMethod.Any)
                     {
                         continue;
                     }

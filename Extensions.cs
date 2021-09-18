@@ -101,9 +101,8 @@ namespace HTTPMan
         /// Extension method that converts a MockHttpMethod to it's string in upper case representation.
         /// </summary>
         /// <param name="MockHttpMethod">The object its self</param>
-        /// <param name="isNotDefaultMethod">Can be set to whatever is just so it will be differentiated from the original one.</param>
         /// <returns></returns>
-        public static string ToString(this MockHttpMethod method, bool isNotDefaultMethod)
+        public static string GetString(this MockHttpMethod method)
         {
             switch ((int)method)
             {

@@ -8,20 +8,14 @@ using System.Threading.Tasks;
 
 namespace HTTPMan
 {
+#nullable enable
     class Program
     {
         static async Task Main(string[] args)
         {
-            Dictionary<string, string> test = new()
-            {
-                { "test1", "test" },
-                { "test2", "test2" },
-                { "email", "email@domain.com" },
-                { "phone", "0712345678" },
-                { "america", "weapons" }
-            };
+            HttpMethod? method = HttpMethod.Get;
 
-            Test(test);
+            System.Console.WriteLine(method.ToString());
         }
 
         static void Test(object test)
@@ -32,6 +26,7 @@ namespace HTTPMan
             System.Console.WriteLine(testDict["america"]);
         }
     }
+#nullable disable
 }
 
 // TODO: Look for features at Fiddler Everywhere, Fiddler Classic, Wireshark, Http ToolKit, Postman and other tools like that.

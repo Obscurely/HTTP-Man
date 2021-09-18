@@ -336,10 +336,8 @@ namespace HTTPMan
 
             // Setting headers.
             e.HttpClient.Response.Headers.Clear();
-            for (int i = 0; i < response.Headers.Count; i++)
-            {
-                e.HttpClient.Response.Headers.AddHeader(response.Headers.Keys.ElementAt(i), response.Headers.Values.ElementAt(i));
-            }
+            if (response.Headers.Count != 0)
+                e.HttpClient.Response.Headers.AddHeaders(response.Headers);
 
             e.SetResponseBodyString(response.BodyString);
             e.HttpClient.Request.ContentType = response.BodyType.GetString();
@@ -362,9 +360,126 @@ namespace HTTPMan
 
         public static SessionEventArgs AutoTransformRequestOrResponse(MockerRule rule, SessionEventArgs e, bool isRequest)
         {
+            MockTransformer transformer = (MockTransformer)(rule.MockingActionOptions[rule.MockingAction.GetOptionsKey()]);
+
             if (isRequest)
             {
-                // to be continued...
+                // Setting http method if any.
+                if (transformer.RequestMethod != null)
+                    e.HttpClient.Request.Method = transformer.RequestMethod.ToString();
+
+                // Setting headers if any.
+                if (transformer.RequestHeaders != null)
+                {
+                    e.HttpClient.Request.Headers.Clear();
+                    if (transformer.RequestHeaders.Count != 0)
+                        e.HttpClient.Request.Headers.AddHeaders(transformer.RequestHeaders);
+                }
+
+                // Setting body type if any.
+                if (transformer.RequestBodyType != null)
+                    e.HttpClient.Request.ContentType = transformer.RequestBodyType.GetString();
+
+                // Setting request body if any.
+                if (transformer.RequestBodyString != null)
+                    e.SetRequestBodyString(transformer.RequestBodyString);
+
+                // Setting request keep body if any.
+                if (transformer.RequestKeepBody != null)
+                    e.HttpClient.Request.KeepBody = (bool)transformer.RequestKeepBody;
+
+                // Changing host if any given.
+                if (transformer.RequestHost != null)
+                {
+                    string originalHost = e.HttpClient.Request.RequestUri.Host;
+
+                    e.HttpClient.Request.RequestUriString = e.HttpClient.Request.RequestUriString.ReplaceFirst(originalHost, transformer.RequestHost);
+                    e.HttpClient.Request.Host = transformer.RequestHost;
+                }
+
+                // Chaning url if any given.
+                if (transformer.RequestUrl != null)
+                {
+                    string oldRequestUrl = e.HttpClient.Request.RequestUriString;
+                    string oldRequestHost = e.HttpClient.Request.Host;
+
+                    try
+                    {
+                        Uri newUri = new(transformer.RequestUrl);
+
+                        e.HttpClient.Request.RequestUri = newUri;
+                        e.HttpClient.Request.Host = newUri.Host;
+                    }
+                    catch (Exception)
+                    {
+                        e.HttpClient.Request.RequestUriString = oldRequestUrl;
+                        e.HttpClient.Request.Host = oldRequestHost;
+                    }
+                }
+
+                // Setting http version if any.
+                if (transformer.RequestHttpMethodVersion != null)
+                    e.HttpClient.Request.HttpVersion = transformer.RequestHttpMethodVersion;
+
+            }
+            else if (!isRequest)
+            {
+                // Setting response status code if any given.
+                if (transformer.ResponseStatusCode != null)
+                    e.HttpClient.Response.StatusCode = (int)transformer.ResponseStatusCode;
+
+                // Setting headers if any.
+                if (transformer.ResponseHeaders != null)
+                {
+                    e.HttpClient.Request.Headers.Clear();
+                    if (transformer.RequestHeaders.Count != 0)
+                        e.HttpClient.Request.Headers.AddHeaders(transformer.RequestHeaders);
+                }
+
+                // Setting body type if any.
+                if (transformer.RequestBodyType != null)
+                    e.HttpClient.Request.ContentType = transformer.RequestBodyType.GetString();
+
+                // Setting request body if any.
+                if (transformer.RequestBodyString != null)
+                    e.SetRequestBodyString(transformer.RequestBodyString);
+
+                // Setting request keep body if any.
+                if (transformer.RequestKeepBody != null)
+                    e.HttpClient.Request.KeepBody = (bool)transformer.RequestKeepBody;
+
+                // Changing host if any given.
+                if (transformer.RequestHost != null)
+                {
+                    string originalHost = e.HttpClient.Request.RequestUri.Host;
+
+                    e.HttpClient.Request.RequestUriString = e.HttpClient.Request.RequestUriString.ReplaceFirst(originalHost, transformer.RequestHost);
+                    e.HttpClient.Request.Host = transformer.RequestHost;
+                }
+
+                // Chaning url if any given.
+                if (transformer.RequestUrl != null)
+                {
+                    string oldRequestUrl = e.HttpClient.Request.RequestUriString;
+                    string oldRequestHost = e.HttpClient.Request.Host;
+
+                    try
+                    {
+                        Uri newUri = new(transformer.RequestUrl);
+
+                        e.HttpClient.Request.RequestUri = newUri;
+                        e.HttpClient.Request.Host = newUri.Host;
+                    }
+                    catch (Exception)
+                    {
+                        e.HttpClient.Request.RequestUriString = oldRequestUrl;
+                        e.HttpClient.Request.Host = oldRequestHost;
+                    }
+                }
+
+                // Setting http version if any.
+                if (transformer.RequestHttpMethodVersion != null)
+                    e.HttpClient.Request.HttpVersion = transformer.RequestHttpMethodVersion;
             }
 
             return e;

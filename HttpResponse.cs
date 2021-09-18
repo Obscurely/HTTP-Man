@@ -26,7 +26,8 @@ namespace HTTPMan
 
         // Constructors
 #nullable enable
-        public HttpResponse(int statusCode = 404, Dictionary<string, string>? headers = null, string body = "", HttpContentType bodyType = HttpContentType.TextPlain, bool keepBody = false, double httpMethodVersion = 1.1)
+        public HttpResponse(int statusCode = 404, Dictionary<string, string>? headers = null, string body = "", HttpContentType bodyType = HttpContentType.TextPlain, bool keepBody = false,
+            double httpMethodVersion = 1.1)
         {
             _statusCode = statusCode;
 
