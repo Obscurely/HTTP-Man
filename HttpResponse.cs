@@ -26,6 +26,15 @@ namespace HTTPMan
 
         // Constructors
 #nullable enable
+        /// <summary>
+        /// Creates a response that works with the mocker.
+        /// </summary>
+        /// <param name="statusCode">The status code of the response.</param>
+        /// <param name="headers">The headers of the response.</param>
+        /// <param name="body">The http content of the response.</param>
+        /// <param name="bodyType">The http content type of the response.</param>
+        /// <param name="keepBody">Wether to the body of the response should be kept in cache or not.</param>
+        /// <param name="httpMethodVersion">The http version used by the request/response.</param>
         public HttpResponse(int statusCode = 404, Dictionary<string, string>? headers = null, string body = "", HttpContentType bodyType = HttpContentType.TextPlain, bool keepBody = false,
             double httpMethodVersion = 1.1)
         {

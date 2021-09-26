@@ -45,9 +45,26 @@ namespace HTTPMan
         public Version? ResponseHttpMethodVersion { get { return _responseHttpMethodVersion; } }
 
         // Constructors
+        /// <summary>
+        /// Creates a mock transformer object to be used in the rule for the auto transform request action.
+        /// </summary>
+        /// <param name="requestMethod">The method used for the request.</param>
+        /// <param name="requestHeaders">The request's headers.</param>
+        /// <param name="requestBodyString">The request's body as a string.</param>
+        /// <param name="requestBodyType">The request's body type.</param>
+        /// <param name="requestKeepBody">Whether the request's body should be cached or not.</param>
+        /// <param name="requestHost">The request's host.</param>
+        /// <param name="requestUrl">The request's url.</param>
+        /// <param name="requestHttpMethodVersion">The request's http version.</param>
+        /// <param name="responseStatusCode">The response's status code.</param>
+        /// <param name="responseHeaders">The response's headers.</param>
+        /// <param name="responseBodyString">The response's body as a string.</param>
+        /// <param name="responseBodyType">The response's body type.</param>
+        /// <param name="responseKeepBody">Whether the response's body should be cached or not.</param>
+        /// <param name="responseHttpMethodVersion">The response's http version.</param>
         public MockTransformer(HttpMethod? requestMethod = null, Dictionary<string, string>? requestHeaders = null, string? requestBodyString = null, HttpContentType? requestBodyType = null,
-            int? responseStatusCode = null, Dictionary<string, string>? responseHeaders = null, string? responseBodyString = null, HttpContentType? responseBodyType = null,
-            bool? requestKeepBody = null, bool? responseKeepBody = null, string? requestHost = null, string? requestUrl = null, double? requestHttpMethodVersion = null,
+            bool? requestKeepBody = null, string? requestHost = null, string? requestUrl = null, double? requestHttpMethodVersion = null, int? responseStatusCode = null,
+            Dictionary<string, string>? responseHeaders = null, string? responseBodyString = null, HttpContentType? responseBodyType = null, bool? responseKeepBody = null,
             double? responseHttpMethodVersion = null)
         {
             // Request

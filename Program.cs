@@ -14,28 +14,15 @@ namespace HTTPMan
         static async Task Main(string[] args)
         {
             Server server = new Server(IPAddress.Parse("127.0.0.1"), 8887, IPAddress.Parse("127.0.0.1"), 8889);
-            Dictionary<string, string> mockerOptions = new() { { "regexPattern", "https://discordapp.com/api/v9/channels/.+?/messages" } };
-            Dictionary<string, string> newBody = new()
-            {
-                { "content", "test" }
-            };
-            MockTransformer transformer = new MockTransformer(null, null, newBody.ToJsonString(), HttpContentType.ApplicationJson, null, null, null, null, null, null, null, null, null, null);
-            Dictionary<string, object> mockerActionOptions = new() { { "transformer", transformer } };
-            MockerRule rule1 = new MockerRule(MockHttpMethod.Post, MockMatcher.ForUrlsMatchingRegex, mockerOptions, MockAction.AutoTransformRequestOrResponse, mockerActionOptions);
+            Dictionary<string, string> mockerOptions = new() { { "host", "google.com" } };
+            Dictionary<string, object> mockerActionOptions = new() { { "host", "duckduckgo.com" } };
+            MockerRule rule1 = new MockerRule(MockHttpMethod.Any, MockMatcher.ForHost, mockerOptions, MockAction.AutoTransformRequestOrResponse, mockerActionOptions);
             server.HttpRules.Add(rule1);
             System.Console.WriteLine(server.Start());
 
             Console.ReadKey();
 
             server.Stop();
-        }
-
-        static void Test(object test)
-        {
-            Dictionary<string, string> testDict = (Dictionary<string, string>)test;
-            System.Console.WriteLine(testDict["email"]);
-            System.Console.WriteLine(testDict["phone"]);
-            System.Console.WriteLine(testDict["america"]);
         }
     }
 #nullable disable
@@ -50,3 +37,7 @@ namespace HTTPMan
 // TODO: add a rule only requests (block all the requests besides the ones allowed in the rule).
 // TODO: add stop from connecting to specific hosts.
 // TODO: stylize the files.
+// TODO: fix ssl pinning errors
+// TODO: make mocker able to stop even doing a tunnel connect to a host.
+
+// TODO: continue checking from mocker rule.

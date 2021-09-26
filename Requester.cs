@@ -1,10 +1,7 @@
-using System.Net.Mime;
-using System.Net.Http.Headers;
 using System;
 using System.Net;
 using System.Linq;
 using System.Text;
-using System.Text.Json;
 using System.Net.Http;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -53,7 +50,7 @@ namespace HTTPMan
         /// Simple function that basically picks a random item from a List not just a proxy, but because that's the only use here is way is named like this.
         /// </summary>
         /// <param name="proxies">list with proxies to pick from.</param>
-        /// <returns>Returns a random selected proxy from the given list.</returns>
+        /// <returns>A random selected proxy from the given list.</returns>
         private string PickProxy(List<string> proxies)
         {
             Random random = new(Guid.NewGuid().GetHashCode());
@@ -80,7 +77,7 @@ namespace HTTPMan
         /// <param name="useProxies">If setting to true the request will be sent through a free proxy with a default, unchangeable timeout of 10 second. If the request fails to complete in that time
         ///                          or another error occurs because of the proxy it will return back and empty response with only one header called error specifying what happened. Usually you have
         ///                          to try and send the request multiple times. Please note proxies don't secure your data, only hide your identity and even at that they can fail. Use them carefully.</param>
-        /// <returns>Returns the response as a HttpResponseMessage which contains all the data about the response and the request the was used to send it. If an error ocurred is gonna send an empty
+        /// <returns>The response as a HttpResponseMessage which contains all the data about the response and the request the was used to send it. If an error ocurred is gonna send an empty
         ///          response with only one header called error with a value containing information about the error.</returns>
 #nullable enable
         public async Task<HttpResponseMessage> GetRequest(string url, double? httpVersion = null, HttpVersionPolicy? versionPolicy = null, Dictionary<string, string>? headers = null,
@@ -295,7 +292,7 @@ namespace HTTPMan
         /// <param name="useProxies">If setting to true the request will be sent through a free proxy with a default, unchangeable timeout of 10 second. If the request fails to complete in that time
         ///                          or another error occurs because of the proxy it will return back and empty response with only one header called error specifying what happened. Usually you have
         ///                          to try and send the request multiple times. Please note proxies don't secure your data, only hide your identity and even at that they can fail. Use them carefully.</param>
-        /// <returns>Returns the response as a HttpResponseMessage which contains all the data about the response and the request the was used to send it. If an error ocurred is gonna send an empty
+        /// <returns>The response as a HttpResponseMessage which contains all the data about the response and the request the was used to send it. If an error ocurred is gonna send an empty
         ///          response with only one header called error with a value containing information about the error.</returns>
 #nullable enable
         public async Task<HttpResponseMessage> PostRequest(string url, double? httpVersion = null, HttpVersionPolicy? versionPolicy = null, Dictionary<string, string>? headers = null,
@@ -478,7 +475,7 @@ namespace HTTPMan
         /// <param name="useProxies">If setting to true the request will be sent through a free proxy with a default, unchangeable timeout of 10 second. If the request fails to complete in that time
         ///                          or another error occurs because of the proxy it will return back and empty response with only one header called error specifying what happened. Usually you have
         ///                          to try and send the request multiple times. Please note proxies don't secure your data, only hide your identity and even at that they can fail. Use them carefully.</param>
-        /// <returns>Returns the response as a HttpResponseMessage which contains all the data about the response and the request the was used to send it. If an error ocurred is gonna send an empty
+        /// <returns>The response as a HttpResponseMessage which contains all the data about the response and the request the was used to send it. If an error ocurred is gonna send an empty
         ///          response with only one header called error with a value containing information about the error. Note Put Request's responses don't have a body.</returns>
 #nullable enable
         public async Task<HttpResponseMessage> PutRequest(string url, double? httpVersion = null, HttpVersionPolicy? versionPolicy = null, Dictionary<string, string>? headers = null,
@@ -654,7 +651,7 @@ namespace HTTPMan
         /// <param name="useProxies">If setting to true the request will be sent through a free proxy with a default, unchangeable timeout of 10 second. If the request fails to complete in that time
         ///                          or another error occurs because of the proxy it will return back and empty response with only one header called error specifying what happened. Usually you have
         ///                          to try and send the request multiple times. Please note proxies don't secure your data, only hide your identity and even at that they can fail. Use them carefully.</param>
-        /// <returns>Returns the response as a HttpResponseMessage which contains all the data about the response and the request the was used to send it. If an error ocurred is gonna send an empty
+        /// <returns>The response as a HttpResponseMessage which contains all the data about the response and the request the was used to send it. If an error ocurred is gonna send an empty
         ///          response with only one header called error with a value containing information about the error. Note Put Request's responses don't have a body.</returns>
 #nullable enable
         public async Task<HttpResponseMessage> PatchRequest(string url, double? httpVersion = null, HttpVersionPolicy? versionPolicy = null, Dictionary<string, string>? headers = null,
@@ -835,7 +832,7 @@ namespace HTTPMan
         /// <param name="useProxies">If setting to true the request will be sent through a free proxy with a default, unchangeable timeout of 10 second. If the request fails to complete in that time
         ///                          or another error occurs because of the proxy it will return back and empty response with only one header called error specifying what happened. Usually you have
         ///                          to try and send the request multiple times. Please note proxies don't secure your data, only hide your identity and even at that they can fail. Use them carefully.</param>
-        /// <returns>Returns the response as a HttpResponseMessage which contains all the data about the response and the request the was used to send it. If an error ocurred is gonna send an empty
+        /// <returns>The response as a HttpResponseMessage which contains all the data about the response and the request the was used to send it. If an error ocurred is gonna send an empty
         ///          response with only one header called error with a value containing information about the error.</returns>
 #nullable enable
         public async Task<HttpResponseMessage> DeleteRequest(string url, double? httpVersion = null, HttpVersionPolicy? versionPolicy = null, Dictionary<string, string>? headers = null,
@@ -1058,7 +1055,7 @@ namespace HTTPMan
         /// <param name="useProxies">If setting to true the request will be sent through a free proxy with a default, unchangeable timeout of 10 second. If the request fails to complete in that time
         ///                          or another error occurs because of the proxy it will return back and empty response with only one header called error specifying what happened. Usually you have
         ///                          to try and send the request multiple times. Please note proxies don't secure your data, only hide your identity and even at that they can fail. Use them carefully.</param>
-        /// <returns>Returns the response as a HttpResponseMessage which contains all the data about the response and the request the was used to send it. If an error ocurred is gonna send an empty
+        /// <returns>The response as a HttpResponseMessage which contains all the data about the response and the request the was used to send it. If an error ocurred is gonna send an empty
         ///          response with only one header called error with a value containing information about the error.</returns>
 #nullable enable
         public async Task<HttpResponseMessage> HeadRequest(string url, double? httpVersion = null, HttpVersionPolicy? versionPolicy = null, Dictionary<string, string>? headers = null,
@@ -1224,7 +1221,7 @@ namespace HTTPMan
         /// <param name="useProxies">If setting to true the request will be sent through a free proxy with a default, unchangeable timeout of 10 second. If the request fails to complete in that time
         ///                          or another error occurs because of the proxy it will return back and empty response with only one header called error specifying what happened. Usually you have
         ///                          to try and send the request multiple times. Please note proxies don't secure your data, only hide your identity and even at that they can fail. Use them carefully.</param>
-        /// <returns>Returns the response as a HttpResponseMessage which contains all the data about the response and the request the was used to send it. If an error ocurred is gonna send an empty
+        /// <returns>The response as a HttpResponseMessage which contains all the data about the response and the request the was used to send it. If an error ocurred is gonna send an empty
         ///          response with only one header called error with a value containing information about the error.</returns>
 #nullable enable
         public async Task<HttpResponseMessage> TraceRequest(string url, double? httpVersion = null, HttpVersionPolicy? versionPolicy = null, Dictionary<string, string>? headers = null,
@@ -1387,7 +1384,7 @@ namespace HTTPMan
         /// <param name="useProxies">If setting to true the request will be sent through a free proxy with a default, unchangeable timeout of 10 second. If the request fails to complete in that time
         ///                          or another error occurs because of the proxy it will return back and empty response with only one header called error specifying what happened. Usually you have
         ///                          to try and send the request multiple times. Please note proxies don't secure your data, only hide your identity and even at that they can fail. Use them carefully.</param>
-        /// <returns>Returns the response as a HttpResponseMessage which contains all the data about the response and the request the was used to send it. If an error ocurred is gonna send an empty
+        /// <returns>The response as a HttpResponseMessage which contains all the data about the response and the request the was used to send it. If an error ocurred is gonna send an empty
         ///          response with only one header called error with a value containing information about the error.</returns>
 #nullable enable
         public async Task<HttpResponseMessage> OptionsRequest(string url, double? httpVersion = null, HttpVersionPolicy? versionPolicy = null, Dictionary<string, string>? headers = null,

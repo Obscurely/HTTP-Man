@@ -2,10 +2,6 @@ using System;
 using System.Net;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Security.Cryptography;
-using System.IO;
-using System.Security.Cryptography.X509Certificates;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Titanium.Web.Proxy;
 using Titanium.Web.Proxy.EventArguments;
@@ -68,7 +64,7 @@ namespace HTTPMan
         /// <summary>
         /// Starts the server on the specified ips and ports.
         /// </summary>
-        /// <returns>Returns true if server was successfully started and false if it failed to start.</returns>
+        /// <returns>True if server was successfully started and false if it failed to start.</returns>
         public bool Start()
         {
             // Adds the handlers for the proxy.
@@ -121,7 +117,7 @@ namespace HTTPMan
         /// <summary>
         /// Returns a byte array containing the root certificate used by the proxy for intercepting network traffic.
         /// </summary>
-        /// <returns>Returns a byte array containing the root certificate.</returns>
+        /// <returns>A byte array containing the root certificate.</returns>
         public byte[] GetRootCertificate()
         {
             return ProxyServer.CertificateManager.RootCertificate.Export(System.Security.Cryptography.X509Certificates.X509ContentType.Cert);
@@ -130,7 +126,7 @@ namespace HTTPMan
         /// <summary>
         /// Prompts user to trust the root certificate used by the proxy if on windows. Only works on Windows.
         /// </summary>
-        /// <returns>Returns true if the user is running windows and it was prompted to trust the certificate and false if it's running something else.</returns>
+        /// <returns>True if the user is running windows and it was prompted to trust the certificate and false if it's running something else.</returns>
         public bool TrustCertificate()
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
@@ -166,7 +162,7 @@ namespace HTTPMan
         /// <summary>
         /// Gives back a string array containing the names of adapters used by the proxy.
         /// </summary>
-        /// <returns>Returns a string array containing the names of adapters used by the proxy.</returns>
+        /// <returns>A string array containing the names of adapters used by the proxy.</returns>
         public string[] GetListenerDevices()
         {
             if (IsServerStarted)
@@ -188,8 +184,7 @@ namespace HTTPMan
         /// <summary>
         /// Gets the ips and ports the proxy is listening to.
         /// </summary>
-        /// Returns an array of (string, string) containing the ips and ports the proxy is listening to.
-        /// <returns></returns>
+        /// <returns>An array of (string, string) containing the ips and ports the proxy is listening to.</returns>
         public (string, string)[] GetListenerIpsAndPorts()
         {
             if (IsServerStarted)

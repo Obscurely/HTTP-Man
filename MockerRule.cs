@@ -1,5 +1,3 @@
-using System;
-using System.Net.Http;
 using System.Collections.Generic;
 
 namespace HTTPMan
@@ -80,7 +78,7 @@ namespace HTTPMan
         /// </summary>
         /// <param name="method">Http Method the mocker should match for (or ANY).</param>
         /// <param name="matcher">Matching method to match only specific request for modifying.</param>
-        /// /// <param name="matcherOptions">Information for the matching method in order for the program to know how to use it.</param>
+        /// /// /// <param name="matcherOptions">Information for the matching method in order for the program to know how to use it.</param>
         /// <param name="mockingAction">What method should the server use if the specific request is matched.</param>
         /// <param name="mockingActionOptions">Information for mocking action to know what to do.</param>
         public MockerRule(MockHttpMethod method, MockMatcher matcher, Dictionary<string, string> matcherOptions, MockAction mockingAction, Dictionary<string, object> mockingActionOptions)

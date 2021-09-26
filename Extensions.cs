@@ -1,5 +1,4 @@
 using System.Linq;
-using System.Text;
 using System.Text.Json;
 using System.Collections.Generic;
 
@@ -10,11 +9,14 @@ namespace HTTPMan
     /// </summary>
     public static class Extensions
     {
+        // *************************
+        // * Dictionary Extensions *
+        // *************************
+
         /// <summary>
         /// Extension method that converts a Dictionary<string, string> to it's json string representation.
         /// </summary>
-        /// <param name="dict">The objects its self.</param>
-        /// <returns></returns>
+        /// <returns>String containing the given dict as a json string.</returns>
         public static string ToJsonString(this Dictionary<string, string> dict)
         {
             JsonSerializerOptions jsonOptions = new();
@@ -25,8 +27,7 @@ namespace HTTPMan
         /// <summary>
         /// Extension method that converts a Dictionary<string, object> to it's json string representation.
         /// </summary>
-        /// <param name="dict">The object its self.</param>
-        /// <returns></returns>
+        /// <returns>String containing the given dict as a json string.</returns>
         public static string ToJsonString(this Dictionary<string, object> dict)
         {
             string json = "{\n";
@@ -58,29 +59,10 @@ namespace HTTPMan
         }
 
         /// <summary>
-        /// Only replaces the first occurrence of the substring.
-        /// </summary>
-        /// <param name="text">the actual string object to replace.</param>
-        /// <param name="search">Old substring.</param>
-        /// <param name="replace">New substring.</param>
-        /// <returns>Returns a string with the first occurrences of the old substring replaced.</returns>
-        public static string ReplaceFirst(this string text, string search, string replace)
-        {
-            int pos = text.IndexOf(search);
-            if (pos < 0)
-            {
-                return text;
-            }
-
-            return text.Substring(0, pos) + replace + text.Substring(pos + search.Length);
-        }
-
-        /// <summary>
         /// Checks if keys and values of 2 Dictionary<string, string> are the same.
         /// </summary>
-        /// <param name="dict1">The first dictionary to compare.</param>
-        /// <param name="dict2">The second dictionary to compare to.</param>
-        /// <returns>Returns true if the keys and values of the 2 dictionaries match otherwise false.</returns>
+        /// <param name="dict2">The dictionary to compare to.</param>
+        /// <returns>True if the keys and values of the 2 dictionaries match otherwise false.</returns>
         public static bool ContentEquals(this Dictionary<string, string> dict1, Dictionary<string, string> dict2)
         {
             if (dict1.Count != dict2.Count)
@@ -97,10 +79,36 @@ namespace HTTPMan
             return true;
         }
 
+
+        // *********************
+        // * String Extensions *
+        // *********************
+
+        /// <summary>
+        /// Only replaces the first occurrence of the substring.
+        /// </summary>
+        /// <param name="search">Old substring.</param>
+        /// <param name="replace">New substring.</param>
+        /// <returns>A string with the first occurrence of the old substring replaced.</returns>
+        public static string ReplaceFirst(this string text, string search, string replace)
+        {
+            int pos = text.IndexOf(search);
+            if (pos < 0)
+            {
+                return text;
+            }
+
+            return text.Substring(0, pos) + replace + text.Substring(pos + search.Length);
+        }
+
+
+        // ******************************
+        // * Mocking Objects Extensions *
+        // ******************************
+
         /// <summary>
         /// Extension method that converts a MockHttpMethod to it's string in upper case representation.
         /// </summary>
-        /// <param name="MockHttpMethod">The object its self</param>
         /// <returns></returns>
         public static string GetString(this MockHttpMethod method)
         {
@@ -130,6 +138,10 @@ namespace HTTPMan
             }
         }
 
+        /// <summary>
+        /// Extension method that gets the option's string key for the current matcher.
+        /// </summary>
+        /// <returns>The option's string key for this matcher.</returns>
         public static string GetOptionsKey(this MockMatcher matcher)
         {
             switch ((int)matcher)
@@ -158,6 +170,10 @@ namespace HTTPMan
             }
         }
 
+        /// <summary>
+        /// Extension method that gets the option's string key for the current action.
+        /// </summary>
+        /// <returns>The option's string key for this action.</returns>
         public static string GetOptionsKey(this MockAction action)
         {
             switch ((int)action)

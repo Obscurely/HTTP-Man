@@ -1,4 +1,5 @@
 using System;
+using System.Net;
 using System.Linq;
 using System.Text.Json;
 using System.Collections.Generic;
@@ -8,16 +9,16 @@ using Titanium.Web.Proxy.EventArguments;
 namespace HTTPMan
 {
     /// <summary>
-    /// Handles the event arguments given by the proxy and mocker rule. Checks if the request is matched and it is manipulates it as the rule says.
+    /// Handles the event argument given by the proxy and mocker rule. Checks if the request is matched and it is manipulates it as the rule says.
     /// </summary>
     public class Mocker
     {
         // Methods
         /// <summary>
-        /// Handles the event arguments given by the proxy and mocker rule. Checks if the request is matched and it is manipulates it as the rule says.
+        /// Handles the event argument given by the proxy and mocker rule. Checks if the request is matched and it is manipulates it as the rule says.
         /// </summary>
         /// <param name="rule">The mocker rule.</param>
-        /// <param name="e">Event arguments given by the proxy.</param>
+        /// <param name="e">Event argument given by the proxy.</param>
         public SessionEventArgs Mock(MockerRule rule, SessionEventArgs e, bool isRequest)
         {
             if (rule.Matcher == MockMatcher.ForHost)
@@ -117,6 +118,10 @@ namespace HTTPMan
             {
                 e = AutoTransformRequestOrResponse(rule, e, isRequest);
             }
+            else if (rule.MockingAction == MockAction.TimeoutWithNoResponse)
+            {
+                // e = TimeOutWithNoResponse(rule, e);
+            }
             else if (rule.MockingAction == MockAction.CloseConnectionImmediately)
             {
                 e = CloseConnectionImmediately(e);
@@ -124,6 +129,7 @@ namespace HTTPMan
 
             return e;
         }
+
 
         // *********************************
         // * Checkers based on the matcher *
@@ -133,8 +139,8 @@ namespace HTTPMan
         /// Checks if the request has the same host as in the rule.
         /// </summary>
         /// <param name="rule">The mocker rule.</param>
-        /// <param name="e">Event arguments given by the proxy.</param>
-        /// <returns>Returns true if the rule and the event arguments match otherwise false.</returns>
+        /// <param name="e">Event argument given by the proxy.</param>
+        /// <returns>True if the rule and the event argument match otherwise false.</returns>
         private static bool IsSameHost(MockerRule rule, SessionEventArgs e)
         {
             if (rule.MatcherOptions[rule.Matcher.GetOptionsKey()].Equals(e.HttpClient.Request.Host))
@@ -147,8 +153,8 @@ namespace HTTPMan
         /// Checks if the request has the same url as in the rule.
         /// </summary>
         /// <param name="rule">The mocker rule.</param>
-        /// <param name="e">Event arguments given by the proxy.</param>
-        /// <returns>Returns true if the rule and the event arguments match otherwise false.</returns>
+        /// <param name="e">Event argument given by the proxy.</param>
+        /// <returns>True if the rule and the event argument match otherwise false.</returns>
         private static bool IsSameUrl(MockerRule rule, SessionEventArgs e)
         {
             if (rule.MatcherOptions[rule.Matcher.GetOptionsKey()].Equals(e.HttpClient.Request.Url))
@@ -161,8 +167,8 @@ namespace HTTPMan
         /// Checks if the regex pattern in the rule mathes the whole request url.
         /// </summary>
         /// <param name="rule">The mocker rule.</param>
-        /// <param name="e">Event arguments given by the proxy.</param>
-        /// <returns>Returns true if the rule and the event arguments match otherwise false.</returns>
+        /// <param name="e">Event argument given by the proxy.</param>
+        /// <returns>True if the rule and the event argument match otherwise false.</returns>
         private static bool IsUrlMatchingRegex(MockerRule rule, SessionEventArgs e)
         {
             string regexPattern = rule.MatcherOptions[rule.Matcher.GetOptionsKey()];
@@ -179,8 +185,8 @@ namespace HTTPMan
         /// Checks if the request has the same query string as in the rule.
         /// </summary>
         /// <param name="rule">The mocker rule.</param>
-        /// <param name="e">Event arguments given by the proxy.</param>
-        /// <returns>Returns true if the rule and the event arguments match otherwise false.</returns>
+        /// <param name="e">Event argument given by the proxy.</param>
+        /// <returns>True if the rule and the event argument match otherwise false.</returns>
         private static bool IsSameQueryString(MockerRule rule, SessionEventArgs e)
         {
             string[] urlSplit = e.HttpClient.Request.Url.Split("?");
@@ -198,8 +204,8 @@ namespace HTTPMan
         /// Checks if the request includes the headers peresent in the rule.
         /// </summary>
         /// <param name="rule">The mocker rule.</param>
-        /// <param name="e">Event arguments given by the proxy.</param>
-        /// <returns>Returns true if the rule and the event arguments match otherwise false.</returns>
+        /// <param name="e">Event argument given by the proxy.</param>
+        /// <returns>True if the rule and the event argument match otherwise false.</returns>
         private static bool IsIncludingHeaders(MockerRule rule, SessionEventArgs e)
         {
             Dictionary<string, string> headers = rule.MatcherOptions;
@@ -210,10 +216,9 @@ namespace HTTPMan
                 {
                     return false;
                 }
-                else
+                else if (!e.HttpClient.Request.Headers.Headers[headers.Keys.ElementAt(i)].Value.Equals(headers.Values.ElementAt(i)))
                 {
-                    if (!e.HttpClient.Request.Headers.Headers[headers.Keys.ElementAt(i)].Value.Equals(headers.Values.ElementAt(i)))
-                        return false;
+                    return false;
                 }
             }
 
@@ -224,8 +229,8 @@ namespace HTTPMan
         /// Checks if the request has the same body as in the rule.
         /// </summary>
         /// <param name="rule">The mocker rule.</param>
-        /// <param name="e">Event arguments given by the proxy.</param>
-        /// <returns>Returns true if the rule and the event arguments match otherwise false.</returns>
+        /// <param name="e">Event argument given by the proxy.</param>
+        /// <returns>True if the rule and the event argument match otherwise false.</returns>
         private static bool IsSameBody(MockerRule rule, SessionEventArgs e)
         {
             string body = rule.MatcherOptions[rule.Matcher.GetOptionsKey()];
@@ -241,8 +246,8 @@ namespace HTTPMan
         /// Checks if the request's body includes the body given in the rule.
         /// </summary>
         /// <param name="rule">The mocker rule.</param>
-        /// <param name="e">Event arguments given by the proxy.</param>
-        /// <returns>Returns true if the rule and the event arguments match otherwise false.</returns>
+        /// <param name="e">Event argument given by the proxy.</param>
+        /// <returns>True if the rule and the event argument match otherwise false.</returns>
         private static bool IsBodyIncluding(MockerRule rule, SessionEventArgs e)
         {
             string body = rule.MatcherOptions[rule.Matcher.GetOptionsKey()];
@@ -258,8 +263,8 @@ namespace HTTPMan
         /// Checks if the request has the same json body as in the rule.
         /// </summary>
         /// <param name="rule">The mocker rule.</param>
-        /// <param name="e">Event arguments given by the proxy.</param>
-        /// <returns>Returns true if the rule and the event arguments match otherwise false.</returns>
+        /// <param name="e">Event argument given by the proxy.</param>
+        /// <returns>True if the rule and the event argument match otherwise false.</returns>
         private static bool IsSameJsonBody(MockerRule rule, SessionEventArgs e)
         {
             string bodyString = rule.MatcherOptions[rule.Matcher.GetOptionsKey()];
@@ -289,8 +294,8 @@ namespace HTTPMan
         /// Checks if the request's json body includes the json body given in the rule.
         /// </summary>
         /// <param name="rule">The mocker rule.</param>
-        /// <param name="e">Event arguments given by the proxy.</param>
-        /// <returns>Returns true if the rule and the event arguments match otherwise false.</returns>
+        /// <param name="e">Event argument given by the proxy.</param>
+        /// <returns>True if the rule and the event argument match otherwise false.</returns>
         private static bool IsJsonBodyIncluding(MockerRule rule, SessionEventArgs e)
         {
             string bodyString = rule.MatcherOptions[rule.Matcher.GetOptionsKey()];
@@ -326,6 +331,12 @@ namespace HTTPMan
         // * Request/Response Changers *
         // *****************************
 
+        /// <summary>
+        /// Gives back for request a fixed response.
+        /// </summary>
+        /// <param name="rule">The mocker rule.</param>
+        /// <param name="e">Event argument given by the proxy.</param>
+        /// <returns>The modified event argument.</returns>
         private static SessionEventArgs ReturnFixedResponse(MockerRule rule, SessionEventArgs e)
         {
             HttpResponse response = (HttpResponse)(rule.MockingActionOptions[rule.MockingAction.GetOptionsKey()]);
@@ -338,24 +349,40 @@ namespace HTTPMan
                 e.HttpClient.Response.Headers.AddHeaders(response.Headers);
 
             e.SetResponseBodyString(response.BodyString);
-            e.HttpClient.Request.ContentType = response.BodyType.GetString();
+            e.HttpClient.Response.ContentType = response.BodyType.GetString();
             e.HttpClient.Response.KeepBody = response.KeepBody;
             e.HttpClient.Response.HttpVersion = response.HttpMethodVersion;
 
             return e;
         }
 
+        /// <summary>
+        /// Forwards the given request to a different host, for example if you have like www.google.com/test chaning the host will make it be like www.duckduckgo.com/test
+        /// </summary>
+        /// <param name="rule">The mocker rule.</param>
+        /// <param name="e">Event argument given by the proxy.</param>
+        /// <returns>The modified event argument.</returns>
         private static SessionEventArgs ForwardRequestToDifferentHost(MockerRule rule, SessionEventArgs e)
         {
             string originalHost = e.HttpClient.Request.RequestUri.Host;
             string newHost = (string)(rule.MockingActionOptions[rule.MockingAction.GetOptionsKey()]);
 
+            e.HttpClient.Request.Url = e.HttpClient.Request.Url.ReplaceFirst(originalHost, newHost);
             e.HttpClient.Request.RequestUriString = e.HttpClient.Request.RequestUriString.ReplaceFirst(originalHost, newHost);
             e.HttpClient.Request.Host = newHost;
+            e.HttpClient.Request.Headers.RemoveHeader("host");
+            e.HttpClient.Request.Headers.AddHeader("host", newHost);
 
             return e;
         }
 
+        /// <summary>
+        /// Auto transforms the given request or response using the transformer object given with the rule.
+        /// </summary>
+        /// <param name="rule">The mocker rule.</param>
+        /// <param name="e">Event argument given by the proxy.</param>
+        /// <param name="isRequest">Whether the current request changing is a request or a response.</param>
+        /// <returns>The modified event argument.</returns>
         public static SessionEventArgs AutoTransformRequestOrResponse(MockerRule rule, SessionEventArgs e, bool isRequest)
         {
             MockTransformer transformer = (MockTransformer)(rule.MockingActionOptions[rule.MockingAction.GetOptionsKey()]);
@@ -364,14 +391,14 @@ namespace HTTPMan
             {
                 // Setting http method if any.
                 if (transformer.RequestMethod != null)
-                    e.HttpClient.Request.Method = transformer.RequestMethod.ToString();
+                    e.HttpClient.Request.Method = (string)(transformer.RequestMethod).ToString();
 
                 // Setting headers if any.
                 if (transformer.RequestHeaders != null)
                 {
                     e.HttpClient.Request.Headers.Clear();
                     if (transformer.RequestHeaders.Count != 0)
-                        e.HttpClient.Request.Headers.AddHeaders(transformer.RequestHeaders);
+                        e.HttpClient.Request.Headers.AddHeaders((Dictionary<string, string>)(transformer.RequestHeaders));
                 }
 
                 // Setting body type if any.
@@ -380,7 +407,7 @@ namespace HTTPMan
 
                 // Setting request body if any.
                 if (transformer.RequestBodyString != null)
-                    e.SetRequestBodyString(transformer.RequestBodyString);
+                    e.SetRequestBodyString((string)(transformer.RequestBodyString));
 
                 // Setting request keep body if any.
                 if (transformer.RequestKeepBody != null)
@@ -390,23 +417,30 @@ namespace HTTPMan
                 if (transformer.RequestHost != null)
                 {
                     string originalHost = e.HttpClient.Request.RequestUri.Host;
+                    string newHost = transformer.RequestHost;
 
-                    e.HttpClient.Request.RequestUriString = e.HttpClient.Request.RequestUriString.ReplaceFirst(originalHost, transformer.RequestHost);
-                    e.HttpClient.Request.Host = transformer.RequestHost;
+                    e.HttpClient.Request.Url = e.HttpClient.Request.Url.ReplaceFirst(originalHost, newHost);
+                    e.HttpClient.Request.RequestUriString = e.HttpClient.Request.RequestUriString.ReplaceFirst(originalHost, newHost);
+                    e.HttpClient.Request.Host = newHost;
+                    e.HttpClient.Request.Headers.RemoveHeader("host");
+                    e.HttpClient.Request.Headers.AddHeader("host", newHost);
                 }
 
-                // Chaning url if any given.
+                // Changing url if any given.
                 if (transformer.RequestUrl != null)
                 {
-                    string oldRequestUrl = e.HttpClient.Request.RequestUriString;
+                    string oldRequestUrl = e.HttpClient.Request.Url;
                     string oldRequestHost = e.HttpClient.Request.Host;
 
                     try
                     {
-                        Uri newUri = new(transformer.RequestUrl);
+                        Uri newUri = new((string)(transformer.RequestUrl));
 
                         e.HttpClient.Request.RequestUri = newUri;
+                        e.HttpClient.Request.Url = (string)(transformer.RequestUrl);
                         e.HttpClient.Request.Host = newUri.Host;
+                        e.HttpClient.Request.Headers.RemoveHeader("host");
+                        e.HttpClient.Request.Headers.AddHeader("host", newUri.Host);
                     }
                     catch (Exception)
                     {
@@ -435,8 +469,8 @@ namespace HTTPMan
                 }
 
                 // Setting body type if any.
-                if (transformer.RequestBodyType != null)
-                    e.HttpClient.Request.ContentType = transformer.RequestBodyType.GetString();
+                if (transformer.ResponseBodyType != null)
+                    e.HttpClient.Response.ContentType = transformer.ResponseBodyType.GetString();
 
                 // Setting response body if any.
                 if (transformer.ResponseBodyString != null)
@@ -448,17 +482,36 @@ namespace HTTPMan
 
                 // Setting http version if any.
                 if (transformer.ResponseHttpMethodVersion != null)
-                    e.HttpClient.Response.HttpVersion = transformer.ResponseHttpMethodVersion;
+                    e.HttpClient.Response.HttpVersion = (Version)(transformer.ResponseHttpMethodVersion);
             }
 
             return e;
         }
 
+        /// <summary>
+        /// Returns back after request an empty response that has as the status code RequestTimeout.
+        /// </summary>
+        /// <param name="e">Event argument given by the proxy.</param>
+        /// <returns>The modified event argument.</returns>
+        public static SessionEventArgs TimeOutWithNoResponse(SessionEventArgs e)
+        {
+            Dictionary<string, Titanium.Web.Proxy.Models.HttpHeader> headers = new();
+            e.GenericResponse("", HttpStatusCode.RequestTimeout, headers, false);
+
+            return e;
+        }
+
+        /// <summary>
+        /// Closes the connection immediately.
+        /// </summary>
+        /// <param name="e">Event argument given by the proxy.</param>
+        /// <returns>The modified event argument.</returns>
         public static SessionEventArgs CloseConnectionImmediately(SessionEventArgs e)
         {
             // Terminating connection and session.
             e.TerminateServerConnection();
             e.TerminateSession();
+            e.Dispose();
 
             return e;
         }

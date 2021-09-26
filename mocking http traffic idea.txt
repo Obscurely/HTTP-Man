@@ -1,1 +1,0 @@
-Add a value that speciefs if is for requests and if it's for responses

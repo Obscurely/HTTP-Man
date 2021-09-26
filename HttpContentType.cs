@@ -1,7 +1,7 @@
 namespace HTTPMan
 {
     /// <summary>
-    /// Enum that contains the http content types for requests supported by the requester.
+    /// Enum that contains the http content types for requests supported by Requester.cs.
     /// </summary>
     public enum HttpContentType : int
     {
@@ -95,7 +95,7 @@ namespace HTTPMan
         /// Returns the string representation of the current HttpContentType object.
         /// </summary>
         /// <param name="contentType">This object of type HttpContentType.</param>
-        /// <returns>Returns the string representation of the current HttpContentType object.</returns>
+        /// <returns>The string representation of the current HttpContentType object.</returns>
         public static string GetString(this HttpContentType contentType)
         {
             switch (contentType)
@@ -160,7 +160,7 @@ namespace HTTPMan
         /// Returns the string representation of the current HttpContentType object.
         /// </summary>
         /// <param name="id">This object of type HttpContentType.</param>
-        /// <returns>Returns the string representation of the current HttpContentType object.</returns>
+        /// <returns>The string representation of the current HttpContentType object.</returns>
         public static string GetString(this HttpContentType? contentType)
         {
             switch (contentType)
