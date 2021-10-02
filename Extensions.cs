@@ -191,7 +191,7 @@ namespace HTTPMan
                 case 5:
                     return "host";
                 case 6:
-                    return "transformer"; // TODO: make object for this one (values for responses and requests.)
+                    return "transformer";
                 case 7:
                     return ""; // Not needed.
                 case 8:

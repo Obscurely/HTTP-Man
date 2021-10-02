@@ -1,0 +1,11 @@
+Mock Checker:
+
+ForHost = working.
+ForUrl = working.
+ForUrlsMatchingRegex = working.
+ExactQueryString = working. (fixed)
+IncludingHeaders = working.
+ExactBody = working. (fixed)
+IncludingBody = working. (fixed)
+ExactJsonBody = working. (fixed)
+JsonBodyIncluding = working. (fixed)

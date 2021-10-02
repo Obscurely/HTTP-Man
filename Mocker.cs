@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Titanium.Web.Proxy.EventArguments;
+using System.Threading.Tasks;
 
 namespace HTTPMan
 {
@@ -19,7 +20,7 @@ namespace HTTPMan
         /// </summary>
         /// <param name="rule">The mocker rule.</param>
         /// <param name="e">Event argument given by the proxy.</param>
-        public SessionEventArgs Mock(MockerRule rule, SessionEventArgs e, bool isRequest)
+        public async Task<SessionEventArgs> Mock(MockerRule rule, SessionEventArgs e, bool isRequest)
         {
             if (rule.Matcher == MockMatcher.ForHost)
             {
@@ -44,7 +45,7 @@ namespace HTTPMan
             }
             else if (rule.Matcher == MockMatcher.ExactQueryString)
             {
-                if (Mocker.IsSameQueryString(rule, e))
+                if (Mocker.IsExactQueryString(rule, e))
                 {
                     e = MockRequest(rule, e, isRequest);
                 }
@@ -58,28 +59,28 @@ namespace HTTPMan
             }
             else if (rule.Matcher == MockMatcher.ExactBody)
             {
-                if (Mocker.IsSameBody(rule, e))
+                if (await Mocker.IsExactBody(rule, e))
                 {
                     e = MockRequest(rule, e, isRequest);
                 }
             }
             else if (rule.Matcher == MockMatcher.BodyIncluding)
             {
-                if (Mocker.IsBodyIncluding(rule, e))
+                if (await Mocker.IsBodyIncluding(rule, e))
                 {
                     e = MockRequest(rule, e, isRequest);
                 }
             }
             else if (rule.Matcher == MockMatcher.ExactJsonBody)
             {
-                if (Mocker.IsSameJsonBody(rule, e))
+                if (await Mocker.IsExactJsonBody(rule, e))
                 {
                     e = MockRequest(rule, e, isRequest);
                 }
             }
             else if (rule.Matcher == MockMatcher.JsonBodyIncluding)
             {
-                if (Mocker.IsJsonBodyIncluding(rule, e))
+                if (await Mocker.IsJsonBodyIncluding(rule, e))
                 {
                     e = MockRequest(rule, e, isRequest);
                 }
@@ -120,7 +121,7 @@ namespace HTTPMan
             }
             else if (rule.MockingAction == MockAction.TimeoutWithNoResponse)
             {
-                // e = TimeOutWithNoResponse(rule, e);
+                e = TimeOutWithNoResponse(e);
             }
             else if (rule.MockingAction == MockAction.CloseConnectionImmediately)
             {
@@ -187,13 +188,16 @@ namespace HTTPMan
         /// <param name="rule">The mocker rule.</param>
         /// <param name="e">Event argument given by the proxy.</param>
         /// <returns>True if the rule and the event argument match otherwise false.</returns>
-        private static bool IsSameQueryString(MockerRule rule, SessionEventArgs e)
+        private static bool IsExactQueryString(MockerRule rule, SessionEventArgs e)
         {
             string[] urlSplit = e.HttpClient.Request.Url.Split("?");
             if (urlSplit.Length != 2)
                 return false;
 
-            string queryString = urlSplit[1];
+            if (urlSplit[1].Split("q=").Length < 2)
+                return false;
+
+            string queryString = urlSplit[1].Split("q=")[1].Split("&")[0];
             if (rule.MatcherOptions[rule.Matcher.GetOptionsKey()].Equals(queryString))
                 return true;
             else
@@ -231,10 +235,10 @@ namespace HTTPMan
         /// <param name="rule">The mocker rule.</param>
         /// <param name="e">Event argument given by the proxy.</param>
         /// <returns>True if the rule and the event argument match otherwise false.</returns>
-        private static bool IsSameBody(MockerRule rule, SessionEventArgs e)
+        private static async Task<bool> IsExactBody(MockerRule rule, SessionEventArgs e)
         {
             string body = rule.MatcherOptions[rule.Matcher.GetOptionsKey()];
-            string requestBody = e.HttpClient.Request.BodyString;
+            string requestBody = await e.GetRequestBodyAsString();
 
             if (body.Equals(requestBody))
                 return true;
@@ -248,10 +252,10 @@ namespace HTTPMan
         /// <param name="rule">The mocker rule.</param>
         /// <param name="e">Event argument given by the proxy.</param>
         /// <returns>True if the rule and the event argument match otherwise false.</returns>
-        private static bool IsBodyIncluding(MockerRule rule, SessionEventArgs e)
+        private static async Task<bool> IsBodyIncluding(MockerRule rule, SessionEventArgs e)
         {
             string body = rule.MatcherOptions[rule.Matcher.GetOptionsKey()];
-            string requestBody = e.HttpClient.Request.BodyString;
+            string requestBody = await e.GetRequestBodyAsString();
 
             if (requestBody.Split(body).Length >= 2)
                 return true;
@@ -265,10 +269,10 @@ namespace HTTPMan
         /// <param name="rule">The mocker rule.</param>
         /// <param name="e">Event argument given by the proxy.</param>
         /// <returns>True if the rule and the event argument match otherwise false.</returns>
-        private static bool IsSameJsonBody(MockerRule rule, SessionEventArgs e)
+        private static async Task<bool> IsExactJsonBody(MockerRule rule, SessionEventArgs e)
         {
             string bodyString = rule.MatcherOptions[rule.Matcher.GetOptionsKey()];
-            string requestBodyString = e.HttpClient.Request.BodyString;
+            string requestBodyString = await e.GetRequestBodyAsString();
 
             Dictionary<string, string> body = new();
             Dictionary<string, string> requestBody = new();
@@ -296,10 +300,10 @@ namespace HTTPMan
         /// <param name="rule">The mocker rule.</param>
         /// <param name="e">Event argument given by the proxy.</param>
         /// <returns>True if the rule and the event argument match otherwise false.</returns>
-        private static bool IsJsonBodyIncluding(MockerRule rule, SessionEventArgs e)
+        private static async Task<bool> IsJsonBodyIncluding(MockerRule rule, SessionEventArgs e)
         {
             string bodyString = rule.MatcherOptions[rule.Matcher.GetOptionsKey()];
-            string requestBodyString = e.HttpClient.Request.BodyString;
+            string requestBodyString = await e.GetRequestBodyAsString();
 
             Dictionary<string, string> body = new();
             Dictionary<string, string> requestBody = new();

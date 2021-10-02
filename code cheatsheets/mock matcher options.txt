@@ -16,14 +16,16 @@
     { "toekn", "3025702570"} // Basically a dict with headers.
 
 5 = ExactBody:
-    { "body", "requestBody"}
+    { "exactBody", "requestBody"}
 
 6 = BodyIncluding:
-    { "body", "part of the body"}
+    { "partBody", "part of the body"}
 
 7 = ExactJsonBody:
-    { "jsonBody", "json format body"}
+    { "exactJsonBody", "json format body"}
 
 8 = JsonBodyIncluding:
-    { "jsonBody", "part of json format body"}
+    { "partJsonBody", "part of json format body"}
+
+All of the dict keys in code go like this (ForHost is just an example): MockMatcher.ForHost.GetOptionsKey();
 

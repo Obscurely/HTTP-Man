@@ -211,7 +211,11 @@ namespace HTTPMan
         /// <returns>Nothing.</returns>
         private async Task OnBeforeTunnelConnectRequest(object sender, TunnelConnectSessionEventArgs e)
         {
+            e.DecryptSsl = true; // Decrypts ssl in order to see and modify the requests and responses.
             TunnelConnectRequests.Add(e); //Stores Tunnel Connect Request.
+
+            // HACK debug line, prints out to console tunnel request's urls.
+            System.Console.WriteLine(e.HttpClient.ConnectRequest.Url);
         }
 
         /// <summary>
@@ -222,6 +226,9 @@ namespace HTTPMan
         /// <returns>Nothing.</returns>
         private async Task OnRequest(object sender, SessionEventArgs e)
         {
+            // HACK debug line, prints out to console request's urls.
+            System.Console.WriteLine(e.HttpClient.Request.Url);
+
             if (HttpRules.Count != 0)
             {
                 for (int i = 0; i < HttpRules.Count; i++)
@@ -231,7 +238,7 @@ namespace HTTPMan
                     if (!HttpRules[i].IsForRequest)
                         continue;
 
-                    e = HttpMocker.Mock(HttpRules[i], e, true);
+                    e = await HttpMocker.Mock(HttpRules[i], e, true);
                 }
             }
 
@@ -256,7 +263,7 @@ namespace HTTPMan
                     if (!HttpRules[i].IsForResponse)
                         continue;
 
-                    e = HttpMocker.Mock(HttpRules[i], e, false);
+                    e = await HttpMocker.Mock(HttpRules[i], e, false);
                 }
             }
 
