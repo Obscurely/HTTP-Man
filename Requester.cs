@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace HTTPMan
 {
     /// <summary>
-    /// Class for doing http complex http requests (basically everything that is supported by the built-in http client class and the specific request type can be changed.)
+    /// Class for doing complex http requests (basically everything that is supported by the built-in http client class and the specific request type can be changed.)
     /// </summary>
     public class Requester
     {

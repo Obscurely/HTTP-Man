@@ -8,7 +8,7 @@
     { "regexPattern", ".+?"} // should check if the pattern matches all the url of request
 
 3 = ExactQueryString:
-    { "query", "ts=st&fd=bd"} // query string is everything after "?" in url.
+    { "query", "ts=st&fd=bd"} // query string is the param "q=" so basically everything between "q=" and "&" in the url
 
 4 = IncludingHeaders:
     { "host", "host.com"}

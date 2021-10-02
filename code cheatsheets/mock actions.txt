@@ -25,3 +25,4 @@
 8 = CloseConnectionImmediately
     Terminates the connection instantly to the specific host.
 
+All of the dict keys in code go like this (ReturnFixedResponse is just an example): MockAction.ReturnFixedResponse.GetOptionsKey()

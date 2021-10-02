@@ -9,3 +9,12 @@ ExactBody = working. (fixed)
 IncludingBody = working. (fixed)
 ExactJsonBody = working. (fixed)
 JsonBodyIncluding = working. (fixed)
+
+
+Mock Actions:
+
+ReturnFixedResponse = working.
+ForwardRequestToDifferentHost = working.
+AutoTransformRequestOrResponse = working.
+TimeoutWithNoResponse = working.
+CloseConnectionImmediately = working.

@@ -14,10 +14,16 @@ namespace HTTPMan
         static async Task Main(string[] args)
         {
             Server server = new Server(IPAddress.Parse("127.0.0.1"), 8887, IPAddress.Parse("127.0.0.1"), 8889);
-            Dictionary<string, string> mockerOptions = new() { { MockMatcher.BodyIncluding.GetOptionsKey(), "test" } };
-            Dictionary<string, object> mockerActionOptions = new() { { "host", "duckduckgo.com" } };
-            MockerRule rule1 = new MockerRule(MockHttpMethod.Any, MockMatcher.BodyIncluding, mockerOptions, MockAction.ForwardRequestToDifferentHost, mockerActionOptions);
+
+            Dictionary<string, string> mockerOptions = new() { { MockMatcher.ForHost.GetOptionsKey(), "duckduckgo.com" } };
+
+            MockTransformer mockTransformer = new MockTransformer(null, null, null, null, null, "qwant.com");
+            Dictionary<string, object> mockerActionOptions = new() { { MockAction.AutoTransformRequestOrResponse.GetOptionsKey(), mockTransformer } };
+
+            MockerRule rule1 = new MockerRule(MockHttpMethod.Any, MockMatcher.ForHost, mockerOptions, MockAction.TimeoutWithNoResponse, mockerActionOptions);
             server.HttpRules.Add(rule1);
+
+
             System.Console.WriteLine(server.Start());
 
             Console.ReadKey();
