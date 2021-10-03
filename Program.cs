@@ -1,5 +1,6 @@
 ﻿using System.Net.Http;
 using System;
+using System.Diagnostics;
 using System.Net;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -45,3 +46,4 @@ namespace HTTPMan
 // TODO fix ssl pinning errors
 // TODO make mocker able to stop even doing a tunnel connect to a host.
 // TODO find a way to bypass HPKP
+// TODO integrate mocker with tunnel connect request for like: block connection to specific host.

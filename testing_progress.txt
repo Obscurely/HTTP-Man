@@ -13,8 +13,25 @@ JsonBodyIncluding = working. (fixed)
 
 Mock Actions:
 
+PassRequestToDestination = working.
+PauseRequestToManuallyEdit = not implemented yet.
+PauseResponseToManuallyEdit = not implemented yet.
+PauseRequestAndResponseToManuallyEdit = not implemented yet.
 ReturnFixedResponse = working.
 ForwardRequestToDifferentHost = working.
 AutoTransformRequestOrResponse = working.
 TimeoutWithNoResponse = working.
 CloseConnectionImmediately = working.
+
+
+
+Files checked, tested and fixed: 
+
+Extensions.cs = yes
+HttpContentType.cs = yes
+HttpResponse.cs = yes
+Mocker.cs = yes
+MockerRule.cs = yes
+MockTransformer = yes
+Requester.cs = yes
+Server.cs = yes

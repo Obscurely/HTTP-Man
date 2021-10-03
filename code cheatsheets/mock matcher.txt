@@ -5,10 +5,10 @@
     { "url", "https://www.url.com"}
 
 2 = ForUrlsMatchingRegex:
-    { "regexPattern", ".+?"} // should check if the pattern matches all the url of request
+    { "regexPattern", ".+"} // should check if the pattern matches all the url of request
 
 3 = ExactQueryString:
-    { "query", "ts=st&fd=bd"} // query string is the param "q=" so basically everything between "q=" and "&" in the url
+    { "query", "test"} // query string is the param "q=" so basically everything between "q=" and "&" in the url
 
 4 = IncludingHeaders:
     { "host", "host.com"}
