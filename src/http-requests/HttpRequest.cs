@@ -1,22 +1,28 @@
 using System;
 using System.Net;
+using System.Net.Http;
 using System.Collections.Generic;
 
 namespace HTTPMan
 {
-    public class HttpResponse
+    /// <summary>
+    /// Object that represents an http request.
+    /// </summary>
+    public class HttpRequest
     {
         // Fields
-        private readonly int _statusCode;
+        private readonly HttpMethod _method;
+        private readonly string _url;
         private readonly Dictionary<string, string> _headers;
         private readonly string _bodyString;
         private readonly HttpContentType _bodyType;
-        private readonly bool _hasBody = false;
+        private readonly bool _hasBody;
         private readonly bool _keepBody;
         private readonly Version _httpMethodVersion;
-
+        
         // Properties
-        public int StatusCode { get { return _statusCode; } }
+        public HttpMethod Method { get { return _method; } }
+        public string Url { get { return _url; } }
         public Dictionary<string, string> Headers { get { return _headers; } }
         public string BodyString { get { return _bodyString; } }
         public HttpContentType BodyType { get { return _bodyType; } }
@@ -27,18 +33,20 @@ namespace HTTPMan
         // Constructors
 #nullable enable
         /// <summary>
-        /// Creates a response that works with the mocker.
+        /// Creates a request that works with the mocker, requester etc.
         /// </summary>
-        /// <param name="statusCode">The status code of the response.</param>
-        /// <param name="headers">The headers of the response.</param>
-        /// <param name="body">The http content of the response.</param>
-        /// <param name="bodyType">The http content type of the response.</param>
-        /// <param name="keepBody">Wether to the body of the response should be kept in cache or not.</param>
-        /// <param name="httpMethodVersion">The http version used by the request/response.</param>
-        public HttpResponse(int statusCode = 404, Dictionary<string, string>? headers = null, string body = "", HttpContentType bodyType = HttpContentType.TextPlain, bool keepBody = false,
+        /// <param name="method">The method of the request.</param>
+        /// <param name="url">The url the request is sent to.</param>
+        /// <param name="headers">The headers of the request.</param>
+        /// <param name="body">The http content of the request.</param>
+        /// <param name="bodyType">The http content type of the request.</param>
+        /// <param name="keepBody">Wether to the body of the request should be kept in cache or not.</param>
+        /// <param name="httpMethodVersion">The http version used by the request.</param>
+        public HttpRequest(HttpMethod method, string url, Dictionary<string, string>? headers = null, string body = "", HttpContentType bodyType = HttpContentType.TextPlain, bool keepBody = false, 
             double httpMethodVersion = 1.1)
         {
-            _statusCode = statusCode;
+            _method = method;
+            _url = url;
 
             // Setting headers if any.
             if (headers != null)

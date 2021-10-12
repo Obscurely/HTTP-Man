@@ -6,6 +6,9 @@ using System.Collections.Generic;
 namespace HTTPMan
 {
 #nullable enable
+    /// <summary>
+    /// Object for the auto transform request action in the mocker.
+    /// </summary>
     public class MockTransformer
     {
         // Fields
