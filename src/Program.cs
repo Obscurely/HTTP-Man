@@ -32,6 +32,7 @@ namespace HTTPMan
 
             server.Stop();*/   
 
+            /*
             Dictionary<string, string> headers = new()
             {
                 { "host", "host.com" },
@@ -62,7 +63,16 @@ namespace HTTPMan
             string bodyRequest = "dsjhfopwiehf9p29ry829hfe9bnfenbdspfhvdsiophgfvipwehf9802hdsjhfopwiehf9p29ry829hfe9bnfenbdspfhvdsiophgfvipwehf9802h\ndsjhfopwiehf9p29ry829hfe9bnfenbdspfhvdsiophgfvipwehf9802h\tdsjhfopwiehf9p29ry829hfe9bnfenbdspfhvdsiophgfvipwehf9802h\n\ndsjhfopwiehf9p29ry829hfe9bnfenbdspfhvdsiophgfvipwehf9802h";
 
             HttpRequest request = new HttpRequest(HttpMethod.Get, "https://www.google.com", headersRequest, bodyRequest, HttpContentType.TextPlain, false, 1.1);
-            await HttpExporter.ExportRequestToHREQ(request, "request.hreq");
+            await HttpExporter.ExportRequestToHREQ(request, "request.hreq");*/
+
+            HttpRequest? request = await HttpImporter.ImportRequestFromHREQ("request.hreq");
+
+            if (request != null) 
+            {
+                System.Console.WriteLine(request.Url);
+                System.Console.WriteLine(request.Method);
+                System.Console.WriteLine(request.BodyString);
+            }
         }
     }
 #nullable disable

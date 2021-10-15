@@ -38,31 +38,31 @@ namespace HTTPMan
     public static class HttpContentTypeExtension
     {
         // Fields
-        private static readonly string _textPlain = "text/plain";
-        private static readonly string _applicationJson = "application/json";
-        private static readonly string _applicationXML = "application/xml";
-        private static readonly string _textXML = "text/xml";
-        private static readonly string _textHTML = "text/html";
-        private static readonly string _multipartFormData = "multipart/form-data";
-        private static readonly string _applicationXWWWFormUrlEncoded = "application/x-www-form-urlencoded";
-        private static readonly string _applicationJavaScript = "application/javascript";
-        private static readonly string _applicationPDF = "application/pdf";
-        private static readonly string _applicationZIP = "application/zip";
-        private static readonly string _audioMPEG = "audio/mpeg";
-        private static readonly string _audioXWAV = "audio/x-wav";
-        private static readonly string _imageGIF = "image/gif";
-        private static readonly string _imageJPEG = "image/jpeg";
-        private static readonly string _imagePNG = "image/png";
-        private static readonly string _imageTIFF = "image/tiff";
-        private static readonly string _imageXIcon = "image/x-icon";
-        private static readonly string _imageSVGAndXML = "image/svg+xml";
-        private static readonly string _multipartMixed = "multipart/mixed";
-        private static readonly string _textCSS = "text/css";
-        private static readonly string _textCSV = "text/csv";
-        private static readonly string _videoMPEG = "video/mpeg";
-        private static readonly string _videoMP4 = "video/mp4";
-        private static readonly string _videoXFLV = "video/x-flv";
-        private static readonly string _videoWEBM = "video/webm";
+        private const string _textPlain = "text/plain";
+        private const string _applicationJson = "application/json";
+        private const string _applicationXML = "application/xml";
+        private const string _textXML = "text/xml";
+        private const string _textHTML = "text/html";
+        private const string _multipartFormData = "multipart/form-data";
+        private const string _applicationXWWWFormUrlEncoded = "application/x-www-form-urlencoded";
+        private const string _applicationJavaScript = "application/javascript";
+        private const string _applicationPDF = "application/pdf";
+        private const string _applicationZIP = "application/zip";
+        private const string _audioMPEG = "audio/mpeg";
+        private const string _audioXWAV = "audio/x-wav";
+        private const string _imageGIF = "image/gif";
+        private const string _imageJPEG = "image/jpeg";
+        private const string _imagePNG = "image/png";
+        private const string _imageTIFF = "image/tiff";
+        private const string _imageXIcon = "image/x-icon";
+        private const string _imageSVGAndXML = "image/svg+xml";
+        private const string _multipartMixed = "multipart/mixed";
+        private const string _textCSS = "text/css";
+        private const string _textCSV = "text/csv";
+        private const string _videoMPEG = "video/mpeg";
+        private const string _videoMP4 = "video/mp4";
+        private const string _videoXFLV = "video/x-flv";
+        private const string _videoWEBM = "video/webm";
 
         // Properties
         private static string TextPlain { get { return _textPlain; } }
@@ -219,6 +219,73 @@ namespace HTTPMan
                 default:
                     return TextPlain;
             }
+        }
+
+        /// <summary>
+        /// Return the matching HttpContentType object for the given string or null if not valid.
+        /// </summary>
+        /// <param name="contentTypeString"></param>
+        /// <returns>The matching HttpContentType object for the given string or null if not valid.</returns>
+#nullable enable
+        public static HttpContentType? ToHttpContentType(this string contentTypeString)
+        {
+            switch (contentTypeString)
+            {
+                case _textPlain:
+                    return HttpContentType.TextPlain;
+                case _applicationJson:
+                    return HttpContentType.ApplicationJson;
+                case _applicationXML:
+                    return HttpContentType.ApplicationXML;
+                case _textXML:
+                    return HttpContentType.TextXML;
+                case _textHTML:
+                    return HttpContentType.TextHTML;
+                case _multipartFormData:
+                    return HttpContentType.MultipartFormData;
+                case _applicationXWWWFormUrlEncoded:
+                    return HttpContentType.ApplicationXWWWFormUrlEncoded;
+                case _applicationJavaScript:
+                    return HttpContentType.ApplicationJavaScript;
+                case _applicationPDF:
+                    return HttpContentType.ApplicationPDF;
+                case _applicationZIP:
+                    return HttpContentType.ApplicationZIP;
+                case _audioMPEG:
+                    return HttpContentType.AudioMPEG;
+                case _audioXWAV:
+                    return HttpContentType.AudioXWAV;
+                case _imageGIF:
+                    return HttpContentType.ImageGIF;
+                case _imageJPEG:
+                    return HttpContentType.ImageJPEG;
+                case _imagePNG:
+                    return HttpContentType.ImagePNG;
+                case _imageTIFF:
+                    return HttpContentType.ImageTIFF;
+                case _imageXIcon:
+                    return HttpContentType.ImageXIcon;
+                case _imageSVGAndXML:
+                    return HttpContentType.ImageSVGAndXML;
+                case _multipartMixed:
+                    return HttpContentType.MultipartMixed;
+                case _textCSS:
+                    return HttpContentType.TextCSS;
+                case _textCSV:
+                    return HttpContentType.TextCSV;
+                case _videoMPEG:
+                    return HttpContentType.VideoMPEG;
+                case _videoMP4:
+                    return HttpContentType.VideoMP4;
+                case _videoXFLV:
+                    return HttpContentType.VideoXFLV;
+                case _videoWEBM:
+                    return HttpContentType.VideoWEBM;
+
+                default:
+                    return null;
+            }
+#nullable disable
         }
     }
 }

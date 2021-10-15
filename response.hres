@@ -1,6 +1,6 @@
 {
-	"http_version": "1.1"
-	"status_code": 200
+	"http_version": 1.1,
+	"status_code": 200,
 	"headers": "{
   "host": "host.com",
   "referer": "duckduckgo.com",
@@ -9,12 +9,12 @@
   "location": "world",
   "city": "universe",
   "music": "anything"
-}"
-	"has_body": true
-	"body_type": "TextPlain"
+}",
+	"has_body": true,
+	"body_type": "TextPlain",
 	"body_string": "dsjhfopwiehf9p29ry829hfe9bnfenbdspfhvdsiophgfvipwehf9802hdsjhfopwiehf9p29ry829hfe9bnfenbdspfhvdsiophgfvipwehf9802h
 dsjhfopwiehf9p29ry829hfe9bnfenbdspfhvdsiophgfvipwehf9802h	dsjhfopwiehf9p29ry829hfe9bnfenbdspfhvdsiophgfvipwehf9802h
 
-dsjhfopwiehf9p29ry829hfe9bnfenbdspfhvdsiophgfvipwehf9802h"
-	"keep_body": false
+dsjhfopwiehf9p29ry829hfe9bnfenbdspfhvdsiophgfvipwehf9802h",
+	"keep_body": false,
 }

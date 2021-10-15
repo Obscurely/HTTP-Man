@@ -24,7 +24,7 @@ namespace HTTPMan
             requestDict.Add("url", request.Url);
             requestDict.Add("headers", request.Headers.ToJsonString());
             requestDict.Add("has_body", request.HasBody);
-            requestDict.Add("body_type", request.BodyType);
+            requestDict.Add("body_type", request.BodyType.GetString());
             requestDict.Add("body_string", request.BodyString);
             requestDict.Add("keep_body", request.KeepBody);
 

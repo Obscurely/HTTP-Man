@@ -1,6 +1,9 @@
+using System;
+using System.Net.Http;
 using System.Linq;
 using System.Text.Json;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace HTTPMan
 {
@@ -25,6 +28,15 @@ namespace HTTPMan
         }
 
         /// <summary>
+        /// Extension method that converts a string to a Dictionary<string, string>.
+        /// </summary>
+        /// <returns>Object of type Dictionary<string, string> from the string.</returns>
+        public static Dictionary<string, string> ToDict(this string str)
+        {
+            return JsonSerializer.Deserialize<Dictionary<string, string>>(str);
+        }
+
+        /// <summary>
         /// Extension method that converts a Dictionary<string, object> to it's json string representation.
         /// </summary>
         /// <returns>String containing the given dict as a json string.</returns>
@@ -37,21 +49,26 @@ namespace HTTPMan
 
                 bool boolResult;
                 int intResult;
+                double doubleResult;
                 if (bool.TryParse(dict.Values.ElementAt(i).ToString(), out boolResult))
                 {
-                    json += "\"" + dict.Keys.ElementAt(i) + "\": " + boolResult.ToString().ToLower() + "\n";
+                    json += "\"" + dict.Keys.ElementAt(i) + "\": " + boolResult.ToString().ToLower() + ",\n";
                 }
                 else if (int.TryParse(dict.Values.ElementAt(i).ToString(), out intResult))
                 {
-                    json += "\"" + dict.Keys.ElementAt(i) + "\": " + intResult.ToString() + "\n";
+                    json += "\"" + dict.Keys.ElementAt(i) + "\": " + intResult + ",\n";
+                }
+                else if (double.TryParse(dict.Values.ElementAt(i).ToString(), out doubleResult)) 
+                {
+                    json += "\"" + dict.Keys.ElementAt(i) + "\": " + doubleResult + ",\n";
                 }
                 else if (dict.Values.ElementAt(i).ToString().ToLower().Equals("null"))
                 {
-                    json += "\"" + dict.Keys.ElementAt(i) + "\": " + "null" + "\n";
+                    json += "\"" + dict.Keys.ElementAt(i) + "\": " + "null" + ",\n";
                 }
                 else
                 {
-                    json += "\"" + dict.Keys.ElementAt(i) + "\": \"" + dict.Values.ElementAt(i).ToString() + "\"\n";
+                    json += "\"" + dict.Keys.ElementAt(i) + "\": \"" + dict.Values.ElementAt(i).ToString() + "\",\n";
                 }
             }
             json += "}";
