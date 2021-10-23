@@ -79,7 +79,6 @@ namespace HTTPMan
 }
 
 // TODO Look for features at Fiddler Everywhere, Fiddler Classic, Wireshark, Http ToolKit, Postman and other tools like that.
-// TODO Look for other client. functions.
 // TODO Add python scripting.
 // TODO add option to export and load requests and responses from files.
 // TODO add a rule only requests (block all the requests besides the ones allowed in the rule).
@@ -87,3 +86,6 @@ namespace HTTPMan
 // TODO make mocker able to stop even doing a tunnel connect to a host.
 // TODO find a way to bypass HPKP to fix ssl pinning errors
 // TODO integrate mocker with tunnel connect request for like: block connection to specific host.
+// TODO implement tool like netdiscover in arch linux
+// TODO flooding utility and remote flooding maybe (by using a packet sniffer and changing the source ip of the request
+//            so the response of the request is sent to a different ip)
