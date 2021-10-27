@@ -30,7 +30,7 @@ namespace HTTPMan
 
             Console.ReadKey();
 
-            server.Stop();*/   
+            server.Stop();*/
 
             /*
             Dictionary<string, string> headers = new()
@@ -65,13 +65,14 @@ namespace HTTPMan
             HttpRequest request = new HttpRequest(HttpMethod.Get, "https://www.google.com", headersRequest, bodyRequest, HttpContentType.TextPlain, false, 1.1);
             await HttpExporter.ExportRequestToHREQ(request, "request.hreq");*/
 
-            HttpRequest? request = await HttpImporter.ImportRequestFromHREQ("request.hreq");
 
-            if (request != null) 
+            HttpResponse? response = await HttpImporter.ImportResponseFromHRES("response.hres");
+
+            if (response != null)
             {
-                System.Console.WriteLine(request.Url);
-                System.Console.WriteLine(request.Method);
-                System.Console.WriteLine(request.BodyString);
+                System.Console.WriteLine(response.HttpMethodVersion);
+                System.Console.WriteLine(response.StatusCode);
+                System.Console.WriteLine(response.BodyString);
             }
         }
     }

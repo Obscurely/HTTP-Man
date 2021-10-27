@@ -29,7 +29,7 @@ namespace HTTPMan
             requestDict.Add("keep_body", request.KeepBody);
 
             await File.WriteAllTextAsync(fileLocation, requestDict.ToJsonString());
-            
+
             return true;
         }
 
@@ -47,13 +47,13 @@ namespace HTTPMan
             responseDict.Add("status_code", response.StatusCode);
             responseDict.Add("headers", response.Headers.ToJsonString());
             responseDict.Add("has_body", response.HasBody);
-            responseDict.Add("body_type", response.BodyType);
+            responseDict.Add("body_type", response.BodyType.GetString());
             responseDict.Add("body_string", response.BodyString);
             responseDict.Add("keep_body", response.KeepBody);
-            
+
             await File.WriteAllTextAsync(fileLocation, responseDict.ToJsonString());
 
             return true;
-        } 
+        }
     }
 }
