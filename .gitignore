@@ -211,6 +211,9 @@ project.lock.json
 # Visual Studio Code
 .vscode/
 
+# Visual Studio Code
+Program.cs
+
 # Output folder used by Webpack or other FE stuff
 **/node_modules/*
 **/wwwroot/*
@@ -219,9 +222,6 @@ project.lock.json
 *.feature.cs
 *.feature.xlsx.*
 *.Specs_*.html
-
-# Program.cs file, not need for the repo.
-Program.cs
 
 #####
 # End of core ignore list, below put you custom 'per project' settings (patterns or path)
