@@ -220,6 +220,9 @@ project.lock.json
 *.feature.xlsx.*
 *.Specs_*.html
 
+# Program.cs file, not need for the repo.
+Program.cs
+
 #####
 # End of core ignore list, below put you custom 'per project' settings (patterns or path)
 #####
