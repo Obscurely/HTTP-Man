@@ -24,7 +24,7 @@ namespace HTTPMan
         // For Responses
         private readonly int? _responseStatusCode = null;
         private readonly Dictionary<string, string>? _responseHeaders;
-        private readonly string? _responseBodyString = null;
+        private readonly string? _responseBodyString;
         private readonly HttpContentType? _responseBodyType;
         private readonly bool? _responseKeepBody = null;
         private readonly Version? _responseHttpMethodVersion;

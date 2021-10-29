@@ -17,7 +17,7 @@ namespace HTTPMan
 #nullable enable
         public static async Task<HttpRequest?> ImportRequestFromHREQ(string fileLocation)
         {
-            string hreqFile = await File.ReadAllTextAsync(fileLocation);
+            string hreqFile = await File.ReadAllTextAsync(fileLocation).ConfigureAwait(false);
             Dictionary<string, object>? requestDict = HttpImporter.RequestToDict(hreqFile);
             if (requestDict == null)
                 return null;
@@ -37,7 +37,7 @@ namespace HTTPMan
 #nullable enable
         public static async Task<HttpResponse?> ImportResponseFromHRES(string fileLocation)
         {
-            string hresFile = await File.ReadAllTextAsync(fileLocation);
+            string hresFile = await File.ReadAllTextAsync(fileLocation).ConfigureAwait(false);
             Dictionary<string, object>? responseDict = HttpImporter.ResponseToDict(hresFile);
             if (responseDict == null)
                 return null;

@@ -28,7 +28,7 @@ namespace HTTPMan
             requestDict.Add("body_string", request.BodyString);
             requestDict.Add("keep_body", request.KeepBody);
 
-            await File.WriteAllTextAsync(fileLocation, requestDict.ToJsonString());
+            await File.WriteAllTextAsync(fileLocation, requestDict.ToJsonString()).ConfigureAwait(false);
 
             return true;
         }
@@ -51,7 +51,7 @@ namespace HTTPMan
             responseDict.Add("body_string", response.BodyString);
             responseDict.Add("keep_body", response.KeepBody);
 
-            await File.WriteAllTextAsync(fileLocation, responseDict.ToJsonString());
+            await File.WriteAllTextAsync(fileLocation, responseDict.ToJsonString()).ConfigureAwait(false);
 
             return true;
         }

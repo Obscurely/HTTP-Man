@@ -32,13 +32,13 @@ namespace HTTPMan
                 e = MockRequest(rule, e, isRequest);
             else if (rule.Matcher == MockMatcher.IncludingHeaders && Mocker.IsIncludingHeaders(rule, e))
                 e = MockRequest(rule, e, isRequest);
-            else if (rule.Matcher == MockMatcher.ExactBody && await Mocker.IsExactBody(rule, e))
+            else if (rule.Matcher == MockMatcher.ExactBody && await Mocker.IsExactBody(rule, e).ConfigureAwait(false))
                 e = MockRequest(rule, e, isRequest);
-            else if (rule.Matcher == MockMatcher.BodyIncluding && await Mocker.IsBodyIncluding(rule, e))
+            else if (rule.Matcher == MockMatcher.BodyIncluding && await Mocker.IsBodyIncluding(rule, e).ConfigureAwait(false))
                 e = MockRequest(rule, e, isRequest);
-            else if (rule.Matcher == MockMatcher.ExactJsonBody && await Mocker.IsExactJsonBody(rule, e))
+            else if (rule.Matcher == MockMatcher.ExactJsonBody && await Mocker.IsExactJsonBody(rule, e).ConfigureAwait(false))
                 e = MockRequest(rule, e, isRequest);
-            else if (rule.Matcher == MockMatcher.JsonBodyIncluding && await Mocker.IsJsonBodyIncluding(rule, e))
+            else if (rule.Matcher == MockMatcher.JsonBodyIncluding && await Mocker.IsJsonBodyIncluding(rule, e).ConfigureAwait(false))
                 e = MockRequest(rule, e, isRequest);
 
             return e;

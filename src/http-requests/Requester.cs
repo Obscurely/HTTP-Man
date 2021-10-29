@@ -88,7 +88,7 @@ namespace HTTPMan
             if (useProxies)
             {
                 if (Proxies.Count() == 0)
-                    Proxies = await GetProxies();
+                    Proxies = await GetProxies().ConfigureAwait(false);
                 string proxy = PickProxy(Proxies);
                 HttpClientHandler clientHandler = new()
                 {
@@ -303,7 +303,7 @@ namespace HTTPMan
             if (useProxies)
             {
                 if (Proxies.Count() == 0)
-                    Proxies = await GetProxies();
+                    Proxies = await GetProxies().ConfigureAwait(false);
                 string proxy = PickProxy(Proxies);
                 HttpClientHandler clientHandler = new()
                 {
@@ -486,7 +486,7 @@ namespace HTTPMan
             if (useProxies)
             {
                 if (Proxies.Count() == 0)
-                    Proxies = await GetProxies();
+                    Proxies = await GetProxies().ConfigureAwait(false);
                 string proxy = PickProxy(Proxies);
                 HttpClientHandler clientHandler = new()
                 {
@@ -662,7 +662,7 @@ namespace HTTPMan
             if (useProxies)
             {
                 if (Proxies.Count() == 0)
-                    Proxies = await GetProxies();
+                    Proxies = await GetProxies().ConfigureAwait(false);
                 string proxy = PickProxy(Proxies);
                 HttpClientHandler clientHandler = new()
                 {
@@ -843,7 +843,7 @@ namespace HTTPMan
             if (useProxies)
             {
                 if (Proxies.Count() == 0)
-                    Proxies = await GetProxies();
+                    Proxies = await GetProxies().ConfigureAwait(false);
                 string proxy = PickProxy(Proxies);
                 HttpClientHandler clientHandler = new()
                 {
@@ -1054,7 +1054,7 @@ namespace HTTPMan
             if (useProxies)
             {
                 if (Proxies.Count() == 0)
-                    Proxies = await GetProxies();
+                    Proxies = await GetProxies().ConfigureAwait(false);
                 string proxy = PickProxy(Proxies);
                 HttpClientHandler clientHandler = new()
                 {
@@ -1220,7 +1220,7 @@ namespace HTTPMan
             if (useProxies)
             {
                 if (Proxies.Count() == 0)
-                    Proxies = await GetProxies();
+                    Proxies = await GetProxies().ConfigureAwait(false);
                 string proxy = PickProxy(Proxies);
                 HttpClientHandler clientHandler = new()
                 {
@@ -1383,7 +1383,7 @@ namespace HTTPMan
             if (useProxies)
             {
                 if (Proxies.Count() == 0)
-                    Proxies = await GetProxies();
+                    Proxies = await GetProxies().ConfigureAwait(false);
                 string proxy = PickProxy(Proxies);
                 HttpClientHandler clientHandler = new()
                 {
