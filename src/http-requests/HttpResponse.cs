@@ -14,7 +14,7 @@ namespace HTTPMan
         private readonly Dictionary<string, string> _headers;
         private readonly string _bodyString;
         private readonly HttpContentType _bodyType;
-        private readonly bool _hasBody = false;
+        private readonly bool _hasBody;
         private readonly bool _keepBody;
         private readonly Version _httpMethodVersion;
 

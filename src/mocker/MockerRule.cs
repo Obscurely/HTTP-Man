@@ -61,10 +61,10 @@ namespace HTTPMan
         private readonly Dictionary<string, string> _matcherOptions;
         private readonly MockAction _mockingAction;
         private readonly Dictionary<string, object> _mockingActionOptions;
-        private readonly bool _isForRequest = false;
-        private readonly bool _isForResponse = false;
-        private readonly bool _isForTunnelConnect = false;
-        private readonly bool _isValid = false;
+        private readonly bool _isForRequest;
+        private readonly bool _isForResponse;
+        private readonly bool _isForTunnelConnect;
+        private readonly bool _isValid;
 
         public MockHttpMethod Method { get { return _method; } }
         public MockMatcher Matcher { get { return _matcher; } }

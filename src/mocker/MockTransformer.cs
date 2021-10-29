@@ -14,20 +14,20 @@ namespace HTTPMan
         // Fields
         // For Requests
         private readonly HttpMethod? _requestMethod = null;
-        private readonly Dictionary<string, string>? _requestHeaders = null;
-        private readonly string? _requestBodyString = null;
+        private readonly Dictionary<string, string>? _requestHeaders;
+        private readonly string? _requestBodyString;
         private readonly HttpContentType? _requestBodyType = null;
         private readonly bool? _requestKeepBody = null;
-        private readonly string? _requestHost = null;
-        private readonly string? _requestUrl = null;
-        private readonly Version? _requestHttpMethodVersion = null;
+        private readonly string? _requestHost;
+        private readonly string? _requestUrl;
+        private readonly Version? _requestHttpMethodVersion;
         // For Responses
         private readonly int? _responseStatusCode = null;
-        private readonly Dictionary<string, string>? _responseHeaders = null;
+        private readonly Dictionary<string, string>? _responseHeaders;
         private readonly string? _responseBodyString = null;
-        private readonly HttpContentType? _responseBodyType = null;
+        private readonly HttpContentType? _responseBodyType;
         private readonly bool? _responseKeepBody = null;
-        private readonly Version? _responseHttpMethodVersion = null;
+        private readonly Version? _responseHttpMethodVersion;
 
         // Properties
         // For Requests

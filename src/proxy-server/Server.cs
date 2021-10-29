@@ -24,8 +24,8 @@ namespace HTTPMan
     {
         // Fields
         private readonly ProxyServer _proxyServer = new();
-        private bool _isServerStarted = false;
-        private bool _isSystemProxySet = false;
+        private bool _isServerStarted;
+        private bool _isSystemProxySet;
         private readonly ExplicitProxyEndPoint _explicitEndPoint;
         private readonly TransparentProxyEndPoint _transparentEndPoint;
         private List<TunnelConnectSessionEventArgs> _tunnelConnectRequests = new();
