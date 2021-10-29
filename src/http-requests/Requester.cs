@@ -1032,7 +1032,6 @@ namespace HTTPMan
                         response.Headers.Add("error", e.Message);
                     }
                 }
-
             }
 
             return response;
