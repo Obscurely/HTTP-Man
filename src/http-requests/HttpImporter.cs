@@ -66,7 +66,7 @@ namespace HTTPMan
             // Validates and adds http_version to the dict.
             string patternHttpVersion = "(?<=\"http_version\": )[0-9]*\\.[0-9]+(?=,\n)";
             double httpVersion;
-            double[] availableHttpVersion = new double[] { 1.0, 1.1, 2.0 };
+            double[] availableHttpVersion = new [] { 1.0, 1.1, 2.0 };
             if (!double.TryParse(Regex.Match(requestJson, patternHttpVersion).ToString(), out httpVersion))
             {
                 return null;
