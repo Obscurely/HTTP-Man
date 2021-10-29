@@ -93,41 +93,17 @@ namespace HTTPMan
             _mockingAction = mockingAction;
             _mockingActionOptions = mockingActionOptions;
 
-            if (mockingAction == MockAction.PassRequestToDestination)
+            if (mockingAction == MockAction.PassRequestToDestination || mockingAction == MockAction.PauseRequestToManuallyEdit || mockingAction == MockAction.PauseResponseToManuallyEdit ||
+                    mockingAction == MockAction.ForwardRequestToDifferentHost)
             {
                 _isForRequest = true;
             }
-            else if (mockingAction == MockAction.PauseRequestToManuallyEdit)
-            {
-                _isForRequest = true;
-            }
-            else if (mockingAction == MockAction.PauseResponseToManuallyEdit)
+            else if (mockingAction == MockAction.ReturnFixedResponse || mockingAction == MockAction.TimeoutWithNoResponse)
             {
                 _isForResponse = true;
             }
-            else if (mockingAction == MockAction.PauseRequestAndResponseToManuallyEdit)
-            {
-                _isForRequest = true;
-                _isForResponse = true;
-            }
-            else if (mockingAction == MockAction.ReturnFixedResponse)
-            {
-                _isForResponse = true;
-            }
-            else if (mockingAction == MockAction.ForwardRequestToDifferentHost)
-            {
-                _isForRequest = true;
-            }
-            else if (mockingAction == MockAction.AutoTransformRequestOrResponse)
-            {
-                _isForRequest = true;
-                _isForResponse = true;
-            }
-            else if (mockingAction == MockAction.TimeoutWithNoResponse)
-            {
-                _isForResponse = true;
-            }
-            else if (mockingAction == MockAction.CloseConnectionImmediately)
+            else if (mockingAction == MockAction.PauseRequestAndResponseToManuallyEdit || mockingAction == MockAction.AutoTransformRequestOrResponse ||
+                        mockingAction == MockAction.CloseConnectionImmediately)
             {
                 _isForRequest = true;
                 _isForResponse = true;

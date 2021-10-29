@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace HTTPMan
 {
-    public class HttpImporter
+    public static class HttpImporter
     {
         /// <summary>
         /// Coverts a hreq file containing a request to a HttpRequest object.
@@ -80,7 +80,7 @@ namespace HTTPMan
             // Validates and adds http_method to the dict.
             string patternHttpMethod = "(?<=\"http_method\": \")[a-zA-Z]+(?=\",\n)";
             string httpMethodString = Regex.Match(requestJson, patternHttpMethod).ToString();
-            string[] availableHttpMethods = new string[] { "GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "TRACE", "OPTIONS" };
+            string[] availableHttpMethods = new [] { "GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "TRACE", "OPTIONS" };
             if (Array.IndexOf(availableHttpMethods, httpMethodString.ToUpper()) == -1)
             {
                 return null;
@@ -155,7 +155,7 @@ namespace HTTPMan
             // Validates and adds http_version to the dict.
             string patternHttpVersion = "(?<=\"http_version\": )[0-9]*\\.[0-9]+(?=,\n)";
             double httpVersion;
-            double[] availableHttpVersion = new double[] { 1.0, 1.1, 2.0 };
+            double[] availableHttpVersion = new [] { 1.0, 1.1, 2.0 };
             if (!double.TryParse(Regex.Match(responseJson, patternHttpVersion).ToString(), out httpVersion))
             {
                 return null;

@@ -7,7 +7,7 @@ namespace HTTPMan
     /// <summary>
     /// Contains all actions related to exporting http stuff to a file.
     /// </summary>
-    public class HttpExporter
+    public static class HttpExporter
     {
         /// <summary>
         /// Function that exports an http request to a .hreq file which can be imported back to the program or used for anything else.

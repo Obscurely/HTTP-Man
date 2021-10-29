@@ -32,7 +32,7 @@ namespace HTTPMan
         private List<SessionEventArgs> _httpRequests = new();
         private List<SessionEventArgs> _httpResponses = new();
         private List<MockerRule> _httpRules = new();
-        private Mocker _httpMocker = new();
+        private readonly Mocker _httpMocker = new();
 
         // Properties
         private ProxyServer ProxyServer { get { return _proxyServer; } }

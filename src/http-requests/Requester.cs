@@ -266,9 +266,13 @@ namespace HTTPMan
                     {
                         response = new();
                         if (timeout != null)
+                        {
                             response.Headers.Add("error", "The request could not be completed in the given timeout of " + timeout.Value.TotalSeconds + " seconds");
+                        }
                         else
+                        {   
                             response.Headers.Add("error", "The request could not be completed in the given timeout");
+                        }
                     }
                     catch (Exception e)
                     {
@@ -286,9 +290,13 @@ namespace HTTPMan
                     {
                         response = new();
                         if (timeout != null)
+                        {
                             response.Headers.Add("error", "The request could not be completed in the given timeout of " + timeout.Value.TotalSeconds + " seconds");
+                        }
                         else
+                        {   
                             response.Headers.Add("error", "The request could not be completed in the given timeout");
+                        }
                     }
                     catch (Exception e)
                     {
@@ -507,9 +515,13 @@ namespace HTTPMan
                 {
                     response = new();
                     if (timeout != null)
+                    {
                         response.Headers.Add("error", "The request could not be completed in the given timeout of " + timeout.Value.TotalSeconds + " seconds");
+                    }
                     else
+                    {   
                         response.Headers.Add("error", "The request could not be completed in the given timeout");
+                    }
                 }
                 catch (Exception e)
                 {
@@ -701,17 +713,25 @@ namespace HTTPMan
                 try
                 {
                     if (requestBody != null)
+                    {
                         response = await Client.PutAsync(url, requestBody);
+                    }
                     else
+                    {
                         response = await Client.PutAsync(url, null!);
+                    }
                 }
                 catch (TaskCanceledException)
                 {
                     response = new();
                     if (timeout != null)
+                    {
                         response.Headers.Add("error", "The request could not be completed in the given timeout of " + timeout.Value.TotalSeconds + " seconds");
+                    }
                     else
+                    {   
                         response.Headers.Add("error", "The request could not be completed in the given timeout");
+                    }
                 }
                 catch (Exception e)
                 {
@@ -908,17 +928,25 @@ namespace HTTPMan
                 try
                 {
                     if (requestBody != null)
+                    {
                         response = await Client.PatchAsync(url, requestBody);
+                    }
                     else
+                    {
                         response = await Client.PatchAsync(url, null!);
+                    }
                 }
                 catch (TaskCanceledException)
                 {
                     response = new();
                     if (timeout != null)
+                    {
                         response.Headers.Add("error", "The request could not be completed in the given timeout of " + timeout.Value.TotalSeconds + " seconds");
+                    }
                     else
+                    {   
                         response.Headers.Add("error", "The request could not be completed in the given timeout");
+                    }
                 }
                 catch (Exception e)
                 {
@@ -1135,9 +1163,13 @@ namespace HTTPMan
                     {
                         response = new();
                         if (timeout != null)
+                        {
                             response.Headers.Add("error", "The request could not be completed in the given timeout of " + timeout.Value.TotalSeconds + " seconds");
+                        }
                         else
+                        {   
                             response.Headers.Add("error", "The request could not be completed in the given timeout");
+                        }
                     }
                     catch (Exception e)
                     {
@@ -1155,9 +1187,13 @@ namespace HTTPMan
                     {
                         response = new();
                         if (timeout != null)
+                        {
                             response.Headers.Add("error", "The request could not be completed in the given timeout of " + timeout.Value.TotalSeconds + " seconds");
+                        }
                         else
+                        {   
                             response.Headers.Add("error", "The request could not be completed in the given timeout");
+                        }
                     }
                     catch (Exception e)
                     {
@@ -1348,9 +1384,13 @@ namespace HTTPMan
                 {
                     response = new();
                     if (timeout != null)
+                    {
                         response.Headers.Add("error", "The request could not be completed in the given timeout of " + timeout.Value.TotalSeconds + " seconds");
+                    }
                     else
+                    {   
                         response.Headers.Add("error", "The request could not be completed in the given timeout");
+                    }
                 }
                 catch (Exception e)
                 {
@@ -1533,9 +1573,13 @@ namespace HTTPMan
                 {
                     response = new();
                     if (timeout != null)
+                    {
                         response.Headers.Add("error", "The request could not be completed in the given timeout of " + timeout.Value.TotalSeconds + " seconds");
+                    }
                     else
+                    {   
                         response.Headers.Add("error", "The request could not be completed in the given timeout");
+                    }
                 }
                 catch (Exception e)
                 {
@@ -1725,9 +1769,13 @@ namespace HTTPMan
                 {
                     response = new();
                     if (timeout != null)
+                    {
                         response.Headers.Add("error", "The request could not be completed in the given timeout of " + timeout.Value.TotalSeconds + " seconds");
+                    }
                     else
+                    {   
                         response.Headers.Add("error", "The request could not be completed in the given timeout");
+                    }
                 }
                 catch (Exception e)
                 {
