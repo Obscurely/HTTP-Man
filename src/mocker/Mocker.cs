@@ -22,69 +22,24 @@ namespace HTTPMan
         /// <param name="e">Event argument given by the proxy.</param>
         public async Task<SessionEventArgs> Mock(MockerRule rule, SessionEventArgs e, bool isRequest)
         {
-            if (rule.Matcher == MockMatcher.ForHost)
-            {
-                if (Mocker.IsSameHost(rule, e))
-                {
-                    e = MockRequest(rule, e, isRequest);
-                }
-            }
-            else if (rule.Matcher == MockMatcher.ForUrl)
-            {
-                if (Mocker.IsSameUrl(rule, e))
-                {
-                    e = MockRequest(rule, e, isRequest);
-                }
-            }
-            else if (rule.Matcher == MockMatcher.ForUrlsMatchingRegex)
-            {
-                if (Mocker.IsUrlMatchingRegex(rule, e))
-                {
-                    e = MockRequest(rule, e, isRequest);
-                }
-            }
-            else if (rule.Matcher == MockMatcher.ExactQueryString)
-            {
-                if (Mocker.IsExactQueryString(rule, e))
-                {
-                    e = MockRequest(rule, e, isRequest);
-                }
-            }
-            else if (rule.Matcher == MockMatcher.IncludingHeaders)
-            {
-                if (Mocker.IsIncludingHeaders(rule, e))
-                {
-                    e = MockRequest(rule, e, isRequest);
-                }
-            }
-            else if (rule.Matcher == MockMatcher.ExactBody)
-            {
-                if (await Mocker.IsExactBody(rule, e))
-                {
-                    e = MockRequest(rule, e, isRequest);
-                }
-            }
-            else if (rule.Matcher == MockMatcher.BodyIncluding)
-            {
-                if (await Mocker.IsBodyIncluding(rule, e))
-                {
-                    e = MockRequest(rule, e, isRequest);
-                }
-            }
-            else if (rule.Matcher == MockMatcher.ExactJsonBody)
-            {
-                if (await Mocker.IsExactJsonBody(rule, e))
-                {
-                    e = MockRequest(rule, e, isRequest);
-                }
-            }
-            else if (rule.Matcher == MockMatcher.JsonBodyIncluding)
-            {
-                if (await Mocker.IsJsonBodyIncluding(rule, e))
-                {
-                    e = MockRequest(rule, e, isRequest);
-                }
-            }
+            if (rule.Matcher == MockMatcher.ForHost && Mocker.IsSameHost(rule, e))
+                e = MockRequest(rule, e, isRequest);
+            else if (rule.Matcher == MockMatcher.ForUrl && Mocker.IsSameUrl(rule, e))
+                e = MockRequest(rule, e, isRequest);
+            else if (rule.Matcher == MockMatcher.ForUrlsMatchingRegex && Mocker.IsUrlMatchingRegex(rule, e))
+                e = MockRequest(rule, e, isRequest);
+            else if (rule.Matcher == MockMatcher.ExactQueryString && Mocker.IsExactQueryString(rule, e))
+                e = MockRequest(rule, e, isRequest);
+            else if (rule.Matcher == MockMatcher.IncludingHeaders && Mocker.IsIncludingHeaders(rule, e))
+                e = MockRequest(rule, e, isRequest);
+            else if (rule.Matcher == MockMatcher.ExactBody && await Mocker.IsExactBody(rule, e))
+                e = MockRequest(rule, e, isRequest);
+            else if (rule.Matcher == MockMatcher.BodyIncluding && await Mocker.IsBodyIncluding(rule, e))
+                e = MockRequest(rule, e, isRequest);
+            else if (rule.Matcher == MockMatcher.ExactJsonBody && await Mocker.IsExactJsonBody(rule, e))
+                e = MockRequest(rule, e, isRequest);
+            else if (rule.Matcher == MockMatcher.JsonBodyIncluding && await Mocker.IsJsonBodyIncluding(rule, e))
+                e = MockRequest(rule, e, isRequest);
 
             return e;
         }
@@ -130,7 +85,6 @@ namespace HTTPMan
 
             return e;
         }
-
 
         // *********************************
         // * Checkers based on the matcher *
@@ -287,7 +241,6 @@ namespace HTTPMan
                 return false;
             }
 
-
             if (body.ContentEquals(requestBody))
                 return true;
             else
@@ -329,7 +282,6 @@ namespace HTTPMan
 
             return true;
         }
-
 
         // *****************************
         // * Request/Response Changers *
@@ -381,6 +333,122 @@ namespace HTTPMan
         }
 
         /// <summary>
+        /// Auto transforms the given request using the transformer object given with the rule.
+        /// </summary>
+        /// <param name="rule">The mocker rule.</param>
+        /// <param name="e">Event argument given by the proxy.</param>
+        /// <param name="transformer">The transformer object used for transforming the request</param>
+        /// <returns>The modified event argument.</returns>
+        private static SessionEventArgs AutoTransformRequest(MockerRule rule, SessionEventArgs e, MockTransformer transformer)
+        {
+            // Setting http method if any.
+            if (transformer.RequestMethod != null)
+                e.HttpClient.Request.Method = (string)(transformer.RequestMethod).ToString();
+
+            // Setting headers if any.
+            if (transformer.RequestHeaders != null)
+            {
+                e.HttpClient.Request.Headers.Clear();
+                if (transformer.RequestHeaders.Count != 0)
+                    e.HttpClient.Request.Headers.AddHeaders((Dictionary<string, string>)(transformer.RequestHeaders));
+            }
+
+            // Setting body type if any.
+            if (transformer.RequestBodyType != null)
+                e.HttpClient.Request.ContentType = transformer.RequestBodyType.GetString();
+
+            // Setting request body if any.
+            if (transformer.RequestBodyString != null)
+                e.SetRequestBodyString((string)(transformer.RequestBodyString));
+
+            // Setting request keep body if any.
+            if (transformer.RequestKeepBody != null)
+                e.HttpClient.Request.KeepBody = (bool)transformer.RequestKeepBody;
+
+            // Changing host if any given.
+            if (transformer.RequestHost != null)
+            {
+                string originalHost = e.HttpClient.Request.RequestUri.Host;
+                string newHost = transformer.RequestHost;
+
+                e.HttpClient.Request.Url = e.HttpClient.Request.Url.ReplaceFirst(originalHost, newHost);
+                e.HttpClient.Request.RequestUriString = e.HttpClient.Request.RequestUriString.ReplaceFirst(originalHost, newHost);
+                e.HttpClient.Request.Host = newHost;
+                e.HttpClient.Request.Headers.RemoveHeader("host");
+                e.HttpClient.Request.Headers.AddHeader("host", newHost);
+            }
+
+            // Changing url if any given.
+            if (transformer.RequestUrl != null)
+            {
+                string oldRequestUrl = e.HttpClient.Request.Url;
+                string oldRequestHost = e.HttpClient.Request.Host;
+
+                try
+                {
+                    Uri newUri = new((string)(transformer.RequestUrl));
+
+                    e.HttpClient.Request.RequestUri = newUri;
+                    e.HttpClient.Request.Url = (string)(transformer.RequestUrl);
+                    e.HttpClient.Request.Host = newUri.Host;
+                    e.HttpClient.Request.Headers.RemoveHeader("host");
+                    e.HttpClient.Request.Headers.AddHeader("host", newUri.Host);
+                }
+                catch (Exception)
+                {
+                    e.HttpClient.Request.RequestUriString = oldRequestUrl;
+                    e.HttpClient.Request.Host = oldRequestHost;
+                }
+            }
+
+            // Setting http version if any.
+            if (transformer.RequestHttpMethodVersion != null)
+                e.HttpClient.Request.HttpVersion = transformer.RequestHttpMethodVersion;
+
+            return e;
+        }
+        
+        /// <summary>
+        /// Auto transforms the given response using the transformer object given with the rule.
+        /// </summary>
+        /// <param name="rule">The mocker rule.</param>
+        /// <param name="e">Event argument given by the proxy.</param>
+        /// <param name="transformer">The transformer object used for transforming the response</param>
+        /// <returns>The modified event argument.</returns>
+        private static SessionEventArgs AutoTransformResponse(MockerRule rule, SessionEventArgs e, MockTransformer transformer)
+        {
+            // Setting response status code if any given.
+            if (transformer.ResponseStatusCode != null)
+                e.HttpClient.Response.StatusCode = (int)transformer.ResponseStatusCode;
+
+            // Setting headers if any.
+            if (transformer.ResponseHeaders != null)
+            {
+                e.HttpClient.Response.Headers.Clear();
+                if (transformer.ResponseHeaders.Count != 0)
+                    e.HttpClient.Response.Headers.AddHeaders(transformer.ResponseHeaders);
+            }
+
+            // Setting body type if any.
+            if (transformer.ResponseBodyType != null)
+                e.HttpClient.Response.ContentType = transformer.ResponseBodyType.GetString();
+
+            // Setting response body if any.
+            if (transformer.ResponseBodyString != null)
+                e.SetResponseBodyString(transformer.ResponseBodyString);
+
+            // Setting response keep body if any.
+            if (transformer.ResponseKeepBody != null)
+                e.HttpClient.Response.KeepBody = (bool)transformer.ResponseKeepBody;
+
+            // Setting http version if any.
+            if (transformer.ResponseHttpMethodVersion != null)
+                e.HttpClient.Response.HttpVersion = (Version)(transformer.ResponseHttpMethodVersion);
+
+            return e;
+        }
+
+        /// <summary>
         /// Auto transforms the given request or response using the transformer object given with the rule.
         /// </summary>
         /// <param name="rule">The mocker rule.</param>
@@ -392,104 +460,9 @@ namespace HTTPMan
             MockTransformer transformer = (MockTransformer)(rule.MockingActionOptions[rule.MockingAction.GetOptionsKey()]);
 
             if (isRequest)
-            {
-                // Setting http method if any.
-                if (transformer.RequestMethod != null)
-                    e.HttpClient.Request.Method = (string)(transformer.RequestMethod).ToString();
-
-                // Setting headers if any.
-                if (transformer.RequestHeaders != null)
-                {
-                    e.HttpClient.Request.Headers.Clear();
-                    if (transformer.RequestHeaders.Count != 0)
-                        e.HttpClient.Request.Headers.AddHeaders((Dictionary<string, string>)(transformer.RequestHeaders));
-                }
-
-                // Setting body type if any.
-                if (transformer.RequestBodyType != null)
-                    e.HttpClient.Request.ContentType = transformer.RequestBodyType.GetString();
-
-                // Setting request body if any.
-                if (transformer.RequestBodyString != null)
-                    e.SetRequestBodyString((string)(transformer.RequestBodyString));
-
-                // Setting request keep body if any.
-                if (transformer.RequestKeepBody != null)
-                    e.HttpClient.Request.KeepBody = (bool)transformer.RequestKeepBody;
-
-                // Changing host if any given.
-                if (transformer.RequestHost != null)
-                {
-                    string originalHost = e.HttpClient.Request.RequestUri.Host;
-                    string newHost = transformer.RequestHost;
-
-                    e.HttpClient.Request.Url = e.HttpClient.Request.Url.ReplaceFirst(originalHost, newHost);
-                    e.HttpClient.Request.RequestUriString = e.HttpClient.Request.RequestUriString.ReplaceFirst(originalHost, newHost);
-                    e.HttpClient.Request.Host = newHost;
-                    e.HttpClient.Request.Headers.RemoveHeader("host");
-                    e.HttpClient.Request.Headers.AddHeader("host", newHost);
-                }
-
-                // Changing url if any given.
-                if (transformer.RequestUrl != null)
-                {
-                    string oldRequestUrl = e.HttpClient.Request.Url;
-                    string oldRequestHost = e.HttpClient.Request.Host;
-
-                    try
-                    {
-                        Uri newUri = new((string)(transformer.RequestUrl));
-
-                        e.HttpClient.Request.RequestUri = newUri;
-                        e.HttpClient.Request.Url = (string)(transformer.RequestUrl);
-                        e.HttpClient.Request.Host = newUri.Host;
-                        e.HttpClient.Request.Headers.RemoveHeader("host");
-                        e.HttpClient.Request.Headers.AddHeader("host", newUri.Host);
-                    }
-                    catch (Exception)
-                    {
-                        e.HttpClient.Request.RequestUriString = oldRequestUrl;
-                        e.HttpClient.Request.Host = oldRequestHost;
-                    }
-                }
-
-                // Setting http version if any.
-                if (transformer.RequestHttpMethodVersion != null)
-                    e.HttpClient.Request.HttpVersion = transformer.RequestHttpMethodVersion;
-
-            }
-            else if (!isRequest)
-            {
-                // Setting response status code if any given.
-                if (transformer.ResponseStatusCode != null)
-                    e.HttpClient.Response.StatusCode = (int)transformer.ResponseStatusCode;
-
-                // Setting headers if any.
-                if (transformer.ResponseHeaders != null)
-                {
-                    e.HttpClient.Response.Headers.Clear();
-                    if (transformer.ResponseHeaders.Count != 0)
-                        e.HttpClient.Response.Headers.AddHeaders(transformer.ResponseHeaders);
-                }
-
-                // Setting body type if any.
-                if (transformer.ResponseBodyType != null)
-                    e.HttpClient.Response.ContentType = transformer.ResponseBodyType.GetString();
-
-                // Setting response body if any.
-                if (transformer.ResponseBodyString != null)
-                    e.SetResponseBodyString(transformer.ResponseBodyString);
-
-                // Setting response keep body if any.
-                if (transformer.ResponseKeepBody != null)
-                    e.HttpClient.Response.KeepBody = (bool)transformer.ResponseKeepBody;
-
-                // Setting http version if any.
-                if (transformer.ResponseHttpMethodVersion != null)
-                    e.HttpClient.Response.HttpVersion = (Version)(transformer.ResponseHttpMethodVersion);
-            }
-
-            return e;
+                return AutoTransformRequest(rule, e, transformer);
+            else
+                return AutoTransformResponse(rule, e, transformer);
         }
 
         /// <summary>

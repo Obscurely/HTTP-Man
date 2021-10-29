@@ -96,7 +96,6 @@ namespace HTTPMan
             return true;
         }
 
-
         // *********************
         // * String Extensions *
         // *********************
@@ -117,7 +116,6 @@ namespace HTTPMan
 
             return text.Substring(0, pos) + replace + text.Substring(pos + search.Length);
         }
-
 
         // ******************************
         // * Mocking Objects Extensions *

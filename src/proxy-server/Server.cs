@@ -233,7 +233,7 @@ namespace HTTPMan
             {
                 for (int i = 0; i < HttpRules.Count; i++)
                 {
-                    if (HttpRules[i].Method.GetString().ToUpper() != e.HttpClient.Request.Method.ToUpper() && HttpRules[i].Method != MockHttpMethod.Any)
+                    if ((HttpRules[i].Method.GetString().ToUpper() != e.HttpClient.Request.Method.ToUpper() && HttpRules[i].Method != MockHttpMethod.Any) || !HttpRules[i].IsValid)
                         continue;
                     if (!HttpRules[i].IsForRequest)
                         continue;
@@ -258,7 +258,7 @@ namespace HTTPMan
             {
                 for (int i = 0; i < HttpRules.Count; i++)
                 {
-                    if (HttpRules[i].Method.GetString().ToUpper() != e.HttpClient.Request.Method.ToUpper() && HttpRules[i].Method != MockHttpMethod.Any)
+                    if ((HttpRules[i].Method.GetString().ToUpper() != e.HttpClient.Request.Method.ToUpper() && HttpRules[i].Method != MockHttpMethod.Any) || !HttpRules[i].IsValid)
                         continue;
                     if (!HttpRules[i].IsForResponse)
                         continue;
