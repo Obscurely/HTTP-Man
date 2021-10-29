@@ -20,8 +20,10 @@ namespace HTTPMan
             string hreqFile = await File.ReadAllTextAsync(fileLocation).ConfigureAwait(false);
             Dictionary<string, object>? requestDict = HttpImporter.RequestToDict(hreqFile);
             if (requestDict == null)
+            {
                 return null;
-
+            }
+                
             HttpRequest request = new HttpRequest((HttpMethod)requestDict["http_method"], (string)requestDict["url"], (Dictionary<string, string>)requestDict["headers"],
                 (string)requestDict["body_string"], (HttpContentType)requestDict["body_type"], (bool)requestDict["keep_body"], (double)requestDict["http_version"]);
 
@@ -40,7 +42,9 @@ namespace HTTPMan
             string hresFile = await File.ReadAllTextAsync(fileLocation).ConfigureAwait(false);
             Dictionary<string, object>? responseDict = HttpImporter.ResponseToDict(hresFile);
             if (responseDict == null)
+            {
                 return null;
+            }  
 
             HttpResponse response = new HttpResponse((int)responseDict["status_code"], (Dictionary<string, string>)responseDict["headers"],
                 (string)responseDict["body_string"], (HttpContentType)responseDict["body_type"], (bool)responseDict["keep_body"], (double)responseDict["http_version"]);
@@ -64,9 +68,13 @@ namespace HTTPMan
             double httpVersion;
             double[] availableHttpVersion = new double[] { 1.0, 1.1, 2.0 };
             if (!double.TryParse(Regex.Match(requestJson, patternHttpVersion).ToString(), out httpVersion))
+            {
                 return null;
+            }     
             else if (Array.IndexOf(availableHttpVersion, httpVersion) == -1)
+            {
                 return null;
+            }  
             request.Add("http_version", httpVersion);
 
             // Validates and adds http_method to the dict.
@@ -74,7 +82,9 @@ namespace HTTPMan
             string httpMethodString = Regex.Match(requestJson, patternHttpMethod).ToString();
             string[] availableHttpMethods = new string[] { "GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "TRACE", "OPTIONS" };
             if (Array.IndexOf(availableHttpMethods, httpMethodString.ToUpper()) == -1)
+            {
                 return null;
+            } 
             request.Add("http_method", new HttpMethod(httpMethodString.ToUpper()));
 
             // Validates and adds url to the dict.
@@ -139,16 +149,22 @@ namespace HTTPMan
             double httpVersion;
             double[] availableHttpVersion = new double[] { 1.0, 1.1, 2.0 };
             if (!double.TryParse(Regex.Match(responseJson, patternHttpVersion).ToString(), out httpVersion))
+            {
                 return null;
+            }
             else if (Array.IndexOf(availableHttpVersion, httpVersion) == -1)
+            {
                 return null;
+            }
             response.Add("http_version", httpVersion);
 
             // Validates and adds status_code to the dict.
             string patternStatusCode = "(?<=\"status_code\": )[0-9]*?(?=,\n)";
             int statusCode;
             if (!int.TryParse(Regex.Match(responseJson, patternStatusCode).ToString(), out statusCode))
+            {
                 return null;
+            }  
             response.Add("status_code", statusCode);
 
             // Validates and adds headers to the dict.
@@ -162,7 +178,9 @@ namespace HTTPMan
             string hasBodyString = Regex.Match(responseJson, patternHasBody).ToString();
             bool hasBody;
             if (!bool.TryParse(hasBodyString, out hasBody))
+            {
                 return null;
+            } 
             response.Add("has_body", hasBody);
 
             // Validates and adds body_type to the dict.
@@ -170,7 +188,9 @@ namespace HTTPMan
             string bodyTypeString = Regex.Match(responseJson, patternBodyType).ToString();
             HttpContentType? bodyType = bodyTypeString.ToHttpContentType();
             if (bodyType == null)
+            {
                 return null;
+            }
             response.Add("body_type", (HttpContentType)bodyType);
 
             // Validates and adds body_string to the dict.
@@ -183,7 +203,9 @@ namespace HTTPMan
             string keepBodyString = Regex.Match(responseJson, patternKeepBody).ToString();
             bool keepBody;
             if (!bool.TryParse(keepBodyString, out keepBody))
+            {
                 return null;
+            }
             response.Add("keep_body", keepBody);
 
             // Finally return back the checked and validated dictionary object containing the response.

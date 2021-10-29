@@ -81,13 +81,21 @@ namespace HTTPMan
 
             // Setting http version for request.
             if (requestHttpMethodVersion == 1.0)
+            {
                 _requestHttpMethodVersion = HttpVersion.Version10;
+            }
             else if (requestHttpMethodVersion == 1.1)
+            {
                 _requestHttpMethodVersion = HttpVersion.Version11;
+            }
             else if (requestHttpMethodVersion == 2.0)
+            {
                 _requestHttpMethodVersion = HttpVersion.Version20;
+            } 
             else
+            {
                 _requestHttpMethodVersion = null;
+            } 
 
             // Response
             _responseStatusCode = responseStatusCode;
@@ -98,13 +106,21 @@ namespace HTTPMan
 
             // Setting http version for response.
             if (responseHttpMethodVersion == 1.0)
+            {
                 _responseHttpMethodVersion = HttpVersion.Version10;
+            }
             else if (responseHttpMethodVersion == 1.1)
+            {
                 _responseHttpMethodVersion = HttpVersion.Version11;
+            }
             else if (responseHttpMethodVersion == 2.0)
+            {
                 _responseHttpMethodVersion = HttpVersion.Version20;
+            }
             else
+            {
                 _responseHttpMethodVersion = null;
+            }
         }
     }
 #nullable disable

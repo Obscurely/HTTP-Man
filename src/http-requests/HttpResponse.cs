@@ -45,10 +45,14 @@ namespace HTTPMan
 
             // Setting headers if any.
             if (headers != null)
+            {
                 _headers = headers;
+            }
             else
+            {
                 _headers = new Dictionary<string, string>();
-
+            }
+        
             // Setting body if any.
             if (!body.Equals(""))
             {
@@ -66,13 +70,21 @@ namespace HTTPMan
 
             // Setting http version.
             if (httpMethodVersion == 1.0)
+            {
                 _httpMethodVersion = HttpVersion.Version10;
+            }
             else if (httpMethodVersion == 1.1)
+            {
                 _httpMethodVersion = HttpVersion.Version11;
+            }
             else if (httpMethodVersion == 2.0)
+            {
                 _httpMethodVersion = HttpVersion.Version20;
+            }
             else
+            {
                 _httpMethodVersion = HttpVersion.Version11;
+            } 
         }
 #nullable disable
     }

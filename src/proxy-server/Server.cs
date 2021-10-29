@@ -234,9 +234,13 @@ namespace HTTPMan
                 for (int i = 0; i < HttpRules.Count; i++)
                 {
                     if ((HttpRules[i].Method.GetString().ToUpper() != e.HttpClient.Request.Method.ToUpper() && HttpRules[i].Method != MockHttpMethod.Any) || !HttpRules[i].IsValid)
+                    {
                         continue;
+                    } 
                     if (!HttpRules[i].IsForRequest)
+                    {
                         continue;
+                    }
 
                     e = await HttpMocker.Mock(HttpRules[i], e, true);
                 }
@@ -259,9 +263,13 @@ namespace HTTPMan
                 for (int i = 0; i < HttpRules.Count; i++)
                 {
                     if ((HttpRules[i].Method.GetString().ToUpper() != e.HttpClient.Request.Method.ToUpper() && HttpRules[i].Method != MockHttpMethod.Any) || !HttpRules[i].IsValid)
+                    {
                         continue;
+                    }
                     if (!HttpRules[i].IsForResponse)
+                    {
                         continue;
+                    }
 
                     e = await HttpMocker.Mock(HttpRules[i], e, false);
                 }
@@ -280,7 +288,9 @@ namespace HTTPMan
         {
             // set IsValid to true/false based on Certificate Errors.
             if (e.SslPolicyErrors == System.Net.Security.SslPolicyErrors.None)
+            {
                 e.IsValid = true;
+            }
 
             return Task.CompletedTask;
         }

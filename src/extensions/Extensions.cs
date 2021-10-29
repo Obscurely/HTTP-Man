@@ -84,12 +84,16 @@ namespace HTTPMan
         public static bool ContentEquals(this Dictionary<string, string> dict1, Dictionary<string, string> dict2)
         {
             if (dict1.Count != dict2.Count)
+            {
                 return false;
-
+            }
+                
             for (int i = 0; i < dict1.Count; i++)
             {
                 if (!(dict1.Keys.ElementAt(i).Equals(dict2.Keys.ElementAt(i)) && dict1.Values.ElementAt(i).Equals(dict2.Values.ElementAt(i))))
+                {
                     return false;
+                } 
             }
 
             return true;

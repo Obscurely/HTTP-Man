@@ -23,23 +23,41 @@ namespace HTTPMan
         public async Task<SessionEventArgs> Mock(MockerRule rule, SessionEventArgs e, bool isRequest)
         {
             if (rule.Matcher == MockMatcher.ForHost && Mocker.IsSameHost(rule, e))
+            {
                 e = MockRequest(rule, e, isRequest);
+            }
             else if (rule.Matcher == MockMatcher.ForUrl && Mocker.IsSameUrl(rule, e))
+            {
                 e = MockRequest(rule, e, isRequest);
+            }
             else if (rule.Matcher == MockMatcher.ForUrlsMatchingRegex && Mocker.IsUrlMatchingRegex(rule, e))
+            {
                 e = MockRequest(rule, e, isRequest);
+            }
             else if (rule.Matcher == MockMatcher.ExactQueryString && Mocker.IsExactQueryString(rule, e))
+            {
                 e = MockRequest(rule, e, isRequest);
+            }   
             else if (rule.Matcher == MockMatcher.IncludingHeaders && Mocker.IsIncludingHeaders(rule, e))
+            {
                 e = MockRequest(rule, e, isRequest);
+            }
             else if (rule.Matcher == MockMatcher.ExactBody && await Mocker.IsExactBody(rule, e).ConfigureAwait(false))
+            {
                 e = MockRequest(rule, e, isRequest);
+            }
             else if (rule.Matcher == MockMatcher.BodyIncluding && await Mocker.IsBodyIncluding(rule, e).ConfigureAwait(false))
+            {
                 e = MockRequest(rule, e, isRequest);
+            }
             else if (rule.Matcher == MockMatcher.ExactJsonBody && await Mocker.IsExactJsonBody(rule, e).ConfigureAwait(false))
+            {
                 e = MockRequest(rule, e, isRequest);
+            }
             else if (rule.Matcher == MockMatcher.JsonBodyIncluding && await Mocker.IsJsonBodyIncluding(rule, e).ConfigureAwait(false))
+            {
                 e = MockRequest(rule, e, isRequest);
+            }      
 
             return e;
         }
@@ -99,9 +117,13 @@ namespace HTTPMan
         private static bool IsSameHost(MockerRule rule, SessionEventArgs e)
         {
             if (rule.MatcherOptions[rule.Matcher.GetOptionsKey()].Equals(e.HttpClient.Request.Host))
+            {
                 return true;
+            }   
             else
+            {
                 return false;
+            }
         }
 
         /// <summary>
@@ -113,9 +135,13 @@ namespace HTTPMan
         private static bool IsSameUrl(MockerRule rule, SessionEventArgs e)
         {
             if (rule.MatcherOptions[rule.Matcher.GetOptionsKey()].Equals(e.HttpClient.Request.Url))
+            {
                 return true;
+            } 
             else
+            {
                 return false;
+            }
         }
 
         /// <summary>
@@ -131,9 +157,13 @@ namespace HTTPMan
             string match = regexUrl.Match(e.HttpClient.Request.Url).ToString();
 
             if (match.Equals(e.HttpClient.Request.Url))
+            {
                 return true;
+            }
             else
+            {
                 return false;
+            }       
         }
 
         /// <summary>
@@ -146,16 +176,24 @@ namespace HTTPMan
         {
             string[] urlSplit = e.HttpClient.Request.Url.Split("?");
             if (urlSplit.Length != 2)
+            {
                 return false;
+            }
 
             if (urlSplit[1].Split("q=").Length < 2)
+            {
                 return false;
-
+            }
+                
             string queryString = urlSplit[1].Split("q=")[1].Split("&")[0];
             if (rule.MatcherOptions[rule.Matcher.GetOptionsKey()].Equals(queryString))
+            {
                 return true;
+            }
             else
+            {
                 return false;
+            }    
         }
 
         /// <summary>
@@ -212,9 +250,13 @@ namespace HTTPMan
             string requestBody = await e.GetRequestBodyAsString();
 
             if (requestBody.Split(body).Length >= 2)
+            {
                 return true;
+            }
             else
+            {
                 return false;
+            }
         }
 
         /// <summary>
@@ -242,9 +284,13 @@ namespace HTTPMan
             }
 
             if (body.ContentEquals(requestBody))
+            {
                 return true;
+            }
             else
+            {
                 return false;
+            }
         }
 
         /// <summary>

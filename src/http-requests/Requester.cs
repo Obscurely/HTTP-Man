@@ -39,7 +39,9 @@ namespace HTTPMan
                 for (int i = 0; i < proxiesArray.Length; i++)
                 {
                     if (!proxiesArray[i].Equals(string.Empty))
+                    {
                         proxies.Add(proxiesArray[i]);
+                    }   
                 }
             }
 
@@ -88,7 +90,9 @@ namespace HTTPMan
             if (useProxies)
             {
                 if (Proxies.Count() == 0)
+                {
                     Proxies = await GetProxies().ConfigureAwait(false);
+                }
                 string proxy = PickProxy(Proxies);
                 HttpClientHandler clientHandler = new()
                 {
@@ -110,15 +114,25 @@ namespace HTTPMan
             {
                 // Setting http version. Defaults to 1.1 if not specified or specified a invalid value.
                 if (httpVersion == null)
+                {
                     Client.DefaultRequestVersion = HttpVersion.Version11;
+                }
                 else if (httpVersion == 1.0)
+                {
                     Client.DefaultRequestVersion = HttpVersion.Version10;
+                } 
                 else if (httpVersion == 1.1)
+                {
                     Client.DefaultRequestVersion = HttpVersion.Version11;
+                }
                 else if (httpVersion == 2.0)
+                {
                     Client.DefaultRequestVersion = HttpVersion.Version20;
+                }
                 else
+                {
                     Client.DefaultRequestVersion = HttpVersion.Version11;
+                }
 
                 // Setting version policy. Defaults to request's version or higher if not specified.
                 if (versionPolicy == null)
@@ -186,7 +200,9 @@ namespace HTTPMan
 
                 // Setting max response content buffer size if specified.
                 if (maxResponseContentBufferSize != null)
+                {
                     Client.MaxResponseContentBufferSize = (long)maxResponseContentBufferSize;
+                }
 
                 // Setting if request accepts cache or not.
                 if (acceptCache != null && Client.DefaultRequestHeaders.CacheControl != null)
@@ -308,7 +324,9 @@ namespace HTTPMan
             if (useProxies)
             {
                 if (Proxies.Count() == 0)
+                {
                     Proxies = await GetProxies().ConfigureAwait(false);
+                }
                 string proxy = PickProxy(Proxies);
                 HttpClientHandler clientHandler = new()
                 {
@@ -335,15 +353,25 @@ namespace HTTPMan
             {
                 // Setting http version. Defaults to 1.1 if not specified or specified a invalid value.
                 if (httpVersion == null)
+                {
                     Client.DefaultRequestVersion = HttpVersion.Version11;
+                }
                 else if (httpVersion == 1.0)
+                {
                     Client.DefaultRequestVersion = HttpVersion.Version10;
+                } 
                 else if (httpVersion == 1.1)
+                {
                     Client.DefaultRequestVersion = HttpVersion.Version11;
+                }
                 else if (httpVersion == 2.0)
+                {
                     Client.DefaultRequestVersion = HttpVersion.Version20;
+                }
                 else
+                {
                     Client.DefaultRequestVersion = HttpVersion.Version11;
+                }
 
                 // Setting version policy. Defaults to request's version or higher if not specified.
                 if (versionPolicy == null)
@@ -385,9 +413,13 @@ namespace HTTPMan
                 if (content != null)
                 {
                     if (contentType != null)
+                    {
                         requestBody = new(content, Encoding.UTF8, contentType.GetString());
+                    }    
                     else
+                    {
                         requestBody = new(content, Encoding.UTF8, HttpContentType.TextPlain.GetString());
+                    }
                 }
 
                 // Setting timeout if any.
@@ -396,7 +428,9 @@ namespace HTTPMan
 
                 // Setting max response content buffer size if specified.
                 if (maxResponseContentBufferSize != null)
+                {
                     Client.MaxResponseContentBufferSize = (long)maxResponseContentBufferSize;
+                }
 
                 // Setting if request accepts cache or not.
                 if (acceptCache != null && Client.DefaultRequestHeaders.CacheControl != null)
@@ -496,7 +530,9 @@ namespace HTTPMan
             if (useProxies)
             {
                 if (Proxies.Count() == 0)
+                {
                     Proxies = await GetProxies().ConfigureAwait(false);
+                }
                 string proxy = PickProxy(Proxies);
                 HttpClientHandler clientHandler = new()
                 {
@@ -523,15 +559,25 @@ namespace HTTPMan
             {
                 // Setting http version. Defaults to 1.1 if not specified or specified a invalid value.
                 if (httpVersion == null)
+                {
                     Client.DefaultRequestVersion = HttpVersion.Version11;
+                }
                 else if (httpVersion == 1.0)
+                {
                     Client.DefaultRequestVersion = HttpVersion.Version10;
+                } 
                 else if (httpVersion == 1.1)
+                {
                     Client.DefaultRequestVersion = HttpVersion.Version11;
+                }
                 else if (httpVersion == 2.0)
+                {
                     Client.DefaultRequestVersion = HttpVersion.Version20;
+                }
                 else
+                {
                     Client.DefaultRequestVersion = HttpVersion.Version11;
+                }
 
                 // Setting version policy. Defaults to request's version or higher if not specified.
                 if (versionPolicy == null)
@@ -573,9 +619,13 @@ namespace HTTPMan
                 if (content != null)
                 {
                     if (contentType != null)
+                    {
                         requestBody = new(content, Encoding.UTF8, contentType.GetString());
+                    }    
                     else
+                    {
                         requestBody = new(content, Encoding.UTF8, HttpContentType.TextPlain.GetString());
+                    }
                 }
 
                 // Setting timeout if any.
@@ -677,7 +727,9 @@ namespace HTTPMan
             if (useProxies)
             {
                 if (Proxies.Count() == 0)
+                {
                     Proxies = await GetProxies().ConfigureAwait(false);
+                }
                 string proxy = PickProxy(Proxies);
                 HttpClientHandler clientHandler = new()
                 {
@@ -693,7 +745,6 @@ namespace HTTPMan
             {
                 Client = new(); // creates/recreates the client instance in order to be fresh.
             }
-
             // Null variable which will change withing the code if the user passed a content.
             // At the end when the request is made the function checks if the requestBody is not null and if it's not it will include it in the request.
             // Otherwise it will make a post request without a body.
@@ -704,15 +755,25 @@ namespace HTTPMan
             {
                 // Setting http version. Defaults to 1.1 if not specified or specified a invalid value.
                 if (httpVersion == null)
+                {
                     Client.DefaultRequestVersion = HttpVersion.Version11;
+                }
                 else if (httpVersion == 1.0)
+                {
                     Client.DefaultRequestVersion = HttpVersion.Version10;
+                } 
                 else if (httpVersion == 1.1)
+                {
                     Client.DefaultRequestVersion = HttpVersion.Version11;
+                }
                 else if (httpVersion == 2.0)
+                {
                     Client.DefaultRequestVersion = HttpVersion.Version20;
+                }
                 else
+                {
                     Client.DefaultRequestVersion = HttpVersion.Version11;
+                }
 
                 // Setting version policy. Defaults to request's version or higher if not specified.
                 if (versionPolicy == null)
@@ -754,9 +815,13 @@ namespace HTTPMan
                 if (content != null)
                 {
                     if (contentType != null)
+                    {
                         requestBody = new(content, Encoding.UTF8, contentType.GetString());
+                    }    
                     else
+                    {
                         requestBody = new(content, Encoding.UTF8, HttpContentType.TextPlain.GetString());
+                    }
                 }
 
                 // Setting timeout if any.
@@ -765,8 +830,9 @@ namespace HTTPMan
 
                 // Setting max response content buffer size if specified.
                 if (maxResponseContentBufferSize != null)
+                {
                     Client.MaxResponseContentBufferSize = (long)maxResponseContentBufferSize;
-
+                }
                 // Setting the chosen dnt header value if chose.
                 if (dnt != null)
                 {
@@ -863,7 +929,9 @@ namespace HTTPMan
             if (useProxies)
             {
                 if (Proxies.Count() == 0)
+                {
                     Proxies = await GetProxies().ConfigureAwait(false);
+                }
                 string proxy = PickProxy(Proxies);
                 HttpClientHandler clientHandler = new()
                 {
@@ -889,15 +957,25 @@ namespace HTTPMan
             {
                 // Setting http version. Defaults to 1.1 if not specified or specified a invalid value.
                 if (httpVersion == null)
+                {
                     Client.DefaultRequestVersion = HttpVersion.Version11;
+                }
                 else if (httpVersion == 1.0)
+                {
                     Client.DefaultRequestVersion = HttpVersion.Version10;
+                } 
                 else if (httpVersion == 1.1)
+                {
                     Client.DefaultRequestVersion = HttpVersion.Version11;
+                }
                 else if (httpVersion == 2.0)
+                {
                     Client.DefaultRequestVersion = HttpVersion.Version20;
+                }
                 else
+                {
                     Client.DefaultRequestVersion = HttpVersion.Version11;
+                }
 
                 // Setting version policy. Defaults to request's version or higher if not specified.
                 if (versionPolicy == null)
@@ -965,7 +1043,9 @@ namespace HTTPMan
 
                 // Setting max response content buffer size if specified.
                 if (maxResponseContentBufferSize != null)
+                {
                     Client.MaxResponseContentBufferSize = (long)maxResponseContentBufferSize;
+                }
 
                 // Setting the chosen dnt header value if chose.
                 if (dnt != null)
@@ -1079,7 +1159,9 @@ namespace HTTPMan
             if (useProxies)
             {
                 if (Proxies.Count() == 0)
+                {
                     Proxies = await GetProxies().ConfigureAwait(false);
+                }
                 string proxy = PickProxy(Proxies);
                 HttpClientHandler clientHandler = new()
                 {
@@ -1101,15 +1183,25 @@ namespace HTTPMan
             {
                 // Setting http version. Defaults to 1.1 if not specified or specified a invalid value.
                 if (httpVersion == null)
+                {
                     Client.DefaultRequestVersion = HttpVersion.Version11;
+                }
                 else if (httpVersion == 1.0)
+                {
                     Client.DefaultRequestVersion = HttpVersion.Version10;
+                } 
                 else if (httpVersion == 1.1)
+                {
                     Client.DefaultRequestVersion = HttpVersion.Version11;
+                }
                 else if (httpVersion == 2.0)
+                {
                     Client.DefaultRequestVersion = HttpVersion.Version20;
+                }
                 else
+                {
                     Client.DefaultRequestVersion = HttpVersion.Version11;
+                }
 
                 // Setting version policy. Defaults to request's version or higher if not specified.
                 if (versionPolicy == null)
@@ -1250,7 +1342,9 @@ namespace HTTPMan
             if (useProxies)
             {
                 if (Proxies.Count() == 0)
+                {
                     Proxies = await GetProxies().ConfigureAwait(false);
+                }
                 string proxy = PickProxy(Proxies);
                 HttpClientHandler clientHandler = new()
                 {
@@ -1272,15 +1366,25 @@ namespace HTTPMan
             {
                 // Setting http version. Defaults to 1.1 if not specified or specified a invalid value.
                 if (httpVersion == null)
+                {
                     Client.DefaultRequestVersion = HttpVersion.Version11;
+                }
                 else if (httpVersion == 1.0)
+                {
                     Client.DefaultRequestVersion = HttpVersion.Version10;
+                } 
                 else if (httpVersion == 1.1)
+                {
                     Client.DefaultRequestVersion = HttpVersion.Version11;
+                }
                 else if (httpVersion == 2.0)
+                {
                     Client.DefaultRequestVersion = HttpVersion.Version20;
+                }
                 else
+                {
                     Client.DefaultRequestVersion = HttpVersion.Version11;
+                }
 
                 // Setting version policy. Defaults to request's version or higher if not specified.
                 if (versionPolicy == null)
@@ -1418,7 +1522,9 @@ namespace HTTPMan
             if (useProxies)
             {
                 if (Proxies.Count() == 0)
+                {
                     Proxies = await GetProxies().ConfigureAwait(false);
+                }
                 string proxy = PickProxy(Proxies);
                 HttpClientHandler clientHandler = new()
                 {
@@ -1440,15 +1546,25 @@ namespace HTTPMan
             {
                 // Setting http version. Defaults to 1.1 if not specified or specified a invalid value.
                 if (httpVersion == null)
+                {
                     Client.DefaultRequestVersion = HttpVersion.Version11;
+                }
                 else if (httpVersion == 1.0)
+                {
                     Client.DefaultRequestVersion = HttpVersion.Version10;
+                } 
                 else if (httpVersion == 1.1)
+                {
                     Client.DefaultRequestVersion = HttpVersion.Version11;
+                }
                 else if (httpVersion == 2.0)
+                {
                     Client.DefaultRequestVersion = HttpVersion.Version20;
+                }
                 else
+                {
                     Client.DefaultRequestVersion = HttpVersion.Version11;
+                }
 
                 // Setting version policy. Defaults to request's version or higher if not specified.
                 if (versionPolicy == null)
@@ -1492,7 +1608,9 @@ namespace HTTPMan
 
                 // Setting max response content buffer size if specified.
                 if (maxResponseContentBufferSize != null)
+                {
                     Client.MaxResponseContentBufferSize = (long)maxResponseContentBufferSize;
+                }
 
                 // Setting the chosen dnt header value if chose.
                 if (dnt != null)
