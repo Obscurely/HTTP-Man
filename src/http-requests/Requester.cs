@@ -863,7 +863,6 @@ namespace HTTPMan
             // Null variable which will change withing the code if the user passed a content.
             // At the end when the request is made the function checks if the requestBody is not null and if it's not it will include it in the request.
             // Otherwise it will make a post request without a body.
-            StringContent? requestBody = null;
 
             HttpResponseMessage response;
             using (Client)
@@ -933,15 +932,6 @@ namespace HTTPMan
                             Content = new StringContent(content, Encoding.UTF8, HttpContentType.TextPlain.GetString())
                         };
                     }
-                }
-
-                // Converting the content if any.
-                if (content != null)
-                {
-                    if (contentType != null)
-                        requestBody = new(content, Encoding.UTF8, contentType.GetString());
-                    else
-                        requestBody = new(content, Encoding.UTF8, HttpContentType.TextPlain.GetString());
                 }
 
                 // Setting timeout if any.
