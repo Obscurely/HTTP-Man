@@ -233,9 +233,13 @@ namespace HTTPMan
             string requestBody = await e.GetRequestBodyAsString();
 
             if (body.Equals(requestBody))
+            {
                 return true;
+            }  
             else
+            {
                 return false;
+            }
         }
 
         /// <summary>
@@ -320,10 +324,14 @@ namespace HTTPMan
             for (int i = 0; i < body.Count; i++)
             {
                 if (!requestBody.ContainsKey(body.Keys.ElementAt(i)))
+                {
                     return false;
+                }
 
                 if (!requestBody[body.Keys.ElementAt(i)].Equals(body.Values.ElementAt(i)))
+                {
                     return false;
+                }   
             }
 
             return true;
@@ -348,7 +356,9 @@ namespace HTTPMan
             // Setting headers.
             e.HttpClient.Response.Headers.Clear();
             if (response.Headers.Count != 0)
+            {
                 e.HttpClient.Response.Headers.AddHeaders(response.Headers);
+            }
 
             e.SetResponseBodyString(response.BodyString);
             e.HttpClient.Response.ContentType = response.BodyType.GetString();
@@ -389,27 +399,37 @@ namespace HTTPMan
         {
             // Setting http method if any.
             if (transformer.RequestMethod != null)
+            {
                 e.HttpClient.Request.Method = (string)(transformer.RequestMethod).ToString();
+            }
 
             // Setting headers if any.
             if (transformer.RequestHeaders != null)
             {
                 e.HttpClient.Request.Headers.Clear();
                 if (transformer.RequestHeaders.Count != 0)
+                {
                     e.HttpClient.Request.Headers.AddHeaders((Dictionary<string, string>)(transformer.RequestHeaders));
+                } 
             }
 
             // Setting body type if any.
             if (transformer.RequestBodyType != null)
+            {
                 e.HttpClient.Request.ContentType = transformer.RequestBodyType.GetString();
+            }
 
             // Setting request body if any.
             if (transformer.RequestBodyString != null)
+            {
                 e.SetRequestBodyString((string)(transformer.RequestBodyString));
+            }
 
             // Setting request keep body if any.
             if (transformer.RequestKeepBody != null)
+            {
                 e.HttpClient.Request.KeepBody = (bool)transformer.RequestKeepBody;
+            }
 
             // Changing host if any given.
             if (transformer.RequestHost != null)
@@ -449,7 +469,9 @@ namespace HTTPMan
 
             // Setting http version if any.
             if (transformer.RequestHttpMethodVersion != null)
+            {
                 e.HttpClient.Request.HttpVersion = transformer.RequestHttpMethodVersion;
+            } 
 
             return e;
         }
@@ -465,31 +487,43 @@ namespace HTTPMan
         {
             // Setting response status code if any given.
             if (transformer.ResponseStatusCode != null)
+            {
                 e.HttpClient.Response.StatusCode = (int)transformer.ResponseStatusCode;
+            }
 
             // Setting headers if any.
             if (transformer.ResponseHeaders != null)
             {
                 e.HttpClient.Response.Headers.Clear();
                 if (transformer.ResponseHeaders.Count != 0)
+                {
                     e.HttpClient.Response.Headers.AddHeaders(transformer.ResponseHeaders);
+                }
             }
 
             // Setting body type if any.
             if (transformer.ResponseBodyType != null)
+            {
                 e.HttpClient.Response.ContentType = transformer.ResponseBodyType.GetString();
+            }
 
             // Setting response body if any.
             if (transformer.ResponseBodyString != null)
+            {
                 e.SetResponseBodyString(transformer.ResponseBodyString);
+            }
 
             // Setting response keep body if any.
             if (transformer.ResponseKeepBody != null)
+            {
                 e.HttpClient.Response.KeepBody = (bool)transformer.ResponseKeepBody;
+            }
 
             // Setting http version if any.
             if (transformer.ResponseHttpMethodVersion != null)
+            {
                 e.HttpClient.Response.HttpVersion = (Version)(transformer.ResponseHttpMethodVersion);
+            }
 
             return e;
         }
@@ -506,9 +540,13 @@ namespace HTTPMan
             MockTransformer transformer = (MockTransformer)(rule.MockingActionOptions[rule.MockingAction.GetOptionsKey()]);
 
             if (isRequest)
+            {
                 return AutoTransformRequest(e, transformer);
+            }   
             else
+            {
                 return AutoTransformResponse(e, transformer);
+            }
         }
 
         /// <summary>

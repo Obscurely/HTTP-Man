@@ -156,13 +156,17 @@ namespace HTTPMan
         private static bool IsRuleValid(MockMatcher matcher, Dictionary<string, string> matcherOptions, MockAction mockingAction, Dictionary<string, object> mockingActionOptions)
         {
             if (!matcherOptions.ContainsKey(matcher.GetOptionsKey()) && matcher != MockMatcher.IncludingHeaders)
+            {
                 return false;
+            }
             
             if (mockingActionOptions.Count >= 1)
             {
                 if (!(mockingAction == MockAction.ReturnFixedResponse || mockingAction == MockAction.ForwardRequestToDifferentHost || mockingAction == MockAction.AutoTransformRequestOrResponse)
                         && mockingAction.GetOptionsKey() != mockingActionOptions.Keys.ElementAt(0))
+                {
                     return false;
+                }
             }
             
             return true;

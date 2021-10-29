@@ -136,9 +136,13 @@ namespace HTTPMan
 
                 // Setting version policy. Defaults to request's version or higher if not specified.
                 if (versionPolicy == null)
+                {
                     Client.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrHigher;
+                }  
                 else
+                {   
                     Client.DefaultVersionPolicy = (HttpVersionPolicy)versionPolicy;
+                } 
 
                 // Setting headers if any.
                 if (headers != null)
@@ -196,7 +200,9 @@ namespace HTTPMan
 
                 // Setting timeout if any.
                 if (timeout != null)
+                {
                     Client.Timeout = (TimeSpan)timeout;
+                }
 
                 // Setting max response content buffer size if specified.
                 if (maxResponseContentBufferSize != null)
@@ -206,7 +212,9 @@ namespace HTTPMan
 
                 // Setting if request accepts cache or not.
                 if (acceptCache != null && Client.DefaultRequestHeaders.CacheControl != null)
+                {
                     Client.DefaultRequestHeaders.CacheControl.NoCache = (bool)acceptCache;
+                }
 
                 // Setting the chosen dnt header value if chose.
                 if (dnt != null)
@@ -375,9 +383,13 @@ namespace HTTPMan
 
                 // Setting version policy. Defaults to request's version or higher if not specified.
                 if (versionPolicy == null)
+                {
                     Client.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrHigher;
+                }  
                 else
+                {   
                     Client.DefaultVersionPolicy = (HttpVersionPolicy)versionPolicy;
+                } 
 
                 // Setting headers if any.
                 if (headers != null)
@@ -424,7 +436,9 @@ namespace HTTPMan
 
                 // Setting timeout if any.
                 if (timeout != null)
+                {
                     Client.Timeout = (TimeSpan)timeout;
+                }
 
                 // Setting max response content buffer size if specified.
                 if (maxResponseContentBufferSize != null)
@@ -434,7 +448,9 @@ namespace HTTPMan
 
                 // Setting if request accepts cache or not.
                 if (acceptCache != null && Client.DefaultRequestHeaders.CacheControl != null)
+                {
                     Client.DefaultRequestHeaders.CacheControl.NoCache = (bool)acceptCache;
+                }
 
                 // Setting the chosen dnt header value if chose.
                 if (dnt != null)
@@ -479,9 +495,13 @@ namespace HTTPMan
                 try
                 {
                     if (requestBody != null)
+                    {
                         response = await Client.PostAsync(url, requestBody);
+                    }
                     else
+                    {
                         response = await Client.PostAsync(url, null!);
+                    } 
                 }
                 catch (TaskCanceledException)
                 {
@@ -581,9 +601,13 @@ namespace HTTPMan
 
                 // Setting version policy. Defaults to request's version or higher if not specified.
                 if (versionPolicy == null)
+                {
                     Client.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrHigher;
+                }  
                 else
+                {   
                     Client.DefaultVersionPolicy = (HttpVersionPolicy)versionPolicy;
+                } 
 
                 // Setting headers if any.
                 if (headers != null)
@@ -630,7 +654,9 @@ namespace HTTPMan
 
                 // Setting timeout if any.
                 if (timeout != null)
+                {
                     Client.Timeout = (TimeSpan)timeout;
+                }
 
                 // Setting the chosen dnt header value if chose.
                 if (dnt != null)
@@ -777,9 +803,13 @@ namespace HTTPMan
 
                 // Setting version policy. Defaults to request's version or higher if not specified.
                 if (versionPolicy == null)
+                {
                     Client.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrHigher;
+                }  
                 else
+                {   
                     Client.DefaultVersionPolicy = (HttpVersionPolicy)versionPolicy;
+                } 
 
                 // Setting headers if any.
                 if (headers != null)
@@ -826,7 +856,9 @@ namespace HTTPMan
 
                 // Setting timeout if any.
                 if (timeout != null)
+                {
                     Client.Timeout = (TimeSpan)timeout;
+                }
 
                 // Setting max response content buffer size if specified.
                 if (maxResponseContentBufferSize != null)
@@ -979,9 +1011,13 @@ namespace HTTPMan
 
                 // Setting version policy. Defaults to request's version or higher if not specified.
                 if (versionPolicy == null)
+                {
                     Client.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrHigher;
+                }  
                 else
+                {   
                     Client.DefaultVersionPolicy = (HttpVersionPolicy)versionPolicy;
+                } 
 
                 // Setting headers if any.
                 if (headers != null)
@@ -1039,7 +1075,9 @@ namespace HTTPMan
 
                 // Setting timeout if any.
                 if (timeout != null)
+                {
                     Client.Timeout = (TimeSpan)timeout;
+                }
 
                 // Setting max response content buffer size if specified.
                 if (maxResponseContentBufferSize != null)
@@ -1205,9 +1243,13 @@ namespace HTTPMan
 
                 // Setting version policy. Defaults to request's version or higher if not specified.
                 if (versionPolicy == null)
+                {
                     Client.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrHigher;
+                }  
                 else
+                {   
                     Client.DefaultVersionPolicy = (HttpVersionPolicy)versionPolicy;
+                } 
 
                 // Setting headers if any.
                 if (headers != null)
@@ -1241,11 +1283,15 @@ namespace HTTPMan
 
                 // Setting timeout if any.
                 if (timeout != null)
+                {
                     Client.Timeout = (TimeSpan)timeout;
+                }
 
                 // Setting if request accepts cache or not.
                 if (acceptCache != null && Client.DefaultRequestHeaders.CacheControl != null)
+                {
                     Client.DefaultRequestHeaders.CacheControl.NoCache = (bool)acceptCache;
+                }
 
                 // Setting the chosen dnt header value if chose.
                 if (dnt != null)
@@ -1388,9 +1434,13 @@ namespace HTTPMan
 
                 // Setting version policy. Defaults to request's version or higher if not specified.
                 if (versionPolicy == null)
+                {
                     Client.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrHigher;
+                }  
                 else
+                {   
                     Client.DefaultVersionPolicy = (HttpVersionPolicy)versionPolicy;
+                } 
 
                 // Setting headers if any.
                 if (headers != null)
@@ -1424,7 +1474,9 @@ namespace HTTPMan
 
                 // Setting timeout if any.
                 if (timeout != null)
+                {
                     Client.Timeout = (TimeSpan)timeout;
+                }
 
                 // Setting the chosen dnt header value if chose.
                 if (dnt != null)
@@ -1568,9 +1620,13 @@ namespace HTTPMan
 
                 // Setting version policy. Defaults to request's version or higher if not specified.
                 if (versionPolicy == null)
+                {
                     Client.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrHigher;
+                }  
                 else
+                {   
                     Client.DefaultVersionPolicy = (HttpVersionPolicy)versionPolicy;
+                } 
 
                 // Setting headers if any.
                 if (headers != null)
@@ -1604,7 +1660,9 @@ namespace HTTPMan
 
                 // Setting timeout if any.
                 if (timeout != null)
+                {
                     Client.Timeout = (TimeSpan)timeout;
+                }
 
                 // Setting max response content buffer size if specified.
                 if (maxResponseContentBufferSize != null)

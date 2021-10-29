@@ -91,7 +91,9 @@ namespace HTTPMan
             string patternUrl = "(?<=\"url\": \")[a-zA-Z]+?://.*?\\.*?\\..*?(?=\",\n)";
             string url = Regex.Match(requestJson, patternUrl).ToString();
             if (!Uri.IsWellFormedUriString(url, UriKind.RelativeOrAbsolute) || url.Equals(string.Empty))
+            {
                 return null;
+            }
             request.Add("url", url);
 
             // Validates and adds headers to the dict.
@@ -105,7 +107,9 @@ namespace HTTPMan
             string hasBodyString = Regex.Match(requestJson, patternHasBody).ToString();
             bool hasBody;
             if (!bool.TryParse(hasBodyString, out hasBody))
+            {
                 return null;
+            } 
             request.Add("has_body", hasBody);
 
             // Validates and adds body_type to the dict.
@@ -113,7 +117,9 @@ namespace HTTPMan
             string bodyTypeString = Regex.Match(requestJson, patternBodyType).ToString();
             HttpContentType? bodyType = bodyTypeString.ToHttpContentType();
             if (bodyType == null)
+            {
                 return null;
+            } 
             request.Add("body_type", (HttpContentType)bodyType);
 
             // Validates and adds body_string to the dict.
@@ -126,7 +132,9 @@ namespace HTTPMan
             string keepBodyString = Regex.Match(requestJson, patternKeepBody).ToString();
             bool keepBody;
             if (!bool.TryParse(keepBodyString, out keepBody))
+            {
                 return null;
+            }  
             request.Add("keep_body", keepBody);
 
             // Finally return back the checked and validated dictionary object containing the request.
