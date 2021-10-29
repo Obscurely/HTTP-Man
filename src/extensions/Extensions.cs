@@ -88,9 +88,7 @@ namespace HTTPMan
 
             for (int i = 0; i < dict1.Count; i++)
             {
-                if (dict1.Keys.ElementAt(i).Equals(dict2.Keys.ElementAt(i)) && dict1.Values.ElementAt(i).Equals(dict2.Values.ElementAt(i)))
-                    continue;
-                else
+                if (!(dict1.Keys.ElementAt(i).Equals(dict2.Keys.ElementAt(i)) && dict1.Values.ElementAt(i).Equals(dict2.Values.ElementAt(i))))
                     return false;
             }
 

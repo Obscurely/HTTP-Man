@@ -339,7 +339,7 @@ namespace HTTPMan
         /// <param name="e">Event argument given by the proxy.</param>
         /// <param name="transformer">The transformer object used for transforming the request</param>
         /// <returns>The modified event argument.</returns>
-        private static SessionEventArgs AutoTransformRequest(MockerRule rule, SessionEventArgs e, MockTransformer transformer)
+        private static SessionEventArgs AutoTransformRequest(SessionEventArgs e, MockTransformer transformer)
         {
             // Setting http method if any.
             if (transformer.RequestMethod != null)
@@ -415,7 +415,7 @@ namespace HTTPMan
         /// <param name="e">Event argument given by the proxy.</param>
         /// <param name="transformer">The transformer object used for transforming the response</param>
         /// <returns>The modified event argument.</returns>
-        private static SessionEventArgs AutoTransformResponse(MockerRule rule, SessionEventArgs e, MockTransformer transformer)
+        private static SessionEventArgs AutoTransformResponse(SessionEventArgs e, MockTransformer transformer)
         {
             // Setting response status code if any given.
             if (transformer.ResponseStatusCode != null)
@@ -460,9 +460,9 @@ namespace HTTPMan
             MockTransformer transformer = (MockTransformer)(rule.MockingActionOptions[rule.MockingAction.GetOptionsKey()]);
 
             if (isRequest)
-                return AutoTransformRequest(rule, e, transformer);
+                return AutoTransformRequest(e, transformer);
             else
-                return AutoTransformResponse(rule, e, transformer);
+                return AutoTransformResponse(e, transformer);
         }
 
         /// <summary>

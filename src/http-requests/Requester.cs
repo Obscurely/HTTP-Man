@@ -144,11 +144,16 @@ namespace HTTPMan
                     // Manually setting the first param in order to not get a "&" at the end.
                     url += parameters.Keys.ElementAt(0) + "=" + parameters.Values.ElementAt(0);
 
+                    // Using StringBuilder for performance sake.
+                    StringBuilder urlTemp = new(url);
+
                     // Automatically setting the rest of params if any.
                     for (int i = 1; i < parameters.Count; i++)
                     {
-                        url += "&" + parameters.Keys.ElementAt(i) + "=" + parameters.Values.ElementAt(i);
+                        urlTemp.Append("&" + parameters.Keys.ElementAt(i) + "=" + parameters.Values.ElementAt(i));
                     }
+
+                    url = urlTemp.ToString();
                 }
 
                 // Setting the content if any.
@@ -364,11 +369,16 @@ namespace HTTPMan
                     // Manually setting the first param in order to not get a "&" at the end.
                     url += parameters.Keys.ElementAt(0) + "=" + parameters.Values.ElementAt(0);
 
+                    // Using StringBuilder for performance sake.
+                    StringBuilder urlTemp = new(url);
+
                     // Automatically setting the rest of params if any.
                     for (int i = 1; i < parameters.Count; i++)
                     {
-                        url += "&" + parameters.Keys.ElementAt(i) + "=" + parameters.Values.ElementAt(i);
+                        urlTemp.Append("&" + parameters.Keys.ElementAt(i) + "=" + parameters.Values.ElementAt(i));
                     }
+
+                    url = urlTemp.ToString();
                 }
 
                 // Converting the content if any.
@@ -547,11 +557,16 @@ namespace HTTPMan
                     // Manually setting the first param in order to not get a "&" at the end.
                     url += parameters.Keys.ElementAt(0) + "=" + parameters.Values.ElementAt(0);
 
+                    // Using StringBuilder for performance sake.
+                    StringBuilder urlTemp = new(url);
+
                     // Automatically setting the rest of params if any.
                     for (int i = 1; i < parameters.Count; i++)
                     {
-                        url += "&" + parameters.Keys.ElementAt(i) + "=" + parameters.Values.ElementAt(i);
+                        urlTemp.Append("&" + parameters.Keys.ElementAt(i) + "=" + parameters.Values.ElementAt(i));
                     }
+
+                    url = urlTemp.ToString();
                 }
 
                 // Converting the content if any.
@@ -723,11 +738,16 @@ namespace HTTPMan
                     // Manually setting the first param in order to not get a "&" at the end.
                     url += parameters.Keys.ElementAt(0) + "=" + parameters.Values.ElementAt(0);
 
+                    // Using StringBuilder for performance sake.
+                    StringBuilder urlTemp = new(url);
+
                     // Automatically setting the rest of params if any.
                     for (int i = 1; i < parameters.Count; i++)
                     {
-                        url += "&" + parameters.Keys.ElementAt(i) + "=" + parameters.Values.ElementAt(i);
+                        urlTemp.Append("&" + parameters.Keys.ElementAt(i) + "=" + parameters.Values.ElementAt(i));
                     }
+
+                    url = urlTemp.ToString();
                 }
 
                 // Converting the content if any.
@@ -903,11 +923,16 @@ namespace HTTPMan
                     // Manually setting the first param in order to not get a "&" at the end.
                     url += parameters.Keys.ElementAt(0) + "=" + parameters.Values.ElementAt(0);
 
+                    // Using StringBuilder for performance sake.
+                    StringBuilder urlTemp = new(url);
+
                     // Automatically setting the rest of params if any.
                     for (int i = 1; i < parameters.Count; i++)
                     {
-                        url += "&" + parameters.Keys.ElementAt(i) + "=" + parameters.Values.ElementAt(i);
+                        urlTemp.Append("&" + parameters.Keys.ElementAt(i) + "=" + parameters.Values.ElementAt(i));
                     }
+
+                    url = urlTemp.ToString();
                 }
 
                 // Setting the content if any.
@@ -1110,11 +1135,16 @@ namespace HTTPMan
                     // Manually setting the first param in order to not get a "&" at the end.
                     url += parameters.Keys.ElementAt(0) + "=" + parameters.Values.ElementAt(0);
 
+                    // Using StringBuilder for performance sake.
+                    StringBuilder urlTemp = new(url);
+
                     // Automatically setting the rest of params if any.
                     for (int i = 1; i < parameters.Count; i++)
                     {
-                        url += "&" + parameters.Keys.ElementAt(i) + "=" + parameters.Values.ElementAt(i);
+                        urlTemp.Append("&" + parameters.Keys.ElementAt(i) + "=" + parameters.Values.ElementAt(i));
                     }
+
+                    url = urlTemp.ToString();
                 }
 
                 // Setting timeout if any.
@@ -1276,11 +1306,16 @@ namespace HTTPMan
                     // Manually setting the first param in order to not get a "&" at the end.
                     url += parameters.Keys.ElementAt(0) + "=" + parameters.Values.ElementAt(0);
 
+                    // Using StringBuilder for performance sake.
+                    StringBuilder urlTemp = new(url);
+
                     // Automatically setting the rest of params if any.
                     for (int i = 1; i < parameters.Count; i++)
                     {
-                        url += "&" + parameters.Keys.ElementAt(i) + "=" + parameters.Values.ElementAt(i);
+                        urlTemp.Append("&" + parameters.Keys.ElementAt(i) + "=" + parameters.Values.ElementAt(i));
                     }
+
+                    url = urlTemp.ToString();
                 }
 
                 // Setting timeout if any.
@@ -1439,11 +1474,16 @@ namespace HTTPMan
                     // Manually setting the first param in order to not get a "&" at the end.
                     url += parameters.Keys.ElementAt(0) + "=" + parameters.Values.ElementAt(0);
 
+                    // Using StringBuilder for performance sake.
+                    StringBuilder urlTemp = new(url);
+
                     // Automatically setting the rest of params if any.
                     for (int i = 1; i < parameters.Count; i++)
                     {
-                        url += "&" + parameters.Keys.ElementAt(i) + "=" + parameters.Values.ElementAt(i);
+                        urlTemp.Append("&" + parameters.Keys.ElementAt(i) + "=" + parameters.Values.ElementAt(i));
                     }
+
+                    url = urlTemp.ToString();
                 }
 
                 // Setting timeout if any.

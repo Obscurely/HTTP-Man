@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Collections.Generic;
 
 namespace HTTPMan
@@ -157,13 +158,13 @@ namespace HTTPMan
             if (!matcherOptions.ContainsKey(matcher.GetOptionsKey()) && matcher != MockMatcher.IncludingHeaders)
                 return false;
             
-            if (mockingAction == MockAction.ReturnFixedResponse && mockingAction.GetOptionsKey() != MockAction.ReturnFixedResponse.GetOptionsKey())
-                return false;
-            else if (mockingAction == MockAction.ForwardRequestToDifferentHost && mockingAction.GetOptionsKey() != MockAction.ForwardRequestToDifferentHost.GetOptionsKey())
-                return false;
-            else if (mockingAction == MockAction.AutoTransformRequestOrResponse && mockingAction.GetOptionsKey() != MockAction.AutoTransformRequestOrResponse.GetOptionsKey())
-                return false;
-
+            if (mockingActionOptions.Count >= 1)
+            {
+                if (!(mockingAction == MockAction.ReturnFixedResponse || mockingAction == MockAction.ForwardRequestToDifferentHost || mockingAction == MockAction.AutoTransformRequestOrResponse)
+                        && mockingAction.GetOptionsKey() != mockingActionOptions.Keys.ElementAt(0))
+                    return false;
+            }
+            
             return true;
         }
     }

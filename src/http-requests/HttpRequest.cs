@@ -52,7 +52,7 @@ namespace HTTPMan
             if (headers != null)
                 _headers = headers;
             else
-                _headers = new Dictionary<string, string>() { };
+                _headers = new Dictionary<string, string>();
 
             // Setting body if any.
             if (!body.Equals(""))
