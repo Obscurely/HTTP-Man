@@ -87,7 +87,7 @@ namespace HTTPMan
             bool? acceptCache = null, bool? dnt = null, bool anonymizeRequest = false, bool useProxies = false)
         {
             // Setting proxy if user chose to use one and adjusting timeout.
-            timeout = await SetupClientAndProxy(useProxies, timeout);
+            timeout = await SetupClientAndProxy(useProxies, timeout).ConfigureAwait(false);
 
             HttpResponseMessage response;
             using (Client)
@@ -204,7 +204,7 @@ namespace HTTPMan
             bool? acceptCache = null, bool? dnt = null, bool anonymizeRequest = false, bool useProxies = false)
         {
             // Setting proxy if user chose to use one and adjusting timeout.
-            timeout = await SetupClientAndProxy(useProxies, timeout);
+            timeout = await SetupClientAndProxy(useProxies, timeout).ConfigureAwait(false);
 
             // Null variable which will change withing the code if the user passed a content.
             // At the end when the request is made the function checks if the requestBody is not null and if it's not it will include it in the request.
@@ -304,7 +304,7 @@ namespace HTTPMan
             bool useProxies = false)
         {
             // Setting proxy if user chose to use one and adjusting timeout.
-            timeout = await SetupClientAndProxy(useProxies, timeout);
+            timeout = await SetupClientAndProxy(useProxies, timeout).ConfigureAwait(false);
 
             // Null variable which will change withing the code if the user passed a content.
             // At the end when the request is made the function checks if the requestBody is not null and if it's not it will include it in the request.
@@ -399,7 +399,7 @@ namespace HTTPMan
             bool? dnt = null, bool anonymizeRequest = false, bool useProxies = false)
         {
             // Setting proxy if user chose to use one and adjusting timeout.
-            timeout = await SetupClientAndProxy(useProxies, timeout);
+            timeout = await SetupClientAndProxy(useProxies, timeout).ConfigureAwait(false);
 
             // Null variable which will change withing the code if the user passed a content.
             // At the end when the request is made the function checks if the requestBody is not null and if it's not it will include it in the request.
@@ -498,7 +498,7 @@ namespace HTTPMan
             bool? dnt = null, bool anonymizeRequest = false, bool useProxies = false)
         {
             // Setting proxy if user chose to use one and adjusting timeout.
-            timeout = await SetupClientAndProxy(useProxies, timeout);
+            timeout = await SetupClientAndProxy(useProxies, timeout).ConfigureAwait(false);
 
             // Null variable which will change withing the code if the user passed a content.
             // At the end when the request is made the function checks if the requestBody is not null and if it's not it will include it in the request.
@@ -612,7 +612,7 @@ namespace HTTPMan
             Dictionary<string, string>? parameters = null, TimeSpan? timeout = null, bool? acceptCache = null, bool? dnt = null, bool anonymizeRequest = false, bool useProxies = false)
         {
             // Setting proxy if user chose to use one and adjusting timeout.
-            timeout = await SetupClientAndProxy(useProxies, timeout);
+            timeout = await SetupClientAndProxy(useProxies, timeout).ConfigureAwait(false);
 
             // Null variable which will change withing the code if the user passed a content.
             // At the end when the request is made the function checks if the requestBody is not null and if it's not it will include it in the request.
@@ -702,7 +702,7 @@ namespace HTTPMan
             Dictionary<string, string>? parameters = null, TimeSpan? timeout = null, bool? dnt = null, bool anonymizeRequest = false, bool useProxies = false)
         {
             // Setting proxy if user chose to use one and adjusting timeout.
-            timeout = await SetupClientAndProxy(useProxies, timeout);
+            timeout = await SetupClientAndProxy(useProxies, timeout).ConfigureAwait(false);
 
             // Null variable which will change withing the code if the user passed a content.
             // At the end when the request is made the function checks if the requestBody is not null and if it's not it will include it in the request.
@@ -790,7 +790,7 @@ namespace HTTPMan
             Dictionary<string, string>? parameters = null, TimeSpan? timeout = null, long? maxResponseContentBufferSize = null, bool? dnt = null, bool anonymizeRequest = false, bool useProxies = false)
         {
             // Setting proxy if user chose to use one and adjusting timeout.
-            timeout = await SetupClientAndProxy(useProxies, timeout);
+            timeout = await SetupClientAndProxy(useProxies, timeout).ConfigureAwait(false);
             
             // Null variable which will change withing the code if the user passed a content.
             // At the end when the request is made the function checks if the requestBody is not null and if it's not it will include it in the request.
@@ -1078,9 +1078,9 @@ namespace HTTPMan
 #nullable disable
 
 #nullable enable
-        public static void AnonymizeRequest(bool anonymizeRequest)
+        public static void AnonymizeRequest(bool anonymize)
         {
-            if (anonymizeRequest == true)
+            if (anonymize == true)
             {
                 // Setting some headers that provide more anonymity. Not much but it's something.
                 Random random = new();
