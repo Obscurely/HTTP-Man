@@ -11,7 +11,7 @@ using Microsoft.Extensions.Hosting;
 using ElectronNET.API;
 using ElectronNET.API.Entities;
 
-namespace HTTP_Man
+namespace HTTPMan
 {
     public class Startup
     {
@@ -64,10 +64,12 @@ namespace HTTP_Man
         {
             BrowserWindow browserWindow = await Electron.WindowManager.CreateWindowAsync(new BrowserWindowOptions
             {
-                Show = false
+                Show = false,
+                // Frame = false
             });
 
             browserWindow.OnReadyToShow += () => browserWindow.Show();
+            browserWindow.Maximize();
         }
     }
 }

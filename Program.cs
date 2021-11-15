@@ -8,7 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using ElectronNET.API;
 
-namespace HTTP_Man
+namespace HTTPMan
 {
     public class Program
     {

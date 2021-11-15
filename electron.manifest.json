@@ -1,15 +1,15 @@
 {
-  "executable": "HTTP-Man",
+  "executable": "HTTPMan",
   "splashscreen": {
     "imageFile": ""
   },
-  "name": "HTTP-Man",
+  "name": "HTTPMan",
   "author": "",
   "singleInstance": false,
   "environment": "Production",
   "build": {
-    "appId": "com.HTTP-Man.app",
-    "productName": "HTTP-Man",
+    "appId": "com.HTTPMan.app",
+    "productName": "HTTPMan",
     "copyright": "Copyright © 2020",
     "buildVersion": "1.0.0",
     "compression": "maximum",
