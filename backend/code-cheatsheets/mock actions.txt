@@ -1,0 +1,28 @@
+0 = PassRequestToDestination:
+    Just passes the request to it's destination without even touching it.
+
+1 = PauseRequestToManuallyEdit:
+    Pauses the request and prompts the user in the ui to change the request.
+
+2 = PauseResponseToManuallyEdit:
+    Pauses the response and prompts the user in the ui to change the request.
+
+3 = PauseRequestAndResponseToManuallyEdit:
+    Pauses the request and response and prompts the user in the uit to change the request.
+
+4 = ReturnFixedResponse:
+    { "response", HttpResponse } // The value is an object of type HttpResponse.
+
+5 = ForwardRequestToDifferentHost:
+    { "host", "host.com" } // Basically a request will turn like this: www.google.com/search/test -> www.host.com/search/test | Modifies the headers and everything.
+
+6 = AutoTransformRequestOrResponse
+    { "transformer", Transformer } // The values is an object of type Transformer which can easily change stuff about either the request or response.
+
+7 = TimeoutWithNoResponse
+    Returns for the request a generic empty response of type timeout.
+
+8 = CloseConnectionImmediately
+    Terminates the connection instantly to the specific host.
+
+All of the dict keys in code go like this (ReturnFixedResponse is just an example): MockAction.ReturnFixedResponse.GetOptionsKey()
