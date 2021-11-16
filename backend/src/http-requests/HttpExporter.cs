@@ -1,8 +1,6 @@
-using System.IO;
-using System.Threading.Tasks;
-using System.Collections.Generic;
+using HTTPMan.Extensions;
 
-namespace HTTPMan
+namespace HTTPMan.Http
 {
     /// <summary>
     /// Contains all actions related to exporting http stuff to a file.

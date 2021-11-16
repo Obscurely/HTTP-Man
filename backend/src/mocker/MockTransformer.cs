@@ -1,9 +1,7 @@
-using System;
 using System.Net;
-using System.Net.Http;
-using System.Collections.Generic;
+using HTTPMan.Http;
 
-namespace HTTPMan
+namespace HTTPMan.Mock
 {
 #nullable enable
     /// <summary>

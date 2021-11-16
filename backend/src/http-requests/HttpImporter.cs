@@ -1,11 +1,7 @@
-using System;
-using System.Net.Http;
-using System.IO;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Collections.Generic;
+using HTTPMan.Extensions;
 
-namespace HTTPMan
+namespace HTTPMan.Http
 {
     public static class HttpImporter
     {

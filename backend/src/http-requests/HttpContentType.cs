@@ -1,4 +1,4 @@
-namespace HTTPMan
+namespace HTTPMan.Http
 {
     /// <summary>
     /// Enum that contains the http content types for requests supported by Requester.cs.

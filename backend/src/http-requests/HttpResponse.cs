@@ -1,8 +1,6 @@
-using System;
 using System.Net;
-using System.Collections.Generic;
 
-namespace HTTPMan
+namespace HTTPMan.Http
 {
     /// <summary>
     /// Object representing an http response.

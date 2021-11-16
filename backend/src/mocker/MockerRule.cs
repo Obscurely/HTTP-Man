@@ -1,7 +1,6 @@
-using System.Linq;
-using System.Collections.Generic;
+using HTTPMan.Extensions;
 
-namespace HTTPMan
+namespace HTTPMan.Mock
 {
     /// <summary>
     /// Enum that contains the http methods supported by the mocker as well as an ANY option.

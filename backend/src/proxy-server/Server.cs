@@ -1,21 +1,15 @@
-using System;
 using System.Net;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 using Titanium.Web.Proxy;
 using Titanium.Web.Proxy.EventArguments;
-using Titanium.Web.Proxy.Exceptions;
-using Titanium.Web.Proxy.Helpers;
-using Titanium.Web.Proxy.Http;
-using Titanium.Web.Proxy.Http2;
 using Titanium.Web.Proxy.Models;
-using Titanium.Web.Proxy.Network;
-using Titanium.Web.Proxy.StreamExtended;
+using HTTPMan.Http;
+using HTTPMan.Mock;
+using HTTPMan.Extensions;
 
 #pragma warning disable CS1998 // disables the warning "async method lacks await operators and will run synchronously" since titanium web proxy requires the handlers to be async.
 
-namespace HTTPMan
+namespace HTTPMan.Proxy
 {
     /// <summary>
     /// The proxy server that intercepts the requests.
@@ -120,7 +114,18 @@ namespace HTTPMan
         /// <returns>A byte array containing the root certificate.</returns>
         public byte[] GetRootCertificate()
         {
-            return ProxyServer.CertificateManager.RootCertificate.Export(System.Security.Cryptography.X509Certificates.X509ContentType.Cert);
+            // checks if proxy server is null in case the server hasn't been init before executing this command.
+            if (ProxyServer == null)
+            {
+                return new byte[0];
+            }
+            else 
+            {
+                // disabling the warning since proxyserver.certificate manager can't actually be null if proxyserver isn't.
+#pragma warning disable CS8602
+                return ProxyServer.CertificateManager.RootCertificate.Export(System.Security.Cryptography.X509Certificates.X509ContentType.Cert);
+#pragma warning restore CS8602
+            }
         }
 
         /// <summary>
@@ -162,8 +167,9 @@ namespace HTTPMan
         /// <summary>
         /// Gives back a string array containing the names of adapters used by the proxy.
         /// </summary>
-        /// <returns>A string array containing the names of adapters used by the proxy.</returns>
-        public string[] GetListenerDevices()
+        /// <returns>A string array containing the names of adapters used by the proxy or null if server not started.</returns>
+#nullable enable
+        public string[]? GetListenerDevices()
         {
             if (IsServerStarted)
             {
@@ -180,6 +186,7 @@ namespace HTTPMan
                 return null;
             }
         }
+#nullable disable
 
         /// <summary>
         /// Gets the ips and ports the proxy is listening to.

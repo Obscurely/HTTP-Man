@@ -1,12 +1,7 @@
-using System;
 using System.Net;
-using System.Linq;
 using System.Text;
-using System.Net.Http;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
-namespace HTTPMan
+namespace HTTPMan.Http
 {
     /// <summary>
     /// Class for doing complex http requests (basically everything that is supported by the built-in http client class and the specific request type can be changed.)
@@ -14,7 +9,7 @@ namespace HTTPMan
     public static class Requester
     {
         // Fields
-        private static HttpClient _client;
+        private static HttpClient _client = new(); // the new client instance is temporary.
         private static readonly string _proxiesUrl = "https://api.proxyscrape.com/v2/?request=getproxies&protocol=http&timeout=5000&country=all&ssl=all&anonymity=all&simplified=true";
         private static List<string> _proxies = new();
 

@@ -1,13 +1,11 @@
-using System;
 using System.Net;
-using System.Linq;
 using System.Text.Json;
-using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Titanium.Web.Proxy.EventArguments;
-using System.Threading.Tasks;
+using HTTPMan.Http;
+using HTTPMan.Extensions;
 
-namespace HTTPMan
+namespace HTTPMan.Mock
 {
     /// <summary>
     /// Handles the event argument given by the proxy and mocker rule. Checks if the request is matched and it is manipulates it as the rule says.
@@ -279,8 +277,11 @@ namespace HTTPMan
 
             try
             {
+                // disabling warning since this is in a controlled environment and a null error is a possible wanted outcome.
+#pragma warning disable CS8600
                 body = JsonSerializer.Deserialize<Dictionary<string, string>>(bodyString);
                 requestBody = JsonSerializer.Deserialize<Dictionary<string, string>>(requestBodyString);
+#pragma warning restore CS8600
             }
             catch (Exception)
             {
@@ -313,25 +314,35 @@ namespace HTTPMan
 
             try
             {
+                // disabling warning since this is in a controlled environment and a null error is a possible wanted outcome.
+#pragma warning disable CS8600
                 body = JsonSerializer.Deserialize<Dictionary<string, string>>(bodyString);
                 requestBody = JsonSerializer.Deserialize<Dictionary<string, string>>(requestBodyString);
+#pragma warning restore CS8600
             }
             catch (Exception)
             {
                 return false;
             }
 
-            for (int i = 0; i < body.Count; i++)
+            if (requestBody == null || body == null)
             {
-                if (!requestBody.ContainsKey(body.Keys.ElementAt(i)))
+                return true;
+            }
+            else
+            {
+                for (int i = 0; i < body.Count; i++)
                 {
-                    return false;
-                }
+                    if (!requestBody.ContainsKey(body.Keys.ElementAt(i)))
+                    {
+                        return false;
+                    }
 
-                if (!requestBody[body.Keys.ElementAt(i)].Equals(body.Values.ElementAt(i)))
-                {
-                    return false;
-                }   
+                    if (!requestBody[body.Keys.ElementAt(i)].Equals(body.Values.ElementAt(i)))
+                    {
+                        return false;
+                    }   
+                }
             }
 
             return true;
@@ -349,7 +360,7 @@ namespace HTTPMan
         /// <returns>The modified event argument.</returns>
         private static SessionEventArgs ReturnFixedResponse(MockerRule rule, SessionEventArgs e)
         {
-            HttpResponse response = (HttpResponse)(rule.MockingActionOptions[rule.MockingAction.GetOptionsKey()]);
+            Http.HttpResponse response = (Http.HttpResponse)(rule.MockingActionOptions[rule.MockingAction.GetOptionsKey()]);
 
             e.HttpClient.Response.StatusCode = response.StatusCode;
 
@@ -448,7 +459,10 @@ namespace HTTPMan
             if (transformer.RequestUrl != null)
             {
                 string oldRequestUrl = e.HttpClient.Request.Url;
+                // disabling warning since this is a bug and host can't be null here.
+#pragma warning disable CS8600
                 string oldRequestHost = e.HttpClient.Request.Host;
+#pragma warning restore CS8600
 
                 try
                 {

@@ -1,12 +1,8 @@
 using System.Text;
-using System;
-using System.Net.Http;
-using System.Linq;
 using System.Text.Json;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
+using HTTPMan.Mock;
 
-namespace HTTPMan
+namespace HTTPMan.Extensions
 {
     /// <summary>
     /// The class where object extension methods go in.
@@ -32,10 +28,21 @@ namespace HTTPMan
         /// Extension method that converts a string to a Dictionary<string, string>.
         /// </summary>
         /// <returns>Object of type Dictionary<string, string> from the string.</returns>
+#nullable enable
         public static Dictionary<string, string> ToDict(this string str)
         {
-            return JsonSerializer.Deserialize<Dictionary<string, string>>(str);
+            Dictionary<string, string>? dict = JsonSerializer.Deserialize<Dictionary<string, string>>(str);
+            if (dict == null)
+            {
+                Dictionary<string, string> emptyDict = new();
+                return emptyDict;
+            }
+            else
+            {
+                return (Dictionary<string, string>)dict;
+            }
         }
+#nullable disable
 
         /// <summary>
         /// Extension method that converts a Dictionary<string, object> to it's json string representation.
