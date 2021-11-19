@@ -1,7 +1,7 @@
 ﻿using System;
 using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.ReactiveUI;
 
 namespace HTTPMan
 {
@@ -18,6 +18,7 @@ namespace HTTPMan
         public static AppBuilder BuildAvaloniaApp()
             => AppBuilder.Configure<App>()
                 .UsePlatformDetect()
-                .LogToTrace();
+                .LogToTrace()
+                .UseReactiveUI();
     }
 }
