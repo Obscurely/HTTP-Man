@@ -1,5 +1,7 @@
 using System.Text;
+using System.Linq;
 using System.Text.Json;
+using System.Collections.Generic;
 using HTTPMan.Mock;
 
 namespace HTTPMan.Extensions

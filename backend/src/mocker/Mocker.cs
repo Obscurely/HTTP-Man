@@ -1,7 +1,11 @@
+using System;
 using System.Net;
+using System.Linq;
 using System.Text.Json;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Titanium.Web.Proxy.EventArguments;
+using System.Threading.Tasks;
 using HTTPMan.Http;
 using HTTPMan.Extensions;
 

@@ -1,9 +1,10 @@
 using System.Net;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using Titanium.Web.Proxy;
 using Titanium.Web.Proxy.EventArguments;
 using Titanium.Web.Proxy.Models;
-using HTTPMan.Http;
 using HTTPMan.Mock;
 using HTTPMan.Extensions;
 

@@ -1,3 +1,5 @@
+using System.Linq;
+using System.Collections.Generic;
 using HTTPMan.Extensions;
 
 namespace HTTPMan.Mock
