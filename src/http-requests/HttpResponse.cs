@@ -14,7 +14,7 @@ namespace HTTPMan
         private readonly Dictionary<string, string> _headers;
         private readonly string _bodyString;
         private readonly HttpContentType _bodyType;
-        private readonly bool _hasBody = false;
+        private readonly bool _hasBody;
         private readonly bool _keepBody;
         private readonly Version _httpMethodVersion;
 
@@ -45,10 +45,14 @@ namespace HTTPMan
 
             // Setting headers if any.
             if (headers != null)
+            {
                 _headers = headers;
+            }
             else
-                _headers = new Dictionary<string, string>() { };
-
+            {
+                _headers = new Dictionary<string, string>();
+            }
+        
             // Setting body if any.
             if (!body.Equals(""))
             {
@@ -66,13 +70,21 @@ namespace HTTPMan
 
             // Setting http version.
             if (httpMethodVersion == 1.0)
+            {
                 _httpMethodVersion = HttpVersion.Version10;
+            }
             else if (httpMethodVersion == 1.1)
+            {
                 _httpMethodVersion = HttpVersion.Version11;
+            }
             else if (httpMethodVersion == 2.0)
+            {
                 _httpMethodVersion = HttpVersion.Version20;
+            }
             else
+            {
                 _httpMethodVersion = HttpVersion.Version11;
+            } 
         }
 #nullable disable
     }

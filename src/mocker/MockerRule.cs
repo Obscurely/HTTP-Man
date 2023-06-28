@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Collections.Generic;
 
 namespace HTTPMan
@@ -47,7 +48,8 @@ namespace HTTPMan
         ForwardRequestToDifferentHost = 5,
         AutoTransformRequestOrResponse = 6,
         TimeoutWithNoResponse = 7,
-        CloseConnectionImmediately = 8
+        CloseConnectionImmediately = 8,
+        BlockConnectionToHost = 9
     }
 
     /// <summary>
@@ -60,9 +62,10 @@ namespace HTTPMan
         private readonly Dictionary<string, string> _matcherOptions;
         private readonly MockAction _mockingAction;
         private readonly Dictionary<string, object> _mockingActionOptions;
-        private readonly bool _isForRequest = false;
-        private readonly bool _isForResponse = false;
-        private readonly bool _isForTunnelConnect = false;
+        private readonly bool _isForRequest;
+        private readonly bool _isForResponse;
+        private readonly bool _isForTunnelConnect;
+        private readonly bool _isValid;
 
         public MockHttpMethod Method { get { return _method; } }
         public MockMatcher Matcher { get { return _matcher; } }
@@ -72,13 +75,14 @@ namespace HTTPMan
         public bool IsForRequest { get { return _isForRequest; } }
         public bool IsForResponse { get { return _isForResponse; } }
         public bool IsForTunnelConnect { get { return _isForTunnelConnect; } }
+        public bool IsValid { get { return _isValid; } }
 
         /// <summary>
         /// Creates a rule with specified information.
         /// </summary>
         /// <param name="method">Http Method the mocker should match for (or ANY).</param>
         /// <param name="matcher">Matching method to match only specific request for modifying.</param>
-        /// /// /// <param name="matcherOptions">Information for the matching method in order for the program to know how to use it.</param>
+        /// <param name="matcherOptions">Information for the matching method in order for the program to know how to use it.</param>
         /// <param name="mockingAction">What method should the server use if the specific request is matched.</param>
         /// <param name="mockingActionOptions">Information for mocking action to know what to do.</param>
         public MockerRule(MockHttpMethod method, MockMatcher matcher, Dictionary<string, string> matcherOptions, MockAction mockingAction, Dictionary<string, object> mockingActionOptions)
@@ -89,45 +93,59 @@ namespace HTTPMan
             _mockingAction = mockingAction;
             _mockingActionOptions = mockingActionOptions;
 
-            if (mockingAction == MockAction.PassRequestToDestination)
+            if (mockingAction == MockAction.PassRequestToDestination || mockingAction == MockAction.PauseRequestToManuallyEdit || mockingAction == MockAction.PauseResponseToManuallyEdit ||
+                    mockingAction == MockAction.ForwardRequestToDifferentHost)
             {
                 _isForRequest = true;
             }
-            else if (mockingAction == MockAction.PauseRequestToManuallyEdit)
-            {
-                _isForRequest = true;
-            }
-            else if (mockingAction == MockAction.PauseResponseToManuallyEdit)
+            else if (mockingAction == MockAction.ReturnFixedResponse || mockingAction == MockAction.TimeoutWithNoResponse)
             {
                 _isForResponse = true;
             }
-            else if (mockingAction == MockAction.PauseRequestAndResponseToManuallyEdit)
+            else if (mockingAction == MockAction.PauseRequestAndResponseToManuallyEdit || mockingAction == MockAction.AutoTransformRequestOrResponse ||
+                        mockingAction == MockAction.CloseConnectionImmediately)
             {
                 _isForRequest = true;
                 _isForResponse = true;
             }
-            else if (mockingAction == MockAction.ReturnFixedResponse)
+            else if (mockingAction == MockAction.BlockConnectionToHost)
             {
-                _isForResponse = true;
+                _isForTunnelConnect = true;
+                if (matcher != MockMatcher.ForHost)
+                {
+                    _matcher = MockMatcher.ForUrl;
+                    _matcherOptions = new Dictionary<string, string>();
+                }
             }
-            else if (mockingAction == MockAction.ForwardRequestToDifferentHost)
+            
+            _isValid = MockerRule.IsRuleValid(matcher, matcherOptions, mockingAction, mockingActionOptions);
+        }
+
+        /// <summary>
+        /// Checks if the current rule being created is valid.
+        /// </summary>
+        /// <param name="matcher">Rule's matcher object.</param>
+        /// <param name="matcherOptions">Rule's matcherOptions object.</param>
+        /// <param name="mockingAction">Rule's mockingAction object.</param>
+        /// <param name="mockingActionOptions">Rule's mockingActionOptions object.</param>
+        /// <returns>True if the rule is valid, false if the rule is invalid.</returns>
+        private static bool IsRuleValid(MockMatcher matcher, Dictionary<string, string> matcherOptions, MockAction mockingAction, Dictionary<string, object> mockingActionOptions)
+        {
+            if (!matcherOptions.ContainsKey(matcher.GetOptionsKey()) && matcher != MockMatcher.IncludingHeaders)
             {
-                _isForRequest = true;
+                return false;
             }
-            else if (mockingAction == MockAction.AutoTransformRequestOrResponse)
+            
+            if (mockingActionOptions.Count >= 1)
             {
-                _isForRequest = true;
-                _isForResponse = true;
+                if (!(mockingAction == MockAction.ReturnFixedResponse || mockingAction == MockAction.ForwardRequestToDifferentHost || mockingAction == MockAction.AutoTransformRequestOrResponse)
+                        && mockingAction.GetOptionsKey() != mockingActionOptions.Keys.ElementAt(0))
+                {
+                    return false;
+                }
             }
-            else if (mockingAction == MockAction.TimeoutWithNoResponse)
-            {
-                _isForResponse = true;
-            }
-            else if (mockingAction == MockAction.CloseConnectionImmediately)
-            {
-                _isForRequest = true;
-                _isForResponse = true;
-            }
+            
+            return true;
         }
     }
 }

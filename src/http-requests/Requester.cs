@@ -11,24 +11,24 @@ namespace HTTPMan
     /// <summary>
     /// Class for doing complex http requests (basically everything that is supported by the built-in http client class and the specific request type can be changed.)
     /// </summary>
-    public class Requester
+    public static class Requester
     {
         // Fields
-        private HttpClient _client;
-        private const string _proxiesUrl = "https://api.proxyscrape.com/v2/?request=getproxies&protocol=http&timeout=5000&country=all&ssl=all&anonymity=all&simplified=true";
-        private List<string> _proxies = new();
+        private static HttpClient _client;
+        private static readonly string _proxiesUrl = "https://api.proxyscrape.com/v2/?request=getproxies&protocol=http&timeout=5000&country=all&ssl=all&anonymity=all&simplified=true";
+        private static List<string> _proxies = new();
 
         // Properties
-        private HttpClient Client { get { return _client; } set { _client = value; } }
-        private string ProxiesUrl { get { return _proxiesUrl; } }
-        private List<string> Proxies { get { return _proxies; } set { _proxies = value; } }
+        private static HttpClient Client { get { return _client; } set { _client = value; } }
+        private static string ProxiesUrl { get { return _proxiesUrl; } }
+        private static List<string> Proxies { get { return _proxies; } set { _proxies = value; } }
 
         // Methods
         /// <summary>
         /// Gets a list of proxies from proxyscrape.com
         /// </summary>
         /// <returns>Return a list with the proxy downloaded from proxyscrape.com</returns>
-        private async Task<List<string>> GetProxies()
+        private static async Task<List<string>> GetProxies()
         {
             List<string> proxies = new();
             using (HttpClient client = new())
@@ -39,7 +39,9 @@ namespace HTTPMan
                 for (int i = 0; i < proxiesArray.Length; i++)
                 {
                     if (!proxiesArray[i].Equals(string.Empty))
+                    {
                         proxies.Add(proxiesArray[i]);
+                    }   
                 }
             }
 
@@ -51,7 +53,7 @@ namespace HTTPMan
         /// </summary>
         /// <param name="proxies">list with proxies to pick from.</param>
         /// <returns>A random selected proxy from the given list.</returns>
-        private string PickProxy(List<string> proxies)
+        private static string PickProxy(List<string> proxies)
         {
             Random random = new(Guid.NewGuid().GetHashCode());
             string proxy = proxies[random.Next(proxies.Count)];
@@ -80,151 +82,45 @@ namespace HTTPMan
         /// <returns>The response as a HttpResponseMessage which contains all the data about the response and the request the was used to send it. If an error ocurred is gonna send an empty
         ///          response with only one header called error with a value containing information about the error.</returns>
 #nullable enable
-        public async Task<HttpResponseMessage> GetRequest(string url, double? httpVersion = null, HttpVersionPolicy? versionPolicy = null, Dictionary<string, string>? headers = null,
+        public static async Task<HttpResponseMessage> GetRequest(string url, double? httpVersion = null, HttpVersionPolicy? versionPolicy = null, Dictionary<string, string>? headers = null,
             Dictionary<string, string>? parameters = null, string? content = null, HttpContentType? contentType = null, TimeSpan? timeout = null, long? maxResponseContentBufferSize = null,
             bool? acceptCache = null, bool? dnt = null, bool anonymizeRequest = false, bool useProxies = false)
         {
-            // Setting proxy if user chose to use one.
-            if (useProxies)
-            {
-                if (Proxies.Count() == 0)
-                    Proxies = await GetProxies();
-                string proxy = PickProxy(Proxies);
-                HttpClientHandler clientHandler = new()
-                {
-                    AllowAutoRedirect = true,
-                    AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip,
-                    Proxy = new WebProxy(new Uri($"http://{proxy}"))
-                };
-
-                Client = new(clientHandler); // creates/recreates the client instance, in order to be fresh, using the selected proxy.
-                timeout = TimeSpan.FromSeconds(10); // setting the timeout to 10 in order to give slower proxies time to finish the request.
-            }
-            else
-            {
-                Client = new(); // creates/recreates the client instance in order to be fresh.
-            }
+            // Setting proxy if user chose to use one and adjusting timeout.
+            timeout = await SetupClientAndProxy(useProxies, timeout).ConfigureAwait(false);
 
             HttpResponseMessage response;
             using (Client)
             {
                 // Setting http version. Defaults to 1.1 if not specified or specified a invalid value.
-                if (httpVersion == null)
-                    Client.DefaultRequestVersion = HttpVersion.Version11;
-                else if (httpVersion == 1.0)
-                    Client.DefaultRequestVersion = HttpVersion.Version10;
-                else if (httpVersion == 1.1)
-                    Client.DefaultRequestVersion = HttpVersion.Version11;
-                else if (httpVersion == 2.0)
-                    Client.DefaultRequestVersion = HttpVersion.Version20;
-                else
-                    Client.DefaultRequestVersion = HttpVersion.Version11;
+                SetupHttpVersion(httpVersion);
 
                 // Setting version policy. Defaults to request's version or higher if not specified.
-                if (versionPolicy == null)
-                    Client.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrHigher;
-                else
-                    Client.DefaultVersionPolicy = (HttpVersionPolicy)versionPolicy;
+                SetupHttpVersionPolicy(versionPolicy);
 
                 // Setting headers if any.
-                if (headers != null)
-                {
-                    Client.DefaultRequestHeaders.Clear();
-                    for (int i = 0; i < headers.Count; i++)
-                    {
-                        Client.DefaultRequestHeaders.Add(headers.Keys.ElementAt(i), headers.Values.ElementAt(i));
-                    }
-                }
+                SetupRequestHeaders(headers);
 
                 // Setting params if any.
-                if (parameters != null)
-                {
-                    url += "?"; // symbol at the end which specifies there would be upcoming params.
-
-                    // Manually setting the first param in order to not get a "&" at the end.
-                    url += parameters.Keys.ElementAt(0) + "=" + parameters.Values.ElementAt(0);
-
-                    // Automatically setting the rest of params if any.
-                    for (int i = 1; i < parameters.Count; i++)
-                    {
-                        url += "&" + parameters.Keys.ElementAt(i) + "=" + parameters.Values.ElementAt(i);
-                    }
-                }
+                url = SetupRequestParams(url, parameters);
 
                 // Setting the content if any.
-                HttpRequestMessage? request = null;
-                if (content != null)
-                {
-                    if (contentType != null)
-                    {
-                        request = new()
-                        {
-                            Method = HttpMethod.Get,
-                            RequestUri = new Uri(url),
-                            Content = new StringContent(content, Encoding.UTF8, contentType.GetString())
-                        };
-                    }
-                    else
-                    {
-                        request = new()
-                        {
-                            Method = HttpMethod.Get,
-                            RequestUri = new Uri(url),
-                            Content = new StringContent(content, Encoding.UTF8, HttpContentType.TextPlain.GetString())
-                        };
-                    }
-                }
+                HttpRequestMessage? request = SetupRequestContent(url, content, contentType);
 
                 // Setting timeout if any.
-                if (timeout != null)
-                    Client.Timeout = (TimeSpan)timeout;
+                SetupRequestTimeout(timeout);
 
                 // Setting max response content buffer size if specified.
-                if (maxResponseContentBufferSize != null)
-                    Client.MaxResponseContentBufferSize = (long)maxResponseContentBufferSize;
+                SetupMaxResponseContentBufferSize(maxResponseContentBufferSize);
 
                 // Setting if request accepts cache or not.
-                if (acceptCache != null && Client.DefaultRequestHeaders.CacheControl != null)
-                    Client.DefaultRequestHeaders.CacheControl.NoCache = (bool)acceptCache;
+                SetupAcceptCache(acceptCache);
 
                 // Setting the chosen dnt header value if chose.
-                if (dnt != null)
-                {
-                    if ((bool)dnt)
-                    {
-                        Client.DefaultRequestHeaders.Remove("dnt");
-                        Client.DefaultRequestHeaders.Add("dnt", 1.ToString());
-                    }
-                    else
-                    {
-                        Client.DefaultRequestHeaders.Remove("dnt");
-                        Client.DefaultRequestHeaders.Add("dnt", 0.ToString());
-                    }
-                }
+                SetupDNT(dnt);
 
                 // Anonymize request as much request as much as possible if requested.
-                if (anonymizeRequest == true)
-                {
-                    // Setting some headers that provide more anonymity. Not much but it's something.
-                    Random random = new();
-                    Client.DefaultRequestHeaders.Remove("x-forwarded-for");
-                    Client.DefaultRequestHeaders.Add("x-forwarded-for", random.Next().ToString());
-                    Client.DefaultRequestHeaders.Remove("x-forwarded-host");
-                    Client.DefaultRequestHeaders.Add("x-forwarded-host", random.Next().ToString());
-                    Client.DefaultRequestHeaders.Remove("forwarded");
-                    Client.DefaultRequestHeaders.Add("forwarded", "by=" + random.Next().ToString());
-                    Client.DefaultRequestHeaders.Remove("user-agent");
-                    Client.DefaultRequestHeaders.Add("user-agent", random.Next().ToString());
-                    Client.DefaultRequestHeaders.Remove("referer");
-                    Client.DefaultRequestHeaders.Add("referer", random.Next().ToString());
-                    Client.DefaultRequestHeaders.Remove("accept-language");
-                    Client.DefaultRequestHeaders.Add("accept-language", "en-US");
-                    Client.DefaultRequestHeaders.Remove("dnt");
-                    Client.DefaultRequestHeaders.Add("dnt", 1.ToString());
-                    Client.DefaultRequestHeaders.Remove("cache-control");
-                    Client.DefaultRequestHeaders.Add("cache-control", "no-cache");
-                    Client.DefaultRequestHeaders.Add("pragma", "no-cache");
-                }
+                AnonymizeRequest(anonymizeRequest);
 
                 // Doing the actual request and saving the response.
                 if (request == null)
@@ -237,9 +133,13 @@ namespace HTTPMan
                     {
                         response = new();
                         if (timeout != null)
+                        {
                             response.Headers.Add("error", "The request could not be completed in the given timeout of " + timeout.Value.TotalSeconds + " seconds");
+                        }
                         else
+                        {   
                             response.Headers.Add("error", "The request could not be completed in the given timeout");
+                        }
                     }
                     catch (Exception e)
                     {
@@ -257,9 +157,13 @@ namespace HTTPMan
                     {
                         response = new();
                         if (timeout != null)
+                        {
                             response.Headers.Add("error", "The request could not be completed in the given timeout of " + timeout.Value.TotalSeconds + " seconds");
+                        }
                         else
+                        {   
                             response.Headers.Add("error", "The request could not be completed in the given timeout");
+                        }
                     }
                     catch (Exception e)
                     {
@@ -295,30 +199,12 @@ namespace HTTPMan
         /// <returns>The response as a HttpResponseMessage which contains all the data about the response and the request the was used to send it. If an error ocurred is gonna send an empty
         ///          response with only one header called error with a value containing information about the error.</returns>
 #nullable enable
-        public async Task<HttpResponseMessage> PostRequest(string url, double? httpVersion = null, HttpVersionPolicy? versionPolicy = null, Dictionary<string, string>? headers = null,
+        public static async Task<HttpResponseMessage> PostRequest(string url, double? httpVersion = null, HttpVersionPolicy? versionPolicy = null, Dictionary<string, string>? headers = null,
             Dictionary<string, string>? parameters = null, string? content = null, HttpContentType? contentType = null, TimeSpan? timeout = null, long? maxResponseContentBufferSize = null,
             bool? acceptCache = null, bool? dnt = null, bool anonymizeRequest = false, bool useProxies = false)
         {
-            // Setting proxy if user chose to use one.
-            if (useProxies)
-            {
-                if (Proxies.Count() == 0)
-                    Proxies = await GetProxies();
-                string proxy = PickProxy(Proxies);
-                HttpClientHandler clientHandler = new()
-                {
-                    AllowAutoRedirect = true,
-                    AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip,
-                    Proxy = new WebProxy(new Uri($"http://{proxy}"))
-                };
-
-                Client = new(clientHandler); // creates/recreates the client instance, in order to be fresh, using the selected proxy.
-                timeout = TimeSpan.FromSeconds(10); // setting the timeout to 10 in order to give slower proxies time to finish the request.
-            }
-            else
-            {
-                Client = new(); // creates/recreates the client instance in order to be fresh.
-            }
+            // Setting proxy if user chose to use one and adjusting timeout.
+            timeout = await SetupClientAndProxy(useProxies, timeout).ConfigureAwait(false);
 
             // Null variable which will change withing the code if the user passed a content.
             // At the end when the request is made the function checks if the requestBody is not null and if it's not it will include it in the request.
@@ -329,123 +215,58 @@ namespace HTTPMan
             using (Client)
             {
                 // Setting http version. Defaults to 1.1 if not specified or specified a invalid value.
-                if (httpVersion == null)
-                    Client.DefaultRequestVersion = HttpVersion.Version11;
-                else if (httpVersion == 1.0)
-                    Client.DefaultRequestVersion = HttpVersion.Version10;
-                else if (httpVersion == 1.1)
-                    Client.DefaultRequestVersion = HttpVersion.Version11;
-                else if (httpVersion == 2.0)
-                    Client.DefaultRequestVersion = HttpVersion.Version20;
-                else
-                    Client.DefaultRequestVersion = HttpVersion.Version11;
+                SetupHttpVersion(httpVersion);
 
                 // Setting version policy. Defaults to request's version or higher if not specified.
-                if (versionPolicy == null)
-                    Client.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrHigher;
-                else
-                    Client.DefaultVersionPolicy = (HttpVersionPolicy)versionPolicy;
+                SetupHttpVersionPolicy(versionPolicy);
 
                 // Setting headers if any.
-                if (headers != null)
-                {
-                    Client.DefaultRequestHeaders.Clear();
-                    for (int i = 0; i < headers.Count; i++)
-                    {
-                        Client.DefaultRequestHeaders.Add(headers.Keys.ElementAt(i), headers.Values.ElementAt(i));
-                    }
-                }
+                SetupRequestHeaders(headers);
 
                 // Setting params if any.
-                if (parameters != null)
-                {
-                    url += "?"; // symbol at the end which specifies there would be upcoming params.
-
-                    // Manually setting the first param in order to not get a "&" at the end.
-                    url += parameters.Keys.ElementAt(0) + "=" + parameters.Values.ElementAt(0);
-
-                    // Automatically setting the rest of params if any.
-                    for (int i = 1; i < parameters.Count; i++)
-                    {
-                        url += "&" + parameters.Keys.ElementAt(i) + "=" + parameters.Values.ElementAt(i);
-                    }
-                }
+                url = SetupRequestParams(url, parameters);
 
                 // Converting the content if any.
-                if (content != null)
-                {
-                    if (contentType != null)
-                        requestBody = new(content, Encoding.UTF8, contentType.GetString());
-                    else
-                        requestBody = new(content, Encoding.UTF8, HttpContentType.TextPlain.GetString());
-                }
+                requestBody = ConvertContent(content, contentType);
 
                 // Setting timeout if any.
-                if (timeout != null)
-                    Client.Timeout = (TimeSpan)timeout;
+                SetupRequestTimeout(timeout);
 
                 // Setting max response content buffer size if specified.
-                if (maxResponseContentBufferSize != null)
-                    Client.MaxResponseContentBufferSize = (long)maxResponseContentBufferSize;
+                SetupMaxResponseContentBufferSize(maxResponseContentBufferSize);
 
                 // Setting if request accepts cache or not.
-                if (acceptCache != null && Client.DefaultRequestHeaders.CacheControl != null)
-                    Client.DefaultRequestHeaders.CacheControl.NoCache = (bool)acceptCache;
+                SetupAcceptCache(acceptCache);
 
                 // Setting the chosen dnt header value if chose.
-                if (dnt != null)
-                {
-                    if ((bool)dnt)
-                    {
-                        Client.DefaultRequestHeaders.Remove("dnt");
-                        Client.DefaultRequestHeaders.Add("dnt", 1.ToString());
-                    }
-                    else
-                    {
-                        Client.DefaultRequestHeaders.Remove("dnt");
-                        Client.DefaultRequestHeaders.Add("dnt", 0.ToString());
-                    }
-                }
+                SetupDNT(dnt);
 
                 // Anonymize request as much request as much as possible if requested.
-                if (anonymizeRequest == true)
-                {
-                    // Setting some headers that provide more anonymity. Not much but it's something.
-                    Random random = new();
-                    Client.DefaultRequestHeaders.Remove("x-forwarded-for");
-                    Client.DefaultRequestHeaders.Add("x-forwarded-for", random.Next().ToString());
-                    Client.DefaultRequestHeaders.Remove("x-forwarded-host");
-                    Client.DefaultRequestHeaders.Add("x-forwarded-host", random.Next().ToString());
-                    Client.DefaultRequestHeaders.Remove("forwarded");
-                    Client.DefaultRequestHeaders.Add("forwarded", "by=" + random.Next().ToString());
-                    Client.DefaultRequestHeaders.Remove("user-agent");
-                    Client.DefaultRequestHeaders.Add("user-agent", random.Next().ToString());
-                    Client.DefaultRequestHeaders.Remove("referer");
-                    Client.DefaultRequestHeaders.Add("referer", random.Next().ToString());
-                    Client.DefaultRequestHeaders.Remove("accept-language");
-                    Client.DefaultRequestHeaders.Add("accept-language", "en-US");
-                    Client.DefaultRequestHeaders.Remove("dnt");
-                    Client.DefaultRequestHeaders.Add("dnt", 1.ToString());
-                    Client.DefaultRequestHeaders.Remove("cache-control");
-                    Client.DefaultRequestHeaders.Add("cache-control", "no-cache");
-                    Client.DefaultRequestHeaders.Add("pragma", "no-cache");
-                }
+                AnonymizeRequest(anonymizeRequest);
 
                 // Doing the actual request and saving the response.
                 try
                 {
                     if (requestBody != null)
+                    {
                         response = await Client.PostAsync(url, requestBody);
+                    }
                     else
+                    {
                         response = await Client.PostAsync(url, null!);
+                    } 
                 }
                 catch (TaskCanceledException)
                 {
                     response = new();
                     if (timeout != null)
+                    {
                         response.Headers.Add("error", "The request could not be completed in the given timeout of " + timeout.Value.TotalSeconds + " seconds");
+                    }
                     else
+                    {   
                         response.Headers.Add("error", "The request could not be completed in the given timeout");
+                    }
                 }
                 catch (Exception e)
                 {
@@ -478,30 +299,12 @@ namespace HTTPMan
         /// <returns>The response as a HttpResponseMessage which contains all the data about the response and the request the was used to send it. If an error ocurred is gonna send an empty
         ///          response with only one header called error with a value containing information about the error. Note Put Request's responses don't have a body.</returns>
 #nullable enable
-        public async Task<HttpResponseMessage> PutRequest(string url, double? httpVersion = null, HttpVersionPolicy? versionPolicy = null, Dictionary<string, string>? headers = null,
+        public static async Task<HttpResponseMessage> PutRequest(string url, double? httpVersion = null, HttpVersionPolicy? versionPolicy = null, Dictionary<string, string>? headers = null,
             Dictionary<string, string>? parameters = null, string? content = null, HttpContentType? contentType = null, TimeSpan? timeout = null, bool? dnt = null, bool anonymizeRequest = false,
             bool useProxies = false)
         {
-            // Setting proxy if user chose to use one.
-            if (useProxies)
-            {
-                if (Proxies.Count() == 0)
-                    Proxies = await GetProxies();
-                string proxy = PickProxy(Proxies);
-                HttpClientHandler clientHandler = new()
-                {
-                    AllowAutoRedirect = true,
-                    AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip,
-                    Proxy = new WebProxy(new Uri($"http://{proxy}"))
-                };
-
-                Client = new(clientHandler); // creates/recreates the client instance, in order to be fresh, using the selected proxy.
-                timeout = TimeSpan.FromSeconds(10); // setting the timeout to 10 in order to give slower proxies time to finish the request.
-            }
-            else
-            {
-                Client = new(); // creates/recreates the client instance in order to be fresh.
-            }
+            // Setting proxy if user chose to use one and adjusting timeout.
+            timeout = await SetupClientAndProxy(useProxies, timeout).ConfigureAwait(false);
 
             // Null variable which will change withing the code if the user passed a content.
             // At the end when the request is made the function checks if the requestBody is not null and if it's not it will include it in the request.
@@ -512,115 +315,52 @@ namespace HTTPMan
             using (Client)
             {
                 // Setting http version. Defaults to 1.1 if not specified or specified a invalid value.
-                if (httpVersion == null)
-                    Client.DefaultRequestVersion = HttpVersion.Version11;
-                else if (httpVersion == 1.0)
-                    Client.DefaultRequestVersion = HttpVersion.Version10;
-                else if (httpVersion == 1.1)
-                    Client.DefaultRequestVersion = HttpVersion.Version11;
-                else if (httpVersion == 2.0)
-                    Client.DefaultRequestVersion = HttpVersion.Version20;
-                else
-                    Client.DefaultRequestVersion = HttpVersion.Version11;
+                SetupHttpVersion(httpVersion);
 
                 // Setting version policy. Defaults to request's version or higher if not specified.
-                if (versionPolicy == null)
-                    Client.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrHigher;
-                else
-                    Client.DefaultVersionPolicy = (HttpVersionPolicy)versionPolicy;
+                SetupHttpVersionPolicy(versionPolicy);
 
                 // Setting headers if any.
-                if (headers != null)
-                {
-                    Client.DefaultRequestHeaders.Clear();
-                    for (int i = 0; i < headers.Count; i++)
-                    {
-                        Client.DefaultRequestHeaders.Add(headers.Keys.ElementAt(i), headers.Values.ElementAt(i));
-                    }
-                }
+                SetupRequestHeaders(headers);
 
                 // Setting params if any.
-                if (parameters != null)
-                {
-                    url += "?"; // symbol at the end which specifies there would be upcoming params.
-
-                    // Manually setting the first param in order to not get a "&" at the end.
-                    url += parameters.Keys.ElementAt(0) + "=" + parameters.Values.ElementAt(0);
-
-                    // Automatically setting the rest of params if any.
-                    for (int i = 1; i < parameters.Count; i++)
-                    {
-                        url += "&" + parameters.Keys.ElementAt(i) + "=" + parameters.Values.ElementAt(i);
-                    }
-                }
+                url = SetupRequestParams(url, parameters);
 
                 // Converting the content if any.
-                if (content != null)
-                {
-                    if (contentType != null)
-                        requestBody = new(content, Encoding.UTF8, contentType.GetString());
-                    else
-                        requestBody = new(content, Encoding.UTF8, HttpContentType.TextPlain.GetString());
-                }
+                requestBody = ConvertContent(content, contentType);
 
                 // Setting timeout if any.
-                if (timeout != null)
-                    Client.Timeout = (TimeSpan)timeout;
+                SetupRequestTimeout(timeout);
 
                 // Setting the chosen dnt header value if chose.
-                if (dnt != null)
-                {
-                    if ((bool)dnt)
-                    {
-                        Client.DefaultRequestHeaders.Remove("dnt");
-                        Client.DefaultRequestHeaders.Add("dnt", 1.ToString());
-                    }
-                    else
-                    {
-                        Client.DefaultRequestHeaders.Remove("dnt");
-                        Client.DefaultRequestHeaders.Add("dnt", 0.ToString());
-                    }
-                }
+                SetupDNT(dnt);
 
                 // Anonymize request as much request as much as possible if requested.
-                if (anonymizeRequest == true)
-                {
-                    // Setting some headers that provide more anonymity. Not much but it's something.
-                    Random random = new();
-                    Client.DefaultRequestHeaders.Remove("x-forwarded-for");
-                    Client.DefaultRequestHeaders.Add("x-forwarded-for", random.Next().ToString());
-                    Client.DefaultRequestHeaders.Remove("x-forwarded-host");
-                    Client.DefaultRequestHeaders.Add("x-forwarded-host", random.Next().ToString());
-                    Client.DefaultRequestHeaders.Remove("forwarded");
-                    Client.DefaultRequestHeaders.Add("forwarded", "by=" + random.Next().ToString());
-                    Client.DefaultRequestHeaders.Remove("user-agent");
-                    Client.DefaultRequestHeaders.Add("user-agent", random.Next().ToString());
-                    Client.DefaultRequestHeaders.Remove("referer");
-                    Client.DefaultRequestHeaders.Add("referer", random.Next().ToString());
-                    Client.DefaultRequestHeaders.Remove("accept-language");
-                    Client.DefaultRequestHeaders.Add("accept-language", "en-US");
-                    Client.DefaultRequestHeaders.Remove("dnt");
-                    Client.DefaultRequestHeaders.Add("dnt", 1.ToString());
-                    Client.DefaultRequestHeaders.Remove("cache-control");
-                    Client.DefaultRequestHeaders.Add("cache-control", "no-cache");
-                    Client.DefaultRequestHeaders.Add("pragma", "no-cache");
-                }
+                AnonymizeRequest(anonymizeRequest);
 
                 // Doing the actual request and saving the response.
                 try
                 {
                     if (requestBody != null)
+                    {
                         response = await Client.PutAsync(url, requestBody);
+                    }
                     else
+                    {
                         response = await Client.PutAsync(url, null!);
+                    }
                 }
                 catch (TaskCanceledException)
                 {
                     response = new();
                     if (timeout != null)
+                    {
                         response.Headers.Add("error", "The request could not be completed in the given timeout of " + timeout.Value.TotalSeconds + " seconds");
+                    }
                     else
+                    {   
                         response.Headers.Add("error", "The request could not be completed in the given timeout");
+                    }
                 }
                 catch (Exception e)
                 {
@@ -654,30 +394,12 @@ namespace HTTPMan
         /// <returns>The response as a HttpResponseMessage which contains all the data about the response and the request the was used to send it. If an error ocurred is gonna send an empty
         ///          response with only one header called error with a value containing information about the error. Note Put Request's responses don't have a body.</returns>
 #nullable enable
-        public async Task<HttpResponseMessage> PatchRequest(string url, double? httpVersion = null, HttpVersionPolicy? versionPolicy = null, Dictionary<string, string>? headers = null,
+        public static async Task<HttpResponseMessage> PatchRequest(string url, double? httpVersion = null, HttpVersionPolicy? versionPolicy = null, Dictionary<string, string>? headers = null,
             Dictionary<string, string>? parameters = null, string? content = null, HttpContentType? contentType = null, TimeSpan? timeout = null, long? maxResponseContentBufferSize = null,
             bool? dnt = null, bool anonymizeRequest = false, bool useProxies = false)
         {
-            // Setting proxy if user chose to use one.
-            if (useProxies)
-            {
-                if (Proxies.Count() == 0)
-                    Proxies = await GetProxies();
-                string proxy = PickProxy(Proxies);
-                HttpClientHandler clientHandler = new()
-                {
-                    AllowAutoRedirect = true,
-                    AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip,
-                    Proxy = new WebProxy(new Uri($"http://{proxy}"))
-                };
-
-                Client = new(clientHandler); // creates/recreates the client instance, in order to be fresh, using the selected proxy.
-                timeout = TimeSpan.FromSeconds(10); // setting the timeout to 10 in order to give slower proxies time to finish the request.
-            }
-            else
-            {
-                Client = new(); // creates/recreates the client instance in order to be fresh.
-            }
+            // Setting proxy if user chose to use one and adjusting timeout.
+            timeout = await SetupClientAndProxy(useProxies, timeout).ConfigureAwait(false);
 
             // Null variable which will change withing the code if the user passed a content.
             // At the end when the request is made the function checks if the requestBody is not null and if it's not it will include it in the request.
@@ -688,119 +410,55 @@ namespace HTTPMan
             using (Client)
             {
                 // Setting http version. Defaults to 1.1 if not specified or specified a invalid value.
-                if (httpVersion == null)
-                    Client.DefaultRequestVersion = HttpVersion.Version11;
-                else if (httpVersion == 1.0)
-                    Client.DefaultRequestVersion = HttpVersion.Version10;
-                else if (httpVersion == 1.1)
-                    Client.DefaultRequestVersion = HttpVersion.Version11;
-                else if (httpVersion == 2.0)
-                    Client.DefaultRequestVersion = HttpVersion.Version20;
-                else
-                    Client.DefaultRequestVersion = HttpVersion.Version11;
+                SetupHttpVersion(httpVersion);
 
                 // Setting version policy. Defaults to request's version or higher if not specified.
-                if (versionPolicy == null)
-                    Client.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrHigher;
-                else
-                    Client.DefaultVersionPolicy = (HttpVersionPolicy)versionPolicy;
+                SetupHttpVersionPolicy(versionPolicy);
 
                 // Setting headers if any.
-                if (headers != null)
-                {
-                    Client.DefaultRequestHeaders.Clear();
-                    for (int i = 0; i < headers.Count; i++)
-                    {
-                        Client.DefaultRequestHeaders.Add(headers.Keys.ElementAt(i), headers.Values.ElementAt(i));
-                    }
-                }
+                SetupRequestHeaders(headers);
 
                 // Setting params if any.
-                if (parameters != null)
-                {
-                    url += "?"; // symbol at the end which specifies there would be upcoming params.
-
-                    // Manually setting the first param in order to not get a "&" at the end.
-                    url += parameters.Keys.ElementAt(0) + "=" + parameters.Values.ElementAt(0);
-
-                    // Automatically setting the rest of params if any.
-                    for (int i = 1; i < parameters.Count; i++)
-                    {
-                        url += "&" + parameters.Keys.ElementAt(i) + "=" + parameters.Values.ElementAt(i);
-                    }
-                }
+                url = SetupRequestParams(url, parameters);
 
                 // Converting the content if any.
-                if (content != null)
-                {
-                    if (contentType != null)
-                        requestBody = new(content, Encoding.UTF8, contentType.GetString());
-                    else
-                        requestBody = new(content, Encoding.UTF8, HttpContentType.TextPlain.GetString());
-                }
+                requestBody = ConvertContent(content, contentType);
 
                 // Setting timeout if any.
-                if (timeout != null)
-                    Client.Timeout = (TimeSpan)timeout;
+                SetupRequestTimeout(timeout);
 
                 // Setting max response content buffer size if specified.
-                if (maxResponseContentBufferSize != null)
-                    Client.MaxResponseContentBufferSize = (long)maxResponseContentBufferSize;
+                SetupMaxResponseContentBufferSize(maxResponseContentBufferSize);
 
                 // Setting the chosen dnt header value if chose.
-                if (dnt != null)
-                {
-                    if ((bool)dnt)
-                    {
-                        Client.DefaultRequestHeaders.Remove("dnt");
-                        Client.DefaultRequestHeaders.Add("dnt", 1.ToString());
-                    }
-                    else
-                    {
-                        Client.DefaultRequestHeaders.Remove("dnt");
-                        Client.DefaultRequestHeaders.Add("dnt", 0.ToString());
-                    }
-                }
+                SetupDNT(dnt);
 
                 // Anonymize request as much request as much as possible if requested.
-                if (anonymizeRequest == true)
-                {
-                    // Setting some headers that provide more anonymity. Not much but it's something.
-                    Random random = new();
-                    Client.DefaultRequestHeaders.Remove("x-forwarded-for");
-                    Client.DefaultRequestHeaders.Add("x-forwarded-for", random.Next().ToString());
-                    Client.DefaultRequestHeaders.Remove("x-forwarded-host");
-                    Client.DefaultRequestHeaders.Add("x-forwarded-host", random.Next().ToString());
-                    Client.DefaultRequestHeaders.Remove("forwarded");
-                    Client.DefaultRequestHeaders.Add("forwarded", "by=" + random.Next().ToString());
-                    Client.DefaultRequestHeaders.Remove("user-agent");
-                    Client.DefaultRequestHeaders.Add("user-agent", random.Next().ToString());
-                    Client.DefaultRequestHeaders.Remove("referer");
-                    Client.DefaultRequestHeaders.Add("referer", random.Next().ToString());
-                    Client.DefaultRequestHeaders.Remove("accept-language");
-                    Client.DefaultRequestHeaders.Add("accept-language", "en-US");
-                    Client.DefaultRequestHeaders.Remove("dnt");
-                    Client.DefaultRequestHeaders.Add("dnt", 1.ToString());
-                    Client.DefaultRequestHeaders.Remove("cache-control");
-                    Client.DefaultRequestHeaders.Add("cache-control", "no-cache");
-                    Client.DefaultRequestHeaders.Add("pragma", "no-cache");
-                }
+                AnonymizeRequest(anonymizeRequest);
 
                 // Doing the actual request and saving the response.
                 try
                 {
                     if (requestBody != null)
+                    {
                         response = await Client.PatchAsync(url, requestBody);
+                    }
                     else
+                    {
                         response = await Client.PatchAsync(url, null!);
+                    }
                 }
                 catch (TaskCanceledException)
                 {
                     response = new();
                     if (timeout != null)
+                    {
                         response.Headers.Add("error", "The request could not be completed in the given timeout of " + timeout.Value.TotalSeconds + " seconds");
+                    }
                     else
+                    {   
                         response.Headers.Add("error", "The request could not be completed in the given timeout");
+                    }
                 }
                 catch (Exception e)
                 {
@@ -835,161 +493,46 @@ namespace HTTPMan
         /// <returns>The response as a HttpResponseMessage which contains all the data about the response and the request the was used to send it. If an error ocurred is gonna send an empty
         ///          response with only one header called error with a value containing information about the error.</returns>
 #nullable enable
-        public async Task<HttpResponseMessage> DeleteRequest(string url, double? httpVersion = null, HttpVersionPolicy? versionPolicy = null, Dictionary<string, string>? headers = null,
+        public static async Task<HttpResponseMessage> DeleteRequest(string url, double? httpVersion = null, HttpVersionPolicy? versionPolicy = null, Dictionary<string, string>? headers = null,
             Dictionary<string, string>? parameters = null, string? content = null, HttpContentType? contentType = null, TimeSpan? timeout = null, long? maxResponseContentBufferSize = null,
             bool? dnt = null, bool anonymizeRequest = false, bool useProxies = false)
         {
-            // Setting proxy if user chose to use one.
-            if (useProxies)
-            {
-                if (Proxies.Count() == 0)
-                    Proxies = await GetProxies();
-                string proxy = PickProxy(Proxies);
-                HttpClientHandler clientHandler = new()
-                {
-                    AllowAutoRedirect = true,
-                    AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip,
-                    Proxy = new WebProxy(new Uri($"http://{proxy}"))
-                };
-
-                Client = new(clientHandler); // creates/recreates the client instance, in order to be fresh, using the selected proxy.
-                timeout = TimeSpan.FromSeconds(10); // setting the timeout to 10 in order to give slower proxies time to finish the request.
-            }
-            else
-            {
-                Client = new(); // creates/recreates the client instance in order to be fresh.
-            }
+            // Setting proxy if user chose to use one and adjusting timeout.
+            timeout = await SetupClientAndProxy(useProxies, timeout).ConfigureAwait(false);
 
             // Null variable which will change withing the code if the user passed a content.
             // At the end when the request is made the function checks if the requestBody is not null and if it's not it will include it in the request.
             // Otherwise it will make a post request without a body.
-            StringContent? requestBody = null;
-
             HttpResponseMessage response;
+
             using (Client)
             {
                 // Setting http version. Defaults to 1.1 if not specified or specified a invalid value.
-                if (httpVersion == null)
-                    Client.DefaultRequestVersion = HttpVersion.Version11;
-                else if (httpVersion == 1.0)
-                    Client.DefaultRequestVersion = HttpVersion.Version10;
-                else if (httpVersion == 1.1)
-                    Client.DefaultRequestVersion = HttpVersion.Version11;
-                else if (httpVersion == 2.0)
-                    Client.DefaultRequestVersion = HttpVersion.Version20;
-                else
-                    Client.DefaultRequestVersion = HttpVersion.Version11;
+                SetupHttpVersion(httpVersion);
 
                 // Setting version policy. Defaults to request's version or higher if not specified.
-                if (versionPolicy == null)
-                    Client.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrHigher;
-                else
-                    Client.DefaultVersionPolicy = (HttpVersionPolicy)versionPolicy;
+                SetupHttpVersionPolicy(versionPolicy);
 
                 // Setting headers if any.
-                if (headers != null)
-                {
-                    Client.DefaultRequestHeaders.Clear();
-                    for (int i = 0; i < headers.Count; i++)
-                    {
-                        Client.DefaultRequestHeaders.Add(headers.Keys.ElementAt(i), headers.Values.ElementAt(i));
-                    }
-                }
+                SetupRequestHeaders(headers);
 
                 // Setting params if any.
-                if (parameters != null)
-                {
-                    url += "?"; // symbol at the end which specifies there would be upcoming params.
-
-                    // Manually setting the first param in order to not get a "&" at the end.
-                    url += parameters.Keys.ElementAt(0) + "=" + parameters.Values.ElementAt(0);
-
-                    // Automatically setting the rest of params if any.
-                    for (int i = 1; i < parameters.Count; i++)
-                    {
-                        url += "&" + parameters.Keys.ElementAt(i) + "=" + parameters.Values.ElementAt(i);
-                    }
-                }
+                url = SetupRequestParams(url, parameters);
 
                 // Setting the content if any.
-                HttpRequestMessage? request = null;
-                if (content != null)
-                {
-                    if (contentType != null)
-                    {
-                        request = new()
-                        {
-                            Method = HttpMethod.Delete,
-                            RequestUri = new Uri(url),
-                            Content = new StringContent(content, Encoding.UTF8, contentType.GetString())
-                        };
-                    }
-                    else
-                    {
-                        request = new()
-                        {
-                            Method = HttpMethod.Delete,
-                            RequestUri = new Uri(url),
-                            Content = new StringContent(content, Encoding.UTF8, HttpContentType.TextPlain.GetString())
-                        };
-                    }
-                }
-
-                // Converting the content if any.
-                if (content != null)
-                {
-                    if (contentType != null)
-                        requestBody = new(content, Encoding.UTF8, contentType.GetString());
-                    else
-                        requestBody = new(content, Encoding.UTF8, HttpContentType.TextPlain.GetString());
-                }
+                HttpRequestMessage? request = SetupRequestContent(url, content, contentType);
 
                 // Setting timeout if any.
-                if (timeout != null)
-                    Client.Timeout = (TimeSpan)timeout;
+                SetupRequestTimeout(timeout);
 
                 // Setting max response content buffer size if specified.
-                if (maxResponseContentBufferSize != null)
-                    Client.MaxResponseContentBufferSize = (long)maxResponseContentBufferSize;
+                SetupMaxResponseContentBufferSize(maxResponseContentBufferSize);
 
                 // Setting the chosen dnt header value if chose.
-                if (dnt != null)
-                {
-                    if ((bool)dnt)
-                    {
-                        Client.DefaultRequestHeaders.Remove("dnt");
-                        Client.DefaultRequestHeaders.Add("dnt", 1.ToString());
-                    }
-                    else
-                    {
-                        Client.DefaultRequestHeaders.Remove("dnt");
-                        Client.DefaultRequestHeaders.Add("dnt", 0.ToString());
-                    }
-                }
+                SetupDNT(dnt);
 
                 // Anonymize request as much request as much as possible if requested.
-                if (anonymizeRequest == true)
-                {
-                    // Setting some headers that provide more anonymity. Not much but it's something.
-                    Random random = new();
-                    Client.DefaultRequestHeaders.Remove("x-forwarded-for");
-                    Client.DefaultRequestHeaders.Add("x-forwarded-for", random.Next().ToString());
-                    Client.DefaultRequestHeaders.Remove("x-forwarded-host");
-                    Client.DefaultRequestHeaders.Add("x-forwarded-host", random.Next().ToString());
-                    Client.DefaultRequestHeaders.Remove("forwarded");
-                    Client.DefaultRequestHeaders.Add("forwarded", "by=" + random.Next().ToString());
-                    Client.DefaultRequestHeaders.Remove("user-agent");
-                    Client.DefaultRequestHeaders.Add("user-agent", random.Next().ToString());
-                    Client.DefaultRequestHeaders.Remove("referer");
-                    Client.DefaultRequestHeaders.Add("referer", random.Next().ToString());
-                    Client.DefaultRequestHeaders.Remove("accept-language");
-                    Client.DefaultRequestHeaders.Add("accept-language", "en-US");
-                    Client.DefaultRequestHeaders.Remove("dnt");
-                    Client.DefaultRequestHeaders.Add("dnt", 1.ToString());
-                    Client.DefaultRequestHeaders.Remove("cache-control");
-                    Client.DefaultRequestHeaders.Add("cache-control", "no-cache");
-                    Client.DefaultRequestHeaders.Add("pragma", "no-cache");
-                }
+                AnonymizeRequest(anonymizeRequest);
 
                 // Doing the actual request and saving the response.
                 if (request == null)
@@ -1002,9 +545,13 @@ namespace HTTPMan
                     {
                         response = new();
                         if (timeout != null)
+                        {
                             response.Headers.Add("error", "The request could not be completed in the given timeout of " + timeout.Value.TotalSeconds + " seconds");
+                        }
                         else
+                        {   
                             response.Headers.Add("error", "The request could not be completed in the given timeout");
+                        }
                     }
                     catch (Exception e)
                     {
@@ -1022,9 +569,13 @@ namespace HTTPMan
                     {
                         response = new();
                         if (timeout != null)
+                        {
                             response.Headers.Add("error", "The request could not be completed in the given timeout of " + timeout.Value.TotalSeconds + " seconds");
+                        }
                         else
+                        {   
                             response.Headers.Add("error", "The request could not be completed in the given timeout");
+                        }
                     }
                     catch (Exception e)
                     {
@@ -1032,7 +583,6 @@ namespace HTTPMan
                         response.Headers.Add("error", e.Message);
                     }
                 }
-
             }
 
             return response;
@@ -1058,122 +608,42 @@ namespace HTTPMan
         /// <returns>The response as a HttpResponseMessage which contains all the data about the response and the request the was used to send it. If an error ocurred is gonna send an empty
         ///          response with only one header called error with a value containing information about the error.</returns>
 #nullable enable
-        public async Task<HttpResponseMessage> HeadRequest(string url, double? httpVersion = null, HttpVersionPolicy? versionPolicy = null, Dictionary<string, string>? headers = null,
+        public static async Task<HttpResponseMessage> HeadRequest(string url, double? httpVersion = null, HttpVersionPolicy? versionPolicy = null, Dictionary<string, string>? headers = null,
             Dictionary<string, string>? parameters = null, TimeSpan? timeout = null, bool? acceptCache = null, bool? dnt = null, bool anonymizeRequest = false, bool useProxies = false)
         {
-            // Setting proxy if user chose to use one.
-            if (useProxies)
-            {
-                if (Proxies.Count() == 0)
-                    Proxies = await GetProxies();
-                string proxy = PickProxy(Proxies);
-                HttpClientHandler clientHandler = new()
-                {
-                    AllowAutoRedirect = true,
-                    AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip,
-                    Proxy = new WebProxy(new Uri($"http://{proxy}"))
-                };
+            // Setting proxy if user chose to use one and adjusting timeout.
+            timeout = await SetupClientAndProxy(useProxies, timeout).ConfigureAwait(false);
 
-                Client = new(clientHandler); // creates/recreates the client instance, in order to be fresh, using the selected proxy.
-                timeout = TimeSpan.FromSeconds(10); // setting the timeout to 10 in order to give slower proxies time to finish the request.
-            }
-            else
-            {
-                Client = new(); // creates/recreates the client instance in order to be fresh.
-            }
-
+            // Null variable which will change withing the code if the user passed a content.
+            // At the end when the request is made the function checks if the requestBody is not null and if it's not it will include it in the request.
+            // Otherwise it will make a post request without a body.
             HttpResponseMessage response;
+
             using (Client)
             {
                 // Setting http version. Defaults to 1.1 if not specified or specified a invalid value.
-                if (httpVersion == null)
-                    Client.DefaultRequestVersion = HttpVersion.Version11;
-                else if (httpVersion == 1.0)
-                    Client.DefaultRequestVersion = HttpVersion.Version10;
-                else if (httpVersion == 1.1)
-                    Client.DefaultRequestVersion = HttpVersion.Version11;
-                else if (httpVersion == 2.0)
-                    Client.DefaultRequestVersion = HttpVersion.Version20;
-                else
-                    Client.DefaultRequestVersion = HttpVersion.Version11;
+                SetupHttpVersion(httpVersion);
 
                 // Setting version policy. Defaults to request's version or higher if not specified.
-                if (versionPolicy == null)
-                    Client.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrHigher;
-                else
-                    Client.DefaultVersionPolicy = (HttpVersionPolicy)versionPolicy;
+                SetupHttpVersionPolicy(versionPolicy); 
 
                 // Setting headers if any.
-                if (headers != null)
-                {
-                    Client.DefaultRequestHeaders.Clear();
-                    for (int i = 0; i < headers.Count; i++)
-                    {
-                        Client.DefaultRequestHeaders.Add(headers.Keys.ElementAt(i), headers.Values.ElementAt(i));
-                    }
-                }
+                SetupRequestHeaders(headers);
 
                 // Setting params if any.
-                if (parameters != null)
-                {
-                    url += "?"; // symbol at the end which specifies there would be upcoming params.
-
-                    // Manually setting the first param in order to not get a "&" at the end.
-                    url += parameters.Keys.ElementAt(0) + "=" + parameters.Values.ElementAt(0);
-
-                    // Automatically setting the rest of params if any.
-                    for (int i = 1; i < parameters.Count; i++)
-                    {
-                        url += "&" + parameters.Keys.ElementAt(i) + "=" + parameters.Values.ElementAt(i);
-                    }
-                }
+                url = SetupRequestParams(url, parameters);
 
                 // Setting timeout if any.
-                if (timeout != null)
-                    Client.Timeout = (TimeSpan)timeout;
+                SetupRequestTimeout(timeout);
 
                 // Setting if request accepts cache or not.
-                if (acceptCache != null && Client.DefaultRequestHeaders.CacheControl != null)
-                    Client.DefaultRequestHeaders.CacheControl.NoCache = (bool)acceptCache;
+                SetupAcceptCache(acceptCache);
 
                 // Setting the chosen dnt header value if chose.
-                if (dnt != null)
-                {
-                    if ((bool)dnt)
-                    {
-                        Client.DefaultRequestHeaders.Remove("dnt");
-                        Client.DefaultRequestHeaders.Add("dnt", 1.ToString());
-                    }
-                    else
-                    {
-                        Client.DefaultRequestHeaders.Remove("dnt");
-                        Client.DefaultRequestHeaders.Add("dnt", 0.ToString());
-                    }
-                }
+                SetupDNT(dnt);
 
                 // Anonymize request as much request as much as possible if requested.
-                if (anonymizeRequest == true)
-                {
-                    // Setting some headers that provide more anonymity. Not much but it's something.
-                    Random random = new();
-                    Client.DefaultRequestHeaders.Remove("x-forwarded-for");
-                    Client.DefaultRequestHeaders.Add("x-forwarded-for", random.Next().ToString());
-                    Client.DefaultRequestHeaders.Remove("x-forwarded-host");
-                    Client.DefaultRequestHeaders.Add("x-forwarded-host", random.Next().ToString());
-                    Client.DefaultRequestHeaders.Remove("forwarded");
-                    Client.DefaultRequestHeaders.Add("forwarded", "by=" + random.Next().ToString());
-                    Client.DefaultRequestHeaders.Remove("user-agent");
-                    Client.DefaultRequestHeaders.Add("user-agent", random.Next().ToString());
-                    Client.DefaultRequestHeaders.Remove("referer");
-                    Client.DefaultRequestHeaders.Add("referer", random.Next().ToString());
-                    Client.DefaultRequestHeaders.Remove("accept-language");
-                    Client.DefaultRequestHeaders.Add("accept-language", "en-US");
-                    Client.DefaultRequestHeaders.Remove("dnt");
-                    Client.DefaultRequestHeaders.Add("dnt", 1.ToString());
-                    Client.DefaultRequestHeaders.Remove("cache-control");
-                    Client.DefaultRequestHeaders.Add("cache-control", "no-cache");
-                    Client.DefaultRequestHeaders.Add("pragma", "no-cache");
-                }
+                AnonymizeRequest(anonymizeRequest);
 
                 // Setting up the request
                 HttpRequestMessage? request = new()
@@ -1191,9 +661,13 @@ namespace HTTPMan
                 {
                     response = new();
                     if (timeout != null)
+                    {
                         response.Headers.Add("error", "The request could not be completed in the given timeout of " + timeout.Value.TotalSeconds + " seconds");
+                    }
                     else
+                    {   
                         response.Headers.Add("error", "The request could not be completed in the given timeout");
+                    }
                 }
                 catch (Exception e)
                 {
@@ -1224,118 +698,39 @@ namespace HTTPMan
         /// <returns>The response as a HttpResponseMessage which contains all the data about the response and the request the was used to send it. If an error ocurred is gonna send an empty
         ///          response with only one header called error with a value containing information about the error.</returns>
 #nullable enable
-        public async Task<HttpResponseMessage> TraceRequest(string url, double? httpVersion = null, HttpVersionPolicy? versionPolicy = null, Dictionary<string, string>? headers = null,
+        public static async Task<HttpResponseMessage> TraceRequest(string url, double? httpVersion = null, HttpVersionPolicy? versionPolicy = null, Dictionary<string, string>? headers = null,
             Dictionary<string, string>? parameters = null, TimeSpan? timeout = null, bool? dnt = null, bool anonymizeRequest = false, bool useProxies = false)
         {
-            // Setting proxy if user chose to use one.
-            if (useProxies)
-            {
-                if (Proxies.Count() == 0)
-                    Proxies = await GetProxies();
-                string proxy = PickProxy(Proxies);
-                HttpClientHandler clientHandler = new()
-                {
-                    AllowAutoRedirect = true,
-                    AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip,
-                    Proxy = new WebProxy(new Uri($"http://{proxy}"))
-                };
+            // Setting proxy if user chose to use one and adjusting timeout.
+            timeout = await SetupClientAndProxy(useProxies, timeout).ConfigureAwait(false);
 
-                Client = new(clientHandler); // creates/recreates the client instance, in order to be fresh, using the selected proxy.
-                timeout = TimeSpan.FromSeconds(10); // setting the timeout to 10 in order to give slower proxies time to finish the request.
-            }
-            else
-            {
-                Client = new(); // creates/recreates the client instance in order to be fresh.
-            }
-
+            // Null variable which will change withing the code if the user passed a content.
+            // At the end when the request is made the function checks if the requestBody is not null and if it's not it will include it in the request.
+            // Otherwise it will make a post request without a body.
             HttpResponseMessage response;
+
             using (Client)
             {
                 // Setting http version. Defaults to 1.1 if not specified or specified a invalid value.
-                if (httpVersion == null)
-                    Client.DefaultRequestVersion = HttpVersion.Version11;
-                else if (httpVersion == 1.0)
-                    Client.DefaultRequestVersion = HttpVersion.Version10;
-                else if (httpVersion == 1.1)
-                    Client.DefaultRequestVersion = HttpVersion.Version11;
-                else if (httpVersion == 2.0)
-                    Client.DefaultRequestVersion = HttpVersion.Version20;
-                else
-                    Client.DefaultRequestVersion = HttpVersion.Version11;
+                SetupHttpVersion(httpVersion);
 
                 // Setting version policy. Defaults to request's version or higher if not specified.
-                if (versionPolicy == null)
-                    Client.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrHigher;
-                else
-                    Client.DefaultVersionPolicy = (HttpVersionPolicy)versionPolicy;
+                SetupHttpVersionPolicy(versionPolicy); 
 
                 // Setting headers if any.
-                if (headers != null)
-                {
-                    Client.DefaultRequestHeaders.Clear();
-                    for (int i = 0; i < headers.Count; i++)
-                    {
-                        Client.DefaultRequestHeaders.Add(headers.Keys.ElementAt(i), headers.Values.ElementAt(i));
-                    }
-                }
+                SetupRequestHeaders(headers);
 
                 // Setting params if any.
-                if (parameters != null)
-                {
-                    url += "?"; // symbol at the end which specifies there would be upcoming params.
-
-                    // Manually setting the first param in order to not get a "&" at the end.
-                    url += parameters.Keys.ElementAt(0) + "=" + parameters.Values.ElementAt(0);
-
-                    // Automatically setting the rest of params if any.
-                    for (int i = 1; i < parameters.Count; i++)
-                    {
-                        url += "&" + parameters.Keys.ElementAt(i) + "=" + parameters.Values.ElementAt(i);
-                    }
-                }
+                url = SetupRequestParams(url, parameters);
 
                 // Setting timeout if any.
-                if (timeout != null)
-                    Client.Timeout = (TimeSpan)timeout;
+                SetupRequestTimeout(timeout);
 
                 // Setting the chosen dnt header value if chose.
-                if (dnt != null)
-                {
-                    if ((bool)dnt)
-                    {
-                        Client.DefaultRequestHeaders.Remove("dnt");
-                        Client.DefaultRequestHeaders.Add("dnt", 1.ToString());
-                    }
-                    else
-                    {
-                        Client.DefaultRequestHeaders.Remove("dnt");
-                        Client.DefaultRequestHeaders.Add("dnt", 0.ToString());
-                    }
-                }
+                SetupDNT(dnt);
 
                 // Anonymize request as much request as much as possible if requested.
-                if (anonymizeRequest == true)
-                {
-                    // Setting some headers that provide more anonymity. Not much but it's something.
-                    Random random = new();
-                    Client.DefaultRequestHeaders.Remove("x-forwarded-for");
-                    Client.DefaultRequestHeaders.Add("x-forwarded-for", random.Next().ToString());
-                    Client.DefaultRequestHeaders.Remove("x-forwarded-host");
-                    Client.DefaultRequestHeaders.Add("x-forwarded-host", random.Next().ToString());
-                    Client.DefaultRequestHeaders.Remove("forwarded");
-                    Client.DefaultRequestHeaders.Add("forwarded", "by=" + random.Next().ToString());
-                    Client.DefaultRequestHeaders.Remove("user-agent");
-                    Client.DefaultRequestHeaders.Add("user-agent", random.Next().ToString());
-                    Client.DefaultRequestHeaders.Remove("referer");
-                    Client.DefaultRequestHeaders.Add("referer", random.Next().ToString());
-                    Client.DefaultRequestHeaders.Remove("accept-language");
-                    Client.DefaultRequestHeaders.Add("accept-language", "en-US");
-                    Client.DefaultRequestHeaders.Remove("dnt");
-                    Client.DefaultRequestHeaders.Add("dnt", 1.ToString());
-                    Client.DefaultRequestHeaders.Remove("cache-control");
-                    Client.DefaultRequestHeaders.Add("cache-control", "no-cache");
-                    Client.DefaultRequestHeaders.Add("pragma", "no-cache");
-                }
+                AnonymizeRequest(anonymizeRequest);
 
                 // Setting up the request
                 HttpRequestMessage? request = new()
@@ -1353,9 +748,13 @@ namespace HTTPMan
                 {
                     response = new();
                     if (timeout != null)
+                    {
                         response.Headers.Add("error", "The request could not be completed in the given timeout of " + timeout.Value.TotalSeconds + " seconds");
+                    }
                     else
+                    {   
                         response.Headers.Add("error", "The request could not be completed in the given timeout");
+                    }
                 }
                 catch (Exception e)
                 {
@@ -1387,122 +786,42 @@ namespace HTTPMan
         /// <returns>The response as a HttpResponseMessage which contains all the data about the response and the request the was used to send it. If an error ocurred is gonna send an empty
         ///          response with only one header called error with a value containing information about the error.</returns>
 #nullable enable
-        public async Task<HttpResponseMessage> OptionsRequest(string url, double? httpVersion = null, HttpVersionPolicy? versionPolicy = null, Dictionary<string, string>? headers = null,
+        public static async Task<HttpResponseMessage> OptionsRequest(string url, double? httpVersion = null, HttpVersionPolicy? versionPolicy = null, Dictionary<string, string>? headers = null,
             Dictionary<string, string>? parameters = null, TimeSpan? timeout = null, long? maxResponseContentBufferSize = null, bool? dnt = null, bool anonymizeRequest = false, bool useProxies = false)
         {
-            // Setting proxy if user chose to use one.
-            if (useProxies)
-            {
-                if (Proxies.Count() == 0)
-                    Proxies = await GetProxies();
-                string proxy = PickProxy(Proxies);
-                HttpClientHandler clientHandler = new()
-                {
-                    AllowAutoRedirect = true,
-                    AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip,
-                    Proxy = new WebProxy(new Uri($"http://{proxy}"))
-                };
-
-                Client = new(clientHandler); // creates/recreates the client instance, in order to be fresh, using the selected proxy.
-                timeout = TimeSpan.FromSeconds(10); // setting the timeout to 10 in order to give slower proxies time to finish the request.
-            }
-            else
-            {
-                Client = new(); // creates/recreates the client instance in order to be fresh.
-            }
-
+            // Setting proxy if user chose to use one and adjusting timeout.
+            timeout = await SetupClientAndProxy(useProxies, timeout).ConfigureAwait(false);
+            
+            // Null variable which will change withing the code if the user passed a content.
+            // At the end when the request is made the function checks if the requestBody is not null and if it's not it will include it in the request.
+            // Otherwise it will make a post request without a body.
             HttpResponseMessage response;
+
             using (Client)
             {
                 // Setting http version. Defaults to 1.1 if not specified or specified a invalid value.
-                if (httpVersion == null)
-                    Client.DefaultRequestVersion = HttpVersion.Version11;
-                else if (httpVersion == 1.0)
-                    Client.DefaultRequestVersion = HttpVersion.Version10;
-                else if (httpVersion == 1.1)
-                    Client.DefaultRequestVersion = HttpVersion.Version11;
-                else if (httpVersion == 2.0)
-                    Client.DefaultRequestVersion = HttpVersion.Version20;
-                else
-                    Client.DefaultRequestVersion = HttpVersion.Version11;
+                SetupHttpVersion(httpVersion);
 
                 // Setting version policy. Defaults to request's version or higher if not specified.
-                if (versionPolicy == null)
-                    Client.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrHigher;
-                else
-                    Client.DefaultVersionPolicy = (HttpVersionPolicy)versionPolicy;
+                SetupHttpVersionPolicy(versionPolicy);
 
                 // Setting headers if any.
-                if (headers != null)
-                {
-                    Client.DefaultRequestHeaders.Clear();
-                    for (int i = 0; i < headers.Count; i++)
-                    {
-                        Client.DefaultRequestHeaders.Add(headers.Keys.ElementAt(i), headers.Values.ElementAt(i));
-                    }
-                }
+                SetupRequestHeaders(headers);
 
                 // Setting params if any.
-                if (parameters != null)
-                {
-                    url += "?"; // symbol at the end which specifies there would be upcoming params.
-
-                    // Manually setting the first param in order to not get a "&" at the end.
-                    url += parameters.Keys.ElementAt(0) + "=" + parameters.Values.ElementAt(0);
-
-                    // Automatically setting the rest of params if any.
-                    for (int i = 1; i < parameters.Count; i++)
-                    {
-                        url += "&" + parameters.Keys.ElementAt(i) + "=" + parameters.Values.ElementAt(i);
-                    }
-                }
+                url = SetupRequestParams(url, parameters);
 
                 // Setting timeout if any.
-                if (timeout != null)
-                    Client.Timeout = (TimeSpan)timeout;
+                SetupRequestTimeout(timeout);
 
                 // Setting max response content buffer size if specified.
-                if (maxResponseContentBufferSize != null)
-                    Client.MaxResponseContentBufferSize = (long)maxResponseContentBufferSize;
+                SetupMaxResponseContentBufferSize(maxResponseContentBufferSize);
 
                 // Setting the chosen dnt header value if chose.
-                if (dnt != null)
-                {
-                    if ((bool)dnt)
-                    {
-                        Client.DefaultRequestHeaders.Remove("dnt");
-                        Client.DefaultRequestHeaders.Add("dnt", 1.ToString());
-                    }
-                    else
-                    {
-                        Client.DefaultRequestHeaders.Remove("dnt");
-                        Client.DefaultRequestHeaders.Add("dnt", 0.ToString());
-                    }
-                }
+                SetupDNT(dnt);
 
                 // Anonymize request as much request as much as possible if requested.
-                if (anonymizeRequest == true)
-                {
-                    // Setting some headers that provide more anonymity. Not much but it's something.
-                    Random random = new();
-                    Client.DefaultRequestHeaders.Remove("x-forwarded-for");
-                    Client.DefaultRequestHeaders.Add("x-forwarded-for", random.Next().ToString());
-                    Client.DefaultRequestHeaders.Remove("x-forwarded-host");
-                    Client.DefaultRequestHeaders.Add("x-forwarded-host", random.Next().ToString());
-                    Client.DefaultRequestHeaders.Remove("forwarded");
-                    Client.DefaultRequestHeaders.Add("forwarded", "by=" + random.Next().ToString());
-                    Client.DefaultRequestHeaders.Remove("user-agent");
-                    Client.DefaultRequestHeaders.Add("user-agent", random.Next().ToString());
-                    Client.DefaultRequestHeaders.Remove("referer");
-                    Client.DefaultRequestHeaders.Add("referer", random.Next().ToString());
-                    Client.DefaultRequestHeaders.Remove("accept-language");
-                    Client.DefaultRequestHeaders.Add("accept-language", "en-US");
-                    Client.DefaultRequestHeaders.Remove("dnt");
-                    Client.DefaultRequestHeaders.Add("dnt", 1.ToString());
-                    Client.DefaultRequestHeaders.Remove("cache-control");
-                    Client.DefaultRequestHeaders.Add("cache-control", "no-cache");
-                    Client.DefaultRequestHeaders.Add("pragma", "no-cache");
-                }
+                AnonymizeRequest(anonymizeRequest);
 
                 // Setting up the request
                 HttpRequestMessage? request = new()
@@ -1520,9 +839,13 @@ namespace HTTPMan
                 {
                     response = new();
                     if (timeout != null)
+                    {
                         response.Headers.Add("error", "The request could not be completed in the given timeout of " + timeout.Value.TotalSeconds + " seconds");
+                    }
                     else
+                    {   
                         response.Headers.Add("error", "The request could not be completed in the given timeout");
+                    }
                 }
                 catch (Exception e)
                 {
@@ -1532,6 +855,253 @@ namespace HTTPMan
             }
 
             return response;
+        }
+#nullable disable
+
+        // ****************************************************
+        // **                                                **
+        // *    Methods to setup request. Repetitive code.    *
+        // **                                                **
+        // ****************************************************
+
+#nullable enable
+        public static async Task<TimeSpan?> SetupClientAndProxy(bool useProxies, TimeSpan? timeout)
+        {
+            if (useProxies)
+            {
+                if (Proxies.Count() == 0)
+                {
+                    Proxies = await GetProxies().ConfigureAwait(false);
+                }
+                string proxy = PickProxy(Proxies);
+                HttpClientHandler clientHandler = new()
+                {
+                    AllowAutoRedirect = true,
+                    AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip,
+                    Proxy = new WebProxy(new Uri($"http://{proxy}"))
+                };
+
+                Client = new(clientHandler); // creates/recreates the client instance, in order to be fresh, using the selected proxy.
+                timeout = TimeSpan.FromSeconds(10); // setting the timeout to 10 in order to give slower proxies time to finish the request.
+
+                return timeout;
+            }
+            else
+            {
+                Client = new(); // creates/recreates the client instance in order to be fresh.
+
+                return timeout;
+            }
+        }
+#nullable disable
+
+#nullable enable
+        public static void SetupHttpVersion(double? httpVersion)
+        {
+            if (httpVersion == null)
+            {
+                Client.DefaultRequestVersion = HttpVersion.Version11;
+            }
+            else if (httpVersion == 1.0)
+            {
+                Client.DefaultRequestVersion = HttpVersion.Version10;
+            } 
+            else if (httpVersion == 1.1)
+            {
+                Client.DefaultRequestVersion = HttpVersion.Version11;
+            }
+            else if (httpVersion == 2.0)
+            {
+                Client.DefaultRequestVersion = HttpVersion.Version20;
+            }
+            else
+            {
+                Client.DefaultRequestVersion = HttpVersion.Version11;
+            }
+        }
+#nullable disable
+
+#nullable enable
+        public static void SetupHttpVersionPolicy(HttpVersionPolicy? versionPolicy)
+        {
+            if (versionPolicy == null)
+            {
+                Client.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrHigher;
+            }  
+            else
+            {   
+                Client.DefaultVersionPolicy = (HttpVersionPolicy)versionPolicy;
+            } 
+        }
+#nullable disable
+
+#nullable enable
+        public static void SetupRequestHeaders(Dictionary<string, string>? headers)
+        {
+            if (headers != null)
+            {
+                Client.DefaultRequestHeaders.Clear();
+                for (int i = 0; i < headers.Count; i++)
+                {
+                    Client.DefaultRequestHeaders.Add(headers.Keys.ElementAt(i), headers.Values.ElementAt(i));
+                }
+            }
+        }
+#nullable disable
+
+#nullable enable
+        public static string SetupRequestParams(string url, Dictionary<string, string>? parameters)
+        {
+            if (parameters != null)
+            {
+                url += "?"; // symbol at the end which specifies there would be upcoming params.
+
+                // Manually setting the first param in order to not get a "&" at the end.
+                url += parameters.Keys.ElementAt(0) + "=" + parameters.Values.ElementAt(0);
+
+                // Using StringBuilder for performance sake.
+                StringBuilder urlTemp = new(url);
+
+                // Automatically setting the rest of params if any.
+                for (int i = 1; i < parameters.Count; i++)
+                {
+                    urlTemp.Append("&" + parameters.Keys.ElementAt(i) + "=" + parameters.Values.ElementAt(i));
+                }
+
+                url = urlTemp.ToString();
+
+                return url;
+            }
+
+            return url;
+        }
+#nullable disable
+
+#nullable enable
+        public static HttpRequestMessage? SetupRequestContent(string url, string? content, HttpContentType? contentType)
+        {
+            HttpRequestMessage? request = null;
+            if (content != null)
+            {
+                if (contentType != null)
+                {
+                    request = new()
+                    {
+                        Method = HttpMethod.Get,
+                        RequestUri = new Uri(url),
+                        Content = new StringContent(content, Encoding.UTF8, contentType.GetString())
+                    };
+                }
+                else
+                {
+                    request = new()
+                    {
+                        Method = HttpMethod.Get,
+                        RequestUri = new Uri(url),
+                        Content = new StringContent(content, Encoding.UTF8, HttpContentType.TextPlain.GetString())
+                    };
+                }
+            }
+
+            return request;
+        }
+#nullable disable
+
+#nullable enable
+        public static StringContent? ConvertContent(string? content, HttpContentType? contentType)
+        {
+            StringContent? requestBody = null;
+
+            if (content != null)
+            {
+                if (contentType != null)
+                {
+                    requestBody = new(content, Encoding.UTF8, contentType.GetString());
+                }    
+                else
+                {
+                    requestBody = new(content, Encoding.UTF8, HttpContentType.TextPlain.GetString());
+                }
+            }
+
+            return requestBody;
+        }
+#nullable disable
+
+#nullable enable
+        public static void SetupRequestTimeout(TimeSpan? timeout)
+        {
+            if (timeout != null)
+            {
+                Client.Timeout = (TimeSpan)timeout;
+            }
+        }
+#nullable disable
+
+#nullable enable
+        public static void SetupMaxResponseContentBufferSize(long? maxResponseContentBufferSize)
+        {
+            if (maxResponseContentBufferSize != null)
+            {
+                Client.MaxResponseContentBufferSize = (long)maxResponseContentBufferSize;
+            }
+        }
+#nullable disable
+
+#nullable enable
+        public static void SetupAcceptCache(bool? acceptCache)
+        {
+            if (acceptCache != null && Client.DefaultRequestHeaders.CacheControl != null)
+            {
+                Client.DefaultRequestHeaders.CacheControl.NoCache = (bool)acceptCache;
+            }
+        }
+#nullable disable
+
+#nullable enable
+        public static void SetupDNT(bool? dnt)
+        {
+            if (dnt != null)
+            {
+                if ((bool)dnt)
+                {
+                    Client.DefaultRequestHeaders.Remove("dnt");
+                    Client.DefaultRequestHeaders.Add("dnt", 1.ToString());
+                }
+                else
+                {
+                    Client.DefaultRequestHeaders.Remove("dnt");
+                    Client.DefaultRequestHeaders.Add("dnt", 0.ToString());
+                }
+            }
+        }
+#nullable disable
+
+#nullable enable
+        public static void AnonymizeRequest(bool anonymize)
+        {
+            if (anonymize == true)
+            {
+                // Setting some headers that provide more anonymity. Not much but it's something.
+                Random random = new();
+                Client.DefaultRequestHeaders.Remove("x-forwarded-for");
+                Client.DefaultRequestHeaders.Add("x-forwarded-for", random.Next().ToString());
+                Client.DefaultRequestHeaders.Remove("x-forwarded-host");
+                Client.DefaultRequestHeaders.Add("x-forwarded-host", random.Next().ToString());
+                Client.DefaultRequestHeaders.Remove("forwarded");
+                Client.DefaultRequestHeaders.Add("forwarded", "by=" + random.Next().ToString());
+                Client.DefaultRequestHeaders.Remove("user-agent");
+                Client.DefaultRequestHeaders.Add("user-agent", random.Next().ToString());
+                Client.DefaultRequestHeaders.Remove("referer");
+                Client.DefaultRequestHeaders.Add("referer", random.Next().ToString());
+                Client.DefaultRequestHeaders.Remove("accept-language");
+                Client.DefaultRequestHeaders.Add("accept-language", "en-US");
+                Client.DefaultRequestHeaders.Remove("dnt");
+                Client.DefaultRequestHeaders.Add("dnt", 1.ToString());
+                Client.DefaultRequestHeaders.Remove("cache-control");
+                Client.DefaultRequestHeaders.Add("cache-control", "no-cache");
+                Client.DefaultRequestHeaders.Add("pragma", "no-cache");
+            }
         }
 #nullable disable
     }

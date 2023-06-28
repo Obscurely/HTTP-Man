@@ -24,15 +24,15 @@ namespace HTTPMan
     {
         // Fields
         private readonly ProxyServer _proxyServer = new();
-        private bool _isServerStarted = false;
-        private bool _isSystemProxySet = false;
+        private bool _isServerStarted;
+        private bool _isSystemProxySet;
         private readonly ExplicitProxyEndPoint _explicitEndPoint;
         private readonly TransparentProxyEndPoint _transparentEndPoint;
         private List<TunnelConnectSessionEventArgs> _tunnelConnectRequests = new();
         private List<SessionEventArgs> _httpRequests = new();
         private List<SessionEventArgs> _httpResponses = new();
         private List<MockerRule> _httpRules = new();
-        private Mocker _httpMocker = new();
+        private readonly Mocker _httpMocker = new();
 
         // Properties
         private ProxyServer ProxyServer { get { return _proxyServer; } }
@@ -233,10 +233,14 @@ namespace HTTPMan
             {
                 for (int i = 0; i < HttpRules.Count; i++)
                 {
-                    if (HttpRules[i].Method.GetString().ToUpper() != e.HttpClient.Request.Method.ToUpper() && HttpRules[i].Method != MockHttpMethod.Any)
+                    if ((HttpRules[i].Method.GetString().ToUpper() != e.HttpClient.Request.Method.ToUpper() && HttpRules[i].Method != MockHttpMethod.Any) || !HttpRules[i].IsValid)
+                    {
                         continue;
+                    } 
                     if (!HttpRules[i].IsForRequest)
+                    {
                         continue;
+                    }
 
                     e = await HttpMocker.Mock(HttpRules[i], e, true);
                 }
@@ -258,10 +262,14 @@ namespace HTTPMan
             {
                 for (int i = 0; i < HttpRules.Count; i++)
                 {
-                    if (HttpRules[i].Method.GetString().ToUpper() != e.HttpClient.Request.Method.ToUpper() && HttpRules[i].Method != MockHttpMethod.Any)
+                    if ((HttpRules[i].Method.GetString().ToUpper() != e.HttpClient.Request.Method.ToUpper() && HttpRules[i].Method != MockHttpMethod.Any) || !HttpRules[i].IsValid)
+                    {
                         continue;
+                    }
                     if (!HttpRules[i].IsForResponse)
+                    {
                         continue;
+                    }
 
                     e = await HttpMocker.Mock(HttpRules[i], e, false);
                 }
@@ -280,7 +288,9 @@ namespace HTTPMan
         {
             // set IsValid to true/false based on Certificate Errors.
             if (e.SslPolicyErrors == System.Net.Security.SslPolicyErrors.None)
+            {
                 e.IsValid = true;
+            }
 
             return Task.CompletedTask;
         }

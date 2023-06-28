@@ -14,20 +14,20 @@ namespace HTTPMan
         // Fields
         // For Requests
         private readonly HttpMethod? _requestMethod = null;
-        private readonly Dictionary<string, string>? _requestHeaders = null;
-        private readonly string? _requestBodyString = null;
+        private readonly Dictionary<string, string>? _requestHeaders;
+        private readonly string? _requestBodyString;
         private readonly HttpContentType? _requestBodyType = null;
         private readonly bool? _requestKeepBody = null;
-        private readonly string? _requestHost = null;
-        private readonly string? _requestUrl = null;
-        private readonly Version? _requestHttpMethodVersion = null;
+        private readonly string? _requestHost;
+        private readonly string? _requestUrl;
+        private readonly Version? _requestHttpMethodVersion;
         // For Responses
         private readonly int? _responseStatusCode = null;
-        private readonly Dictionary<string, string>? _responseHeaders = null;
-        private readonly string? _responseBodyString = null;
-        private readonly HttpContentType? _responseBodyType = null;
+        private readonly Dictionary<string, string>? _responseHeaders;
+        private readonly string? _responseBodyString;
+        private readonly HttpContentType? _responseBodyType;
         private readonly bool? _responseKeepBody = null;
-        private readonly Version? _responseHttpMethodVersion = null;
+        private readonly Version? _responseHttpMethodVersion;
 
         // Properties
         // For Requests
@@ -81,13 +81,21 @@ namespace HTTPMan
 
             // Setting http version for request.
             if (requestHttpMethodVersion == 1.0)
+            {
                 _requestHttpMethodVersion = HttpVersion.Version10;
+            }
             else if (requestHttpMethodVersion == 1.1)
+            {
                 _requestHttpMethodVersion = HttpVersion.Version11;
+            }
             else if (requestHttpMethodVersion == 2.0)
+            {
                 _requestHttpMethodVersion = HttpVersion.Version20;
+            } 
             else
+            {
                 _requestHttpMethodVersion = null;
+            } 
 
             // Response
             _responseStatusCode = responseStatusCode;
@@ -98,13 +106,21 @@ namespace HTTPMan
 
             // Setting http version for response.
             if (responseHttpMethodVersion == 1.0)
+            {
                 _responseHttpMethodVersion = HttpVersion.Version10;
+            }
             else if (responseHttpMethodVersion == 1.1)
+            {
                 _responseHttpMethodVersion = HttpVersion.Version11;
+            }
             else if (responseHttpMethodVersion == 2.0)
+            {
                 _responseHttpMethodVersion = HttpVersion.Version20;
+            }
             else
+            {
                 _responseHttpMethodVersion = null;
+            }
         }
     }
 #nullable disable

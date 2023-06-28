@@ -1,3 +1,4 @@
+using System.Text;
 using System;
 using System.Net.Http;
 using System.Linq;
@@ -42,37 +43,37 @@ namespace HTTPMan
         /// <returns>String containing the given dict as a json string.</returns>
         public static string ToJsonString(this Dictionary<string, object> dict)
         {
-            string json = "{\n";
+            StringBuilder jsonString = new("{\n");
             for (int i = 0; i < dict.Count; i++)
             {
-                json += "\t";
+                jsonString.Append("\t");
 
                 bool boolResult;
                 int intResult;
                 double doubleResult;
                 if (bool.TryParse(dict.Values.ElementAt(i).ToString(), out boolResult))
                 {
-                    json += "\"" + dict.Keys.ElementAt(i) + "\": " + boolResult.ToString().ToLower() + ",\n";
+                    jsonString.Append("\"" + dict.Keys.ElementAt(i) + "\": " + boolResult.ToString().ToLower() + ",\n");
                 }
                 else if (int.TryParse(dict.Values.ElementAt(i).ToString(), out intResult))
                 {
-                    json += "\"" + dict.Keys.ElementAt(i) + "\": " + intResult + ",\n";
+                    jsonString.Append("\"" + dict.Keys.ElementAt(i) + "\": " + intResult + ",\n");
                 }
                 else if (double.TryParse(dict.Values.ElementAt(i).ToString(), out doubleResult)) 
                 {
-                    json += "\"" + dict.Keys.ElementAt(i) + "\": " + doubleResult + ",\n";
+                    jsonString.Append("\"" + dict.Keys.ElementAt(i) + "\": " + doubleResult + ",\n");
                 }
                 else if (dict.Values.ElementAt(i).ToString().ToLower().Equals("null"))
                 {
-                    json += "\"" + dict.Keys.ElementAt(i) + "\": " + "null" + ",\n";
+                    jsonString.Append("\"" + dict.Keys.ElementAt(i) + "\": " + "null" + ",\n");
                 }
                 else
                 {
-                    json += "\"" + dict.Keys.ElementAt(i) + "\": \"" + dict.Values.ElementAt(i).ToString() + "\",\n";
+                    jsonString.Append("\"" + dict.Keys.ElementAt(i) + "\": \"" + dict.Values.ElementAt(i).ToString() + "\",\n");
                 }
             }
-            json += "}";
-            return json;
+            jsonString.Append("}");
+            return jsonString.ToString();
         }
 
         /// <summary>
@@ -83,19 +84,20 @@ namespace HTTPMan
         public static bool ContentEquals(this Dictionary<string, string> dict1, Dictionary<string, string> dict2)
         {
             if (dict1.Count != dict2.Count)
+            {
                 return false;
-
+            }
+                
             for (int i = 0; i < dict1.Count; i++)
             {
-                if (dict1.Keys.ElementAt(i).Equals(dict2.Keys.ElementAt(i)) && dict1.Values.ElementAt(i).Equals(dict2.Values.ElementAt(i)))
-                    continue;
-                else
+                if (!(dict1.Keys.ElementAt(i).Equals(dict2.Keys.ElementAt(i)) && dict1.Values.ElementAt(i).Equals(dict2.Values.ElementAt(i))))
+                {
                     return false;
+                } 
             }
 
             return true;
         }
-
 
         // *********************
         // * String Extensions *
@@ -117,7 +119,6 @@ namespace HTTPMan
 
             return text.Substring(0, pos) + replace + text.Substring(pos + search.Length);
         }
-
 
         // ******************************
         // * Mocking Objects Extensions *

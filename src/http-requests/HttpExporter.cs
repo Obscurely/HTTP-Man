@@ -7,7 +7,7 @@ namespace HTTPMan
     /// <summary>
     /// Contains all actions related to exporting http stuff to a file.
     /// </summary>
-    public class HttpExporter
+    public static class HttpExporter
     {
         /// <summary>
         /// Function that exports an http request to a .hreq file which can be imported back to the program or used for anything else.
@@ -28,8 +28,8 @@ namespace HTTPMan
             requestDict.Add("body_string", request.BodyString);
             requestDict.Add("keep_body", request.KeepBody);
 
-            await File.WriteAllTextAsync(fileLocation, requestDict.ToJsonString());
-            
+            await File.WriteAllTextAsync(fileLocation, requestDict.ToJsonString()).ConfigureAwait(false);
+
             return true;
         }
 
@@ -47,13 +47,13 @@ namespace HTTPMan
             responseDict.Add("status_code", response.StatusCode);
             responseDict.Add("headers", response.Headers.ToJsonString());
             responseDict.Add("has_body", response.HasBody);
-            responseDict.Add("body_type", response.BodyType);
+            responseDict.Add("body_type", response.BodyType.GetString());
             responseDict.Add("body_string", response.BodyString);
             responseDict.Add("keep_body", response.KeepBody);
-            
-            await File.WriteAllTextAsync(fileLocation, responseDict.ToJsonString());
+
+            await File.WriteAllTextAsync(fileLocation, responseDict.ToJsonString()).ConfigureAwait(false);
 
             return true;
-        } 
+        }
     }
 }
